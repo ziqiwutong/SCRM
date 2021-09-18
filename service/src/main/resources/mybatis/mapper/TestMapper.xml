@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.scrm.service.dao.TestDao">
+
+    <resultMap id="testMap" type="com.scrm.service.entity.Test">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+    </resultMap>
+
+    <!--查询Test-->
+    <select id="queryTest" resultMap="testMap">
+        <bind name="key_offset" value="(currentPage-1)*pageCount"/>
+        select * from test
+        order by id asc
+        <if test="pageCount != null and currentPage != null">
+            limit #{key_offset},#{pageCount}
+        </if>
+    </select>
+
+    <!--查询Test总数量-->
+    <select id="queryTestCount" resultType="Integer">
+        select count(id) from test
+    </select>
+
+    <!--根据ID查询Test-->
+    <select id="queryTestById" resultMap="testMap">
+        select *
+        from test
+        where id = #{id}
+    </select>
+
+    <!--插入Test-->
+    <insert id="insertTest" parameterType="com.scrm.service.entity.Test"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into test (id, name)
+        values (#{id}, #{name})
+    </insert>
+
+    <!--更新Test-->
+    <update id="updateTest" parameterType="com.scrm.service.entity.Test">
+        update test set name=#{name}
+        where id=#{id}
+    </update>
+
+    <!--根据ID删除Test-->
+    <delete id="deleteTest">
+        delete from test
+        where id=#{id}
+    </delete>
+</mapper>

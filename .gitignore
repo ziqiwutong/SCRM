@@ -1,0 +1,5 @@
+/.idea
+/.git
+/eureka/target
+/zuul/target
+/service/target
