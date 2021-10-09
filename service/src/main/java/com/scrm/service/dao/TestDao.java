@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import java.util.List;
 
 @Mapper
-public interface TestDao {
+public interface TestDao{
     /**
      * 分页查询
      * @param pageCount 一页的数量，可为null
