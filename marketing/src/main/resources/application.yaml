@@ -1,15 +1,15 @@
-#Î¢·şÎñ½¨ÒéÒ»¶¨ÒªĞ´·şÎñ¶Ë¿ÚºÅºÍÎ¢·şÎñÃû³Æ
+#å¾®æœåŠ¡å»ºè®®ä¸€å®šè¦å†™æœåŠ¡ç«¯å£å·å’Œå¾®æœåŠ¡åç§°
 server:
   port: 30003
 spring:
   application:
-    # Î¢·şÎñÃû³Æ
+    # å¾®æœåŠ¡åç§°
     name: marketing
   cloud:
     nacos:
-      discovery: # ÅäÖÃnacos×¢²áÖĞĞÄ·şÎñ·¢ÏÖ
-        server-addr: http://101.34.5.36:8848  #ÅäÖÃµÄNacosµØÖ·
-        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # ÕâÊÇscrmµÄÃû³Æ¿Õ¼ä£¬¿ÉÒÔÈ¥nacosµØÖ·¿´¿´
+      discovery: # é…ç½®nacosæ³¨å†Œä¸­å¿ƒæœåŠ¡å‘ç°
+        server-addr: http://101.34.5.36:8848  #é…ç½®çš„Nacosåœ°å€
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # è¿™æ˜¯scrmçš„åç§°ç©ºé—´ï¼Œå¯ä»¥å»nacosåœ°å€çœ‹çœ‹
 
   datasource:
     url: "jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
