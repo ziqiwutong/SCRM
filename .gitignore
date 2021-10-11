@@ -1,11 +1,7 @@
-/.idea
-/.git
+.git
 /scrm.iml
-/eureka/target
-/zuul/target
-/service/target
+/*/target
 /*/*.iml
-
 
 HELP.md
 target/
