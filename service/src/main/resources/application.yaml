@@ -20,4 +20,5 @@ spring:
 #  mapper-locations: classpath:mybatis/mapper/*.xml
 mybatis-plus:
   mapper-locations: classpath:mybatis/mapper/*.xml
-  config-location: classpath:mybatis/mybatis-config.xml
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰命名
