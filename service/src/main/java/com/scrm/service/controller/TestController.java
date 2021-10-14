@@ -3,7 +3,10 @@ package com.scrm.service.controller;
 import com.scrm.service.entity.Test;
 import com.scrm.service.service.TestService;
 import com.scrm.service.util.resp.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 
@@ -20,6 +23,9 @@ public class TestController {
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @RequestParam(value = "currentPage", required = false) Integer currentPage
     ) {
+        RestTemplate rest = new RestTemplate();
+        HttpEntity<String> response = rest.exchange("https://mp.weixin.qq.com/s/r3zslmUEY0qUZBO8VO2WtQ", HttpMethod.GET, null, String.class);
+
         return PageResp.success().setData(
                 testService.query(pageCount, currentPage)
         ).setPage(pageCount, currentPage, testService.queryCount()).setMsg("成功");
