@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scrm.service.dao.se_clue_statusDao">
+    <resultMap id="se_clue_statusMap" type="com.scrm.service.entity.se_clue_status">
+        <result property="id" column="id"/>
+        <result property="clue_id" column="clue_id"/>
+        <result property="clue_editor" column="clue_editor"/>
+        <result property="clue_status" column="clue_status"/>
+        <result property="clue_notes" column="clue_notes"/>
+        <result property="create_time" column="create_time"/>
+        <result property="update_time" column="update_time"/>
+    </resultMap>
+
+    <resultMap id="se_clueMap" type="com.scrm.service.entity.se_clue">
+        <result property="id" column="id"/>
+        <result property="clue_name" column="clue_name"/>
+        <result property="clue_date" column="clue_date"/>
+        <result property="clue_status" column="clue_status"/>
+        <result property="clue_editor" column="clue_editor"/>
+        <result property="clue_discover" column="clue_discover"/>
+        <result property="clue_responsible" column="clue_responsible"/>
+        <result property="business_opporitunity_flag" column="business_opporitunity_flag"/>
+        <result property="create_time" column="create_time"/>
+        <result property="update_time" column="update_time"/>
+    </resultMap>
+
+    <select id="queryClueStatus" resultMap="se_clue_statusMap">
+        select id,clue_id,clue_editor,clue_status,clue_notes,create_time from se_clue_status
+        where clue_id = #{clue_id} order by create_time asc
+    </select>
+
+    <insert id="addClueStatus" parameterType="com.scrm.service.entity.se_clue_status"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into se_clue_status (id, clue_id, clue_editor, clue_status, clue_notes)
+        values(#{id}, #{clue_id}, #{clue_editor}, #{clue_status}, #{clue_notes})
+    </insert>
+
+    <update id="editClueStatus" parameterType="com.scrm.service.entity.se_clue_status">
+        update se_clue_status set clue_id = #{clue_id}, clue_editor = #{clue_editor}, clue_status = #{clue_status}, clue_notes = #{clue_notes}
+        where id = #{id}
+    </update>
+
+    <select id="queryClue" resultMap="se_clueMap">
+        select * from se_clue where id = #{id}
+    </select>
+
+</mapper>
