@@ -1,13 +1,13 @@
 .git
 /scrm.iml
 /*/target
-/*/*.iml
 
 HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+!**/*.iml
 
 ### STS ###
 .apt_generated
