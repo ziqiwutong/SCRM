@@ -21,6 +21,8 @@ public class LabelController {
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage
     ) {
+        if (currentPage < 1) currentPage = 1;
+        if (pageCount < 1) pageCount = 1;
         return PageResp.success().setData(
                 labelService.query(pageCount, currentPage)
         ).setPage(pageCount, currentPage, labelService.queryCount()).setMsg("成功");

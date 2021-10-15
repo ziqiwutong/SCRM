@@ -21,8 +21,8 @@ spring:
           uri: lb://service
           predicates:
             - Path=/se/** # 断言，路径相匹配的进行路由
-#          filters:
-#            - StripPrefix=1
+          filters:
+            - StripPrefix=1
         - id: marketing # 路由的id,没有规定规则但要求唯一,建议配合服务名
           #匹配后提供服务的路由地址
           uri: lb://marketing

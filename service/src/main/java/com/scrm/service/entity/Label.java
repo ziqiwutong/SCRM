@@ -14,7 +14,7 @@ public class Label {
 
     private String labelName;
 
-    private int labelObject;
+    private Integer labelObject;
 
     private String createTime;
 
