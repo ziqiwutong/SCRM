@@ -14,7 +14,6 @@ import org.springframework.stereotype.Component;
  */
 @ConfigurationProperties(value = "my.aes")
 @Component
-@Data
 public class MyAES {
 
     private String secret = "1234567890123456";
@@ -61,6 +60,14 @@ public class MyAES {
 
         //解密为字符串
         return aes.decryptStr(str, CharsetUtil.CHARSET_UTF_8);
+    }
+
+    public String getSecret() {
+        return secret;
+    }
+
+    public void setSecret(String secret) {
+        this.secret = secret;
     }
 }
 

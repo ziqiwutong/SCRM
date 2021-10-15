@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.lang.Nullable;
 
-import javax.annotation.Nullable;
 
 /**
  * @author fzk
