@@ -10,9 +10,9 @@ spring:
         server-addr: http://101.34.5.36:8848  #配置的Nacos地址
         namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
   datasource:
-    url: jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8
+    url: jdbc:mysql://106.15.235.113:3306/scrm?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: 123456
+    password: "!MySQL123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #mybatis:

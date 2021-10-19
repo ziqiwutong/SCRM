@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scrm.service.dao.ClueDao">
+    <select id="queryClue" resultType="com.scrm.service.entity.Clue">
+        <bind name="key_offset" value="(currentPage-1)*pageCount"/>
+        select * from se_clue order by id asc
+        <if test="pageCount != null and currentPage != null">
+            limit #{key_offset},#{pageCount}
+        </if>
+    </select>
+
+    <select id="queryClueByKey" resultType="com.scrm.service.entity.Clue">
+        select * from se_clue where clue_name like "%"#{clueName}"%"
+    </select>
+
+    <select id="queryCount" resultType="Integer">
+        select count(id) from se_clue
+    </select>
+
+    <insert id="addClue" parameterType="com.scrm.service.entity.Clue"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into se_clue (id, clue_name, clue_date, clue_status, clue_editor, clue_discover, clue_responsible, business_opporitunity_flag)
+        values(#{id}, #{clueName}, #{clueDate}, #{clueStatus}, #{clueEditor}, #{clueDiscover}, #{clueResponsible}, #{businessOpporitunityFlag})
+    </insert>
+
+    <update id="editClue" parameterType="com.scrm.service.entity.Clue">
+        update se_clue set clue_name = #{clueName}, clue_date = #{clueDate}, clue_status = #{clueStatus}, clue_editor = #{clueEditor}, clue_discover = #{clueDiscover}, clueResponsible = #{clueResponsible}, business_opporitunity_flag = #{businessOpporitunityFlag}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClue">
+        delete from se_clue where id = #{id}
+    </delete>
+
+    <delete id="deleteClueStatus">
+        delete from se_clue_status where clue_id = #{clueId}
+    </delete>
+</mapper>

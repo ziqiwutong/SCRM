@@ -1,31 +1,29 @@
 package com.scrm.service.controller;
 
-import com.scrm.service.entity.se_clue;
-import com.scrm.service.entity.se_clue_status;
-import com.scrm.service.service.se_clueService;
-import com.scrm.service.service.se_clue_statusService;
+import com.scrm.service.entity.Clue;
+import com.scrm.service.entity.ClueStatus;
+import com.scrm.service.service.ClueService;
+import com.scrm.service.service.ClueStatusService;
 import com.scrm.service.util.resp.PageResp;
 import com.scrm.service.util.resp.Resp;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
 @RequestMapping(value="/clue")
-@Controller
-public class se_clueController {
+@RestController
+public class ClueController {
     @Resource
-    private se_clueService se_clueService;
+    private ClueService se_clueService;
 
     @Resource
-    private se_clue_statusService se_clue_statusService;
+    private ClueStatusService se_clue_statusService;
 
-    @RequestMapping(value="/queryClue")
+    @GetMapping(value="/queryClue")
     @ResponseBody
     public PageResp queryClue(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
@@ -36,13 +34,13 @@ public class se_clueController {
         ).setPage(pageCount, currentPage, se_clueService.queryCount()).setMsg("成功");
     }
 
-    @RequestMapping(value="/queryClueByKey")
+    @GetMapping(value="/queryClueByKey")
     @ResponseBody
     public Resp queryClueByKey(
             @RequestParam(value = "key") String key
     )
     {
-        List<se_clue> se_clue = se_clueService.queryClueByKey(key);
+        List<Clue> se_clue = se_clueService.queryClueByKey(key);
         if (se_clue.size() == 0) {
             return Resp.error().setMsg("无数据");
         } else {
@@ -50,10 +48,10 @@ public class se_clueController {
         }
     }
 
-    @RequestMapping(value="/addClue")
+    @PostMapping(value="/addClue")
     @ResponseBody
     public Resp addClue(
-            @RequestBody se_clue se_clue
+            @RequestBody Clue se_clue
     )
     {
         if (se_clue == null) {
@@ -67,10 +65,10 @@ public class se_clueController {
         }
     }
 
-    @RequestMapping(value="/editClue")
+    @PostMapping(value="/editClue")
     @ResponseBody
     public Resp editClue(
-            @RequestBody se_clue se_clue
+            @RequestBody Clue se_clue
     )
     {
         if (se_clue == null) {
@@ -84,7 +82,7 @@ public class se_clueController {
         }
     }
 
-    @RequestMapping(value="/deleteClue")
+    @PostMapping(value="/deleteClue")
     @ResponseBody
     public Resp deleteClue(
             @RequestParam(value = "id") Integer id
@@ -98,14 +96,14 @@ public class se_clueController {
         }
     }
 
-    @RequestMapping(value="/queryClueStatus")
+    @GetMapping(value="/queryClueStatus")
     @ResponseBody
     public Resp queryClueStatus(
             @RequestParam(value = "id") Integer id
     )
     {
-        se_clue se_clue = se_clue_statusService.queryClue(id);
-        List<se_clue_status> list = se_clue_statusService.queryClueStatus(id);
+        Clue se_clue = se_clue_statusService.queryClue(id);
+        List<ClueStatus> list = se_clue_statusService.queryClueStatus(id);
         List final_list = new ArrayList();
         final_list.add(se_clue);
         final_list.add(list);
@@ -114,10 +112,10 @@ public class se_clueController {
         ).setMsg("成功");
     }
 
-    @RequestMapping(value="/addClueStatus")
+    @PostMapping(value="/addClueStatus")
     @ResponseBody
     public Resp addClueStatus(
-            @RequestBody se_clue_status se_clue_status
+            @RequestBody ClueStatus se_clue_status
     )
     {
         if (se_clue_status == null) {
@@ -131,10 +129,10 @@ public class se_clueController {
         }
     }
 
-    @RequestMapping(value="/editClueStatus")
+    @PostMapping(value="/editClueStatus")
     @ResponseBody
     public Resp editClueStatus(
-            @RequestBody se_clue_status se_clue_status
+            @RequestBody ClueStatus se_clue_status
     )
     {
         if (se_clue_status == null) {

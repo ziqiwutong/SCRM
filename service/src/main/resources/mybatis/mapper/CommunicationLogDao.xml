@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scrm.service.dao.CommunicationLogDao">
+    <select id="queryCommunication" resultType="com.scrm.service.entity.Communication">
+        select customer_id, visit_times, call_times, msg_times, wx_times
+        from se_communication where se_communication.id = #{id}
+    </select>
+
+    <select id="queryCommunicationLog" resultType="com.scrm.service.entity.CommunicationLog">
+        select * from se_communication_log
+        where communication_id = #{id}
+        order by communication_way
+    </select>
+
+    <insert id="addCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into se_communication_log (id, communication_id, communication_way, communication_content, communication_time)
+        values(#{id}, #{communicationId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
+    </insert>
+
+    <update id="editCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog">
+        update se_communication_log set communication_id = #{communicationId}, communication_way = #{communicationWay}, communication_content = #{communicationContent}, communication_time = #{communicationTime}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCommunicationLog">
+    delete from se_communication_log where id = #{id}
+    </delete>
+</mapper>

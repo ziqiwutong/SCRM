@@ -1,27 +1,27 @@
 package com.scrm.service.service.impl;
 
-import com.scrm.service.dao.se_clue_statusDao;
-import com.scrm.service.entity.se_clue;
-import com.scrm.service.entity.se_clue_status;
-import com.scrm.service.service.se_clue_statusService;
+import com.scrm.service.dao.ClueStatusDao;
+import com.scrm.service.entity.Clue;
+import com.scrm.service.entity.ClueStatus;
+import com.scrm.service.service.ClueStatusService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class se_clue_statusServiceImpl implements se_clue_statusService {
+public class ClueStatusServiceImpl implements ClueStatusService {
 
     @Resource
-    private se_clue_statusDao se_clue_statusDao;
+    private ClueStatusDao se_clue_statusDao;
 
     @Override
-    public List<se_clue_status> queryClueStatus(Integer id) {
+    public List<ClueStatus> queryClueStatus(Integer id) {
         return se_clue_statusDao.queryClueStatus(id);
     }
 
     @Override
-    public String addClueStatus(se_clue_status se_clue_status) {
+    public String addClueStatus(ClueStatus se_clue_status) {
         int result = se_clue_statusDao.addClueStatus(se_clue_status);
         if (result < 1) {
             return "插入失败";
@@ -30,7 +30,7 @@ public class se_clue_statusServiceImpl implements se_clue_statusService {
     }
 
     @Override
-    public String editClueStatus(se_clue_status se_clue_status) {
+    public String editClueStatus(ClueStatus se_clue_status) {
         int result = se_clue_statusDao.editClueStatus(se_clue_status);
         if (result < 1) {
             return "更新失败";
@@ -39,7 +39,7 @@ public class se_clue_statusServiceImpl implements se_clue_statusService {
     }
 
     @Override
-    public se_clue queryClue(Integer clue_id) {
+    public Clue queryClue(Integer clue_id) {
         return se_clue_statusDao.queryClue(clue_id);
     }
 }

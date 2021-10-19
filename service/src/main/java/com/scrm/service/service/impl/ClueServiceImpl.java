@@ -1,25 +1,25 @@
 package com.scrm.service.service.impl;
 
-import com.scrm.service.dao.se_clueDao;
-import com.scrm.service.entity.se_clue;
-import com.scrm.service.service.se_clueService;
+import com.scrm.service.dao.ClueDao;
+import com.scrm.service.entity.Clue;
+import com.scrm.service.service.ClueService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
 
 @Service
-public class se_clueServiceImpl implements se_clueService {
+public class ClueServiceImpl implements ClueService {
     @Resource
-    private se_clueDao se_clueDao;
+    private ClueDao se_clueDao;
 
     @Override
-    public List<se_clue> queryClue(Integer pageCount, Integer currentPage) {
+    public List<Clue> queryClue(Integer pageCount, Integer currentPage) {
         return se_clueDao.queryClue(pageCount, currentPage);
     }
 
     @Override
-    public List<se_clue> queryClueByKey(String key) {
+    public List<Clue> queryClueByKey(String key) {
         return se_clueDao.queryClueByKey(key);
     }
 
@@ -29,7 +29,7 @@ public class se_clueServiceImpl implements se_clueService {
     }
 
     @Override
-    public String addClue(se_clue se_clue) {
+    public String addClue(Clue se_clue) {
         int result = se_clueDao.addClue(se_clue);
         if (result < 1) {
             return "插入失败";
@@ -38,7 +38,7 @@ public class se_clueServiceImpl implements se_clueService {
     }
 
     @Override
-    public String editClue(se_clue se_clue) {
+    public String editClue(Clue se_clue) {
         int result = se_clueDao.editClue(se_clue);
         if (result < 1) {
             return "更新失败";

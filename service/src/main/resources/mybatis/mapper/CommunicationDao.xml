@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scrm.service.dao.CommunicationDao">
+    <select id="queryCommunication" resultType="com.scrm.service.entity.UserAndCommunication">
+        <bind name="key_offset" value="(currentPage-1)*pageCount"/>
+        select se_communication.customer_id, cms_user.user_name, cms_user.user_icon, cms_user.telephone, cms_department.department_name, cms_user.create_time
+        from se_communication
+        left join cms_user on se_communication.customer_id = cms_user.id
+        left join cms_department on cms_user.department_id = cms_department.id
+        <if test="pageCount != null and currentPage != null">
+            limit #{key_offset},#{pageCount}
+        </if>
+    </select>
+
+    <select id="queryCommunicationByKey" resultType="com.scrm.service.entity.UserAndCommunication">
+        select se_communication.customer_id, cms_user.user_name, cms_user.user_icon, cms_user.telephone, cms_department.department_name, cms_user.create_time
+        from se_communication
+        left join cms_user on se_communication.customer_id = cms_user.id
+        left join cms_department on cms_user.department_id = cms_department.id
+        where cms_user.user_name like "%"#{userName}"%"
+    </select>
+
+    <select id="queryCount" resultType="Integer">
+        select count(customer_id) from se_communication
+    </select>
+
+    <insert id="addCommunication" parameterType="com.scrm.service.entity.Communication"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into se_communication (id, customer_id, visit_times, call_times, msg_times, wx_times)
+        values(#{id}, #{customerId}, #{visitTimes}, #{callTimes}, #{msgTimes}, #{wxTimes})
+    </insert>
+
+    <update id="editCommunication" parameterType="com.scrm.service.entity.Communication">
+        update se_communication set customer_id = #{customerId}, visit_times = #{visitTimes}, call_times = #{callTimes}, msg_times = #{msgTimes}, wx_times = #{wxTimes}
+        where id = #{id}
+    </update>
+
+    <delete id="deleteCommunication">
+        delete from se_communication where id = #{id}
+    </delete>
+</mapper>

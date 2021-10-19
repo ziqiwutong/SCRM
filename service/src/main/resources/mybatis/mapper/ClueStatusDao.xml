@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.scrm.service.dao.ClueStatusDao">
+    <select id="queryClueStatus" resultType="com.scrm.service.entity.ClueStatus">
+        select id,clue_id,clue_editor,clue_status,clue_notes,create_time from se_clue_status
+        where clue_id = #{clueId} order by create_time asc
+    </select>
+
+    <insert id="addClueStatus" parameterType="com.scrm.service.entity.ClueStatus"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into se_clue_status (id, clue_id, clue_editor, clue_status, clue_notes)
+        values(#{id}, #{clueId}, #{clueEditor}, #{clueStatus}, #{clueNotes})
+    </insert>
+
+    <update id="editClueStatus" parameterType="com.scrm.service.entity.ClueStatus">
+        update se_clue_status set clue_id = #{clueId}, clue_editor = #{clueEditor}, clue_status = #{clueStatus}, clue_notes = #{clueNotes}
+        where id = #{id}
+    </update>
+
+    <select id="queryClue" resultType="com.scrm.service.entity.Clue">
+        select * from se_clue where id = #{id}
+    </select>
+
+</mapper>
