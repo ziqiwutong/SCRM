@@ -1,6 +1,7 @@
 package com.scrm.marketing.service.impl;
 
 import com.scrm.marketing.entity.Article;
+import com.scrm.marketing.entity.ArticleShareRecord;
 import com.scrm.marketing.entity.User;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.feign.UserClient;
@@ -14,12 +15,11 @@ import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.Nullable;
 import javax.annotation.Resource;
-import java.sql.Wrapper;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,11 +42,52 @@ public class ArticleServiceImpl implements ArticleService {
     private ArticleCustomerReadMapper articleCustomerReadMapper;
 
     @Override
-    public Result getArticleDetail(Long id) {
+    @Transactional//开启事务
+    public Result getArticleDetail(Long id, @Nullable Long shareId) throws MyException {
         Article article = articleMapper.selectById(id);
         if (article == null)
             return Result.error(CodeEum.NOT_EXIST);
-        else return Result.success(article);
+        // 1、shareId为空
+        if (shareId == null) {
+            return Result.success(article);
+        }
+        // 2、shareId不为空
+        else {
+            // 2.1 先查出user
+            User shareUser = userMapper.selectById(shareId);
+            if (shareUser == null)
+                return Result.error(CodeEum.PARAM_ERROR);
+            // 2.2 再根据shareId和articleId查文章分享分享
+            List<ArticleShareRecord> articleShareRecords =
+                    articleShareRecordMapper.selectByAIdAndSid(id, shareId);
+
+            ArticleShareRecord articleShareRecord = null;
+            // 2.3 没有记录，则新增
+            if (articleShareRecords.isEmpty()) {
+                articleShareRecord = new ArticleShareRecord();
+                articleShareRecord.setArticleId(id);//文章id
+                articleShareRecord.setShareId(shareId);// 分享者id
+                articleShareRecord.setShowShareFlag(true);//默认展示分享标记
+                articleShareRecord.setReadRecord("");
+                if (1 != articleShareRecordMapper.insert(articleShareRecord))
+                    throw new MyException(CodeEum.ERROR.getCode(), "分享记录添加失败");
+
+            }
+            // 2.4 有1条记录
+            else if (articleShareRecords.size() == 1) {
+                articleShareRecord = articleShareRecords.get(0);
+            }
+            // 2.5 多条记录，抛异常
+            else
+                throw new MyException(CodeEum.ERROR.getCode(), "分享记录表存在多条相关记录");
+
+            Map<String, Object> map = new HashMap<>();
+            map.put("article", article);
+            map.put("user", shareUser);
+            map.put("showShareFlag", articleShareRecord.getShowShareFlag());
+            return Result.success(map);
+        }
+
     }
 
     @Override

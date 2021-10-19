@@ -32,7 +32,7 @@ public class SaTokenJwtUtil {
     static {
         try {
             Yaml yaml = new Yaml();
-            URL url = SaTokenJwtUtil.class.getClassLoader().getResource("application.yaml");
+            URL url = SaTokenJwtUtil.class.getClassLoader().getResource("classpath:application.yaml");
             if (url != null) {
                 //获取yaml文件中的配置数据，然后转换为obj，
                 //也可以将值转换为Map

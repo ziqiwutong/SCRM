@@ -5,13 +5,14 @@ import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
 import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 
 /**
  * @author fzk
  * @date 2021-10-14 20:24
  */
 public interface ArticleService {
-    Result getArticleDetail(Long id);
+    Result getArticleDetail(Long id,@Nullable Long shareId) throws MyException;
 
     PageResult queryPage(int pageNum, int pageSize,Integer examineFlag);
 

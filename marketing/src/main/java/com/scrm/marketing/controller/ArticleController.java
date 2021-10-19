@@ -25,11 +25,13 @@ public class ArticleController {
 
     @GetMapping(path = "/detail")
     @SaCheckLogin
-    public Result getArticleDetail(@RequestParam("id") Long id) {
+    public Result getArticleDetail(
+            @RequestParam("id") Long id,
+            @RequestParam(value = "shareId", required = false) Long shareId) throws MyException {
         if (id == null)
             return Result.error(CodeEum.PARAM_ERROR);
         // 调用service
-        return articleService.getArticleDetail(id);
+        return articleService.getArticleDetail(id, shareId);
     }
 
     @GetMapping(path = "/queryPage")
@@ -94,14 +96,14 @@ public class ArticleController {
             @RequestParam("examineNotes") String examineNotes
     ) throws MyException {
         // 1.参数检查
-        if(id==null||examineFlag==null)
+        if (id == null || examineFlag == null)
             return Result.error(CodeEum.PARAM_MISS);
 
         // 2、获取loginId
         Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
 
         // 3.调用service
-        articleService.examine(id,loginId,examineFlag,examineNotes);
+        articleService.examine(id, loginId, examineFlag, examineNotes);
 
         return Result.success();
     }

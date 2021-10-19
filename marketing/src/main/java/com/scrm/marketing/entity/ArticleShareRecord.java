@@ -1,8 +1,6 @@
 package com.scrm.marketing.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,7 +8,7 @@ import lombok.NoArgsConstructor;
 /**
  * @author fzk
  * @date 2021-10-14 17:32
- *
+ * <p>
  * 每篇文章下每个分享者
  */
 @Data
@@ -23,7 +21,12 @@ public class ArticleShareRecord {
 
     private Long articleId;
     private Long shareId;
+    /**
+     * 分享者链接应该是不会用了
+     */
+    @Deprecated
     private String shareLink;
+    @TableField
     private Boolean showShareFlag;
 
     /**
