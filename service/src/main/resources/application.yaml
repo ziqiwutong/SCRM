@@ -20,4 +20,7 @@ spring:
 #  mapper-locations: classpath:mybatis/mapper/*.xml
 mybatis-plus:
   mapper-locations: classpath:mybatis/mapper/*.xml
-  config-location: classpath:mybatis/mybatis-config.xml
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰命名
+    # 配置日志  选择了默认的控制台输出   如果选择log4j或slf4j，需要导入包
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

@@ -12,7 +12,46 @@ spring:
         server-addr: http://101.34.5.36:8848  #配置的Nacos地址
         namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
   datasource:
-    url: "jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
+    url: "jdbc:mysql://106.15.235.113:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
     username: root
     password: "!MySQL123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+###########   OpenFeign超时配置  ################
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 1000 # 防止由于服务器处理时间长而阻塞调用者，单位ms
+        readTimeout: 1000 # 从连接建立时开始应用，在返回响应时间过长时触发，单位ms
+        loggerLevel: basic
+
+# 配置日志  选择了默认的控制台输出   如果选择log4j或slf4j，需要导入包
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true # 开启驼峰命名
+
+########### Sa-Token配置 ######################
+sa-token:
+  # token名称 (同时也是cookie名称)
+  token-name: token
+  # token有效期，单位s 默认30天, -1代表永不过期
+  timeout: 2592000
+  # token临时有效期 (指定时间内无操作就视为token过期) 单位: 秒
+  activity-timeout: -1
+  # 是否允许同一账号并发登录 (为true时允许一起登录, 为false时新登录挤掉旧登录)
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个token (为true时所有登录共用一个token, 为false时每次登录新建一个token)
+  is-share: false
+  # token风格
+  token-style: uuid
+  # 是否输出操作日志
+  is-log: false
+
+########### 自定义配置 ######################
+my:
+  jwt:
+    secret: "scrm"
+    timeout: 604800 # Token有效期，一周，单位：s
+    loginIdKey: userID
