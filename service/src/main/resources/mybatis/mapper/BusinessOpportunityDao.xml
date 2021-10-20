@@ -16,7 +16,7 @@
     </select>
 
     <select id="queryCount" resultType="Integer">
-        select count(id) from se_business_opportunity
+        select count(*) from se_business_opportunity
     </select>
 
     <insert id="addBizOpp" parameterType="com.scrm.service.entity.BusinessOpportunity"
