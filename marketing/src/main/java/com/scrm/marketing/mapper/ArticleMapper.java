@@ -30,7 +30,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
     List<Article> queryPage(int index, int pageSize, Integer examineFlag);
 
     @SelectProvider(ArticleSqlProvider.class)
-    // 默认实现中，会将映射器方法的调用解析到实现的同名方法上
+        // 默认实现中，会将映射器方法的调用解析到实现的同名方法上
     int queryCount(int index, int pageSize, Integer examineFlag);
 
     @Update("UPDATE mk_article SET examine_id=#{loginId},examine_name=#{examineName}, " +

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.URL;
 import java.util.Date;
 import java.util.Map;
@@ -32,12 +33,12 @@ public class SaTokenJwtUtil {
     static {
         try {
             Yaml yaml = new Yaml();
-            URL url = SaTokenJwtUtil.class.getClassLoader().getResource("classpath:application.yaml");
-            if (url != null) {
+            InputStream in = SaTokenJwtUtil.class.getClassLoader().getResourceAsStream("application.yaml");
+            if (in != null) {
                 //获取yaml文件中的配置数据，然后转换为obj，
                 //也可以将值转换为Map
-                Map map = (Map) yaml.load(new FileInputStream(url.getFile()));
-                System.out.println("application.yaml文件中所有配置信息：\n"+map);
+                Map map = yaml.loadAs(in, Map.class);
+                System.out.println(map);
                 //通过map我们取值就可以了.
                 Map my = (Map) map.get("my");
                 Map jwt = (Map) my.get("jwt");
