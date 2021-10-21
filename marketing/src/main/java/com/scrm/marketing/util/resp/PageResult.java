@@ -15,20 +15,31 @@ public class PageResult extends Result {
         super();
     }
 
-    public PageResult(CodeEum codeEum, Object data, int total, int pageNum) {
-        super(codeEum, data);
+    public PageResult(int code, String msg, Object data, int total, int pageNum) {
+        super(code, msg, data);
         this.total = total;
         this.pageNum = pageNum;
     }
 
+    public static PageResult init(CodeEum codeEum, Object data, int total, int pageNum) {
+        return init(codeEum.getCode(), codeEum.getMsg(), data, total, pageNum);
+    }
+
+    public static PageResult init(int code, String msg, Object data, int total, int pageNum) {
+        return new PageResult(code, msg, data, total, pageNum);
+    }
+
     public static PageResult success(Object data, int total, int pageNum) {
-        return new PageResult(CodeEum.SUCCESS, data, total, pageNum);
+        return init(CodeEum.SUCCESS, data, total, pageNum);
     }
 
-    public static PageResult error(CodeEum codeEum){
-        return new PageResult(codeEum,null,-1,-1);
+    public static PageResult error(CodeEum codeEum) {
+        return init(codeEum, null, -1, -1);
     }
 
+    /**
+     * getter和setter方法
+     */
     public int getTotal() {
         return total;
     }
@@ -43,5 +54,13 @@ public class PageResult extends Result {
 
     public void setPageNum(int pageNum) {
         this.pageNum = pageNum;
+    }
+
+    @Override
+    public String toString() {
+        return "PageResult{" +
+                "total=" + total +
+                ", pageNum=" + pageNum +
+                '}';
     }
 }
