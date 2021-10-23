@@ -25,12 +25,23 @@ public class ArticleShareRecordController {
     @GetMapping(path = "/shareRecord")
     public Result queryShareRecord(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(value="shareId",required = false) List<Long> shareIds
+            @RequestParam(value = "shareId", required = false) List<Long> shareIds
     ) {
         // 参数检查
         if (articleId == null || articleId < 1L)
             return Result.error(CodeEum.PARAM_ERROR);
         // 对于shareIds的处理交由SQL构造器
         return articleShareRecordService.queryShareRecord(articleId, shareIds);
+    }
+
+    @GetMapping(path = "/sharePerson")
+    public Result querySharePerson(
+            @RequestParam("articleId") Long articleId
+    ) {
+        // 1.参数检查
+        if(articleId==null||articleId<1)
+            return Result.error(CodeEum.PARAM_ERROR);
+        // 调用service
+        return articleShareRecordService.querySharePerson(articleId);
     }
 }

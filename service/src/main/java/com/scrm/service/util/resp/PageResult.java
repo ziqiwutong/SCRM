@@ -54,4 +54,12 @@ public class PageResult extends Result {
     public void setPageNum(int pageNum) {
         this.pageNum = pageNum;
     }
+
+    @Override
+    public String toString() {
+        return "PageResult{" +
+                "total=" + total +
+                ", pageNum=" + pageNum +
+                '}';
+    }
 }

@@ -2,7 +2,11 @@ package com.scrm.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.scrm.marketing.entity.User;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 /**
  * @author fzk
@@ -10,4 +14,8 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserMapper extends BaseMapper<User> {
+    @Select("select u.* from cms_user u " +
+            "   INNER JOIN mk_article_share_record s ON u.id=s.share_id " +
+            "   WHERE s.article_id=#{articleId}")
+    List<User> querySharePerson(@NonNull Long articleId);
 }

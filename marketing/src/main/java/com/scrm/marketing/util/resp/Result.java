@@ -20,30 +20,28 @@ public class Result {
         this.data = data;
     }
 
-    public Result(CodeEum codeEum, Object data) {
-        this.code = codeEum.getCode();
-        this.msg = codeEum.getMsg();
-        this.data = data;
-    }
-
     public static Result success() {
-        return new Result(CodeEum.SUCCESS, null);
+        return init(CodeEum.SUCCESS, null);
     }
 
     public static Result success(Object data) {
-        return new Result(CodeEum.SUCCESS, data);
+        return init(CodeEum.CODE_SUCCESS, "ok", data);
     }
 
     public static Result error(CodeEum codeEum) {
-        return new Result(codeEum, null);
+        return init(codeEum.getCode(), codeEum.getMsg(), null);
     }
 
     public static Result error(CodeEum codeEum, Object data) {
-        return new Result(codeEum, data);
+        return init(codeEum.getCode(), codeEum.getMsg(), data);
     }
 
     public static Result init(int code, String msg, Object data) {
         return new Result(code, msg, data);
+    }
+
+    public static Result init(CodeEum codeEum, Object data) {
+        return new Result(codeEum.getCode(), codeEum.getMsg(), data);
     }
 
     /*getter和setter方法*/
@@ -72,4 +70,13 @@ public class Result {
         this.data = data;
     }
 
+    @Override
+    public String toString() {
+        return "Result{" +
+                "code=" + code +
+                ", msg='" + msg + '\'' +
+                ", data=" + data +
+                '}';
+    }
 }
+
