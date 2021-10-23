@@ -11,9 +11,9 @@ public interface ClueService {
 
     Integer queryCount();
 
-    String addClue(Clue se_clue);
+    String addClue(Clue se_clue) throws Exception;
 
-    String editClue(Clue se_clue);
+    String editClue(Clue se_clue) throws Exception;
 
-    String deleteClue(Integer id);
+    String deleteClue(Integer id) throws Exception;
 }

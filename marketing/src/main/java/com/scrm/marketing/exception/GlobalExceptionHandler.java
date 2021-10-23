@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static org.bouncycastle.asn1.x500.style.RFC4519Style.cn;
+
 /**
  * @author fzk
  * @date 2021-10-14 19:14

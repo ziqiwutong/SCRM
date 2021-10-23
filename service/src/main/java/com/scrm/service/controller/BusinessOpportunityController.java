@@ -46,7 +46,7 @@ public class BusinessOpportunityController {
            return Result.error(CodeEum.PARAM_MISS);
         }
         try {
-            String result = se_business_opportunityService.addBizOpp(businessOpportunity);
+            se_business_opportunityService.addBizOpp(businessOpportunity);
             return Result.success();
         } catch (Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -61,7 +61,7 @@ public class BusinessOpportunityController {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try {
-            String result = se_business_opportunityService.editBizOpp(businessOpportunity);
+            se_business_opportunityService.editBizOpp(businessOpportunity);
             return Result.success();
         } catch (Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -73,7 +73,7 @@ public class BusinessOpportunityController {
             @RequestParam(value = "id") Integer id
     ) {
         try {
-            String result = se_business_opportunityService.deleteBizOpp(id);
+            se_business_opportunityService.deleteBizOpp(id);
             return Result.success();
         } catch (Exception e) {
             return Result.error(CodeEum.FAIL);

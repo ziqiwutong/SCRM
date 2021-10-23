@@ -26,7 +26,7 @@
     </insert>
 
     <update id="editClue" parameterType="com.scrm.service.entity.Clue">
-        update se_clue set clue_name = #{clueName}, clue_date = #{clueDate}, clue_status = #{clueStatus}, clue_editor = #{clueEditor}, clue_discover = #{clueDiscover}, clueResponsible = #{clueResponsible}, business_opporitunity_flag = #{businessOpporitunityFlag}
+        update se_clue set clue_name = #{clueName}, clue_date = #{clueDate}, clue_status = #{clueStatus}, clue_editor = #{clueEditor}, clue_discover = #{clueDiscover}, clue_responsible = #{clueResponsible}, business_opporitunity_flag = #{businessOpporitunityFlag}
         where id = #{id}
     </update>
 

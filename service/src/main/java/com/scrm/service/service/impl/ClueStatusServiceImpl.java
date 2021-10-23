@@ -5,6 +5,7 @@ import com.scrm.service.entity.Clue;
 import com.scrm.service.entity.ClueStatus;
 import com.scrm.service.service.ClueStatusService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -21,19 +22,21 @@ public class ClueStatusServiceImpl implements ClueStatusService {
     }
 
     @Override
-    public String addClueStatus(ClueStatus se_clue_status) {
+    @Transactional//开启事务
+    public String addClueStatus(ClueStatus se_clue_status) throws Exception{
         int result = se_clue_statusDao.addClueStatus(se_clue_status);
         if (result < 1) {
-            return "插入失败";
+            throw new Exception("插入失败");
         }
         return null;
     }
 
     @Override
-    public String editClueStatus(ClueStatus se_clue_status) {
+    @Transactional//开启事务
+    public String editClueStatus(ClueStatus se_clue_status) throws Exception{
         int result = se_clue_statusDao.editClueStatus(se_clue_status);
         if (result < 1) {
-            return "更新失败";
+            throw new Exception("更新失败");
         }
         return null;
     }
