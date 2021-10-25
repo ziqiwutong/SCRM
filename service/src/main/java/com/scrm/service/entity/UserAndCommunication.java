@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class UserAndCommunication {
     private Long customerId;
-    private String userName;
+    private String username;
     private String userIcon;
     private String telephone;
     private String departmentName;
@@ -21,11 +21,11 @@ public class UserAndCommunication {
     }
 
     public String getUserName() {
-        return userName;
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUserName(String username) {
+        this.username = username;
     }
 
     public String getUserIcon() {

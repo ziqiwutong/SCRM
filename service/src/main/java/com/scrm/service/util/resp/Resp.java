@@ -13,29 +13,29 @@ public class Resp {
 
     }
 
-    private Resp(State stateEnum) {
-        this.errorCode = stateEnum.getErrorCode();
-        this.msg = stateEnum.getMsg();
+    private Resp(CodeEum codeEum) {
+        this.errorCode = codeEum.getCode();
+        this.msg = codeEum.getMsg();
     }
 
-    public static Resp success(State stateEnum) {
-            return new Resp(stateEnum);
+    public static Resp success(CodeEum codeEum) {
+            return new Resp(codeEum);
         }
 
     public static Resp success() {
-        return new Resp(State.SUCCESS);
+        return new Resp(CodeEum.SUCCESS);
     }
 
-    public static Resp error(State stateEnum) {
-        return new Resp(stateEnum);
+    public static Resp error(CodeEum codeEum) {
+        return new Resp(codeEum);
     }
 
     public static Resp error() {
-        return new Resp(State.ERROR);
+        return new Resp(CodeEum.ERROR);
     }
 
-    public static Resp info(State stateEnum) {
-        return new Resp(stateEnum);
+    public static Resp info(CodeEum codeEum) {
+        return new Resp(codeEum);
     }
 
     public boolean respSuccess() {
@@ -96,6 +96,6 @@ public class Resp {
     }
 
     static {
-        PARAM_WRONG = new Resp(State.REQUEST_WRONG);
+        PARAM_WRONG = new Resp(CodeEum.PARAM_ERROR);
     }
 }

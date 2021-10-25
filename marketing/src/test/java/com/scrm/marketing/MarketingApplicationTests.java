@@ -3,13 +3,17 @@ package com.scrm.marketing;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.scrm.marketing.entity.*;
+import com.scrm.marketing.feign.TestClient;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.satoken.SaTokenJwtUtil;
+import com.scrm.marketing.util.resp.Result;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest
 class MarketingApplicationTests {
@@ -23,7 +27,7 @@ class MarketingApplicationTests {
     @Resource
     private CustomerReadLogMapper readLogMapper;
     @Resource
-    private ProductCustomerBpLogMapper productCustomerBpLogMapper;
+    private ProCusBpLogMapper productCustomerBpLogMapper;
 
     @Test
     void contextLoads() {
@@ -54,6 +58,18 @@ class MarketingApplicationTests {
         String token="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJuYmYiOjE2MzQzMDEwNjYsImlzcyI6ImF1dGgwIiwiZXhwIjoxNjM0OTA1ODY2LCJ1c2VySUQiOiIxIiwiaWF0IjoxNjM0MzAxMDY2fQ.4R5yZGXuduwYegEuuGvAt5EpB9_bePhpwVS7toMkNqo";
         String loginId = SaTokenJwtUtil.getLoginId(token);
         System.out.println(loginId);
+    }
+
+    @Resource
+    private TestClient testClient;
+    @Test
+    void feignTest(){
+        Map<String,Object> map=new HashMap<>();
+//        map.put("Authorization","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJzY3JtMTIzIiwiaWF0IjoxNjM0NjQ2OTEwLCJleHAiOjE2MzUyNTE3MTB9.C3Tp_mN2u_K5erHX3LZj_hp5rR2hr4iUHR_ieZqCY7k");
+        map.put("id",1);
+        map.put("shareId",1);
+        Result result = testClient.getArticleDetail(map);
+        System.out.println(result);
     }
 
 }

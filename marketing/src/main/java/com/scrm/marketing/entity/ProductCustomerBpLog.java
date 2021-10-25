@@ -33,6 +33,7 @@ public class ProductCustomerBpLog {
      */
     private Long customerId;
     private String customerName;
+    private String customerIcon;
 
     /**
      * 记录的属性

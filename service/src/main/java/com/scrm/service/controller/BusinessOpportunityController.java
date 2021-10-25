@@ -1,16 +1,14 @@
 package com.scrm.service.controller;
 
+
 import com.scrm.service.entity.BusinessOpportunity;
-import com.scrm.service.entity.Clue;
 import com.scrm.service.service.BusinessOpportunityService;
-import com.scrm.service.util.resp.PageResp;
-import com.scrm.service.util.resp.Resp;
-import org.springframework.stereotype.Controller;
+import com.scrm.service.util.resp.CodeEum;
+import com.scrm.service.util.resp.PageResult;
+import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.util.List;
 
 @RequestMapping(value = "/businessOpportunity")
@@ -20,72 +18,65 @@ public class BusinessOpportunityController {
     private BusinessOpportunityService se_business_opportunityService;
 
     @GetMapping(value = "/queryBizOpportunity")
-    @ResponseBody
-    public PageResp queryBizOpportunity(
+    public PageResult queryBizOpportunity(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @RequestParam(value = "currentPage", required = false) Integer currentPage) {
-        return PageResp.success().setData(
-                se_business_opportunityService.queryBizOpportunity(pageCount, currentPage)
-        ).setPage(pageCount, currentPage, se_business_opportunityService.queryCount()).setMsg("成功");
+
+        // 查询数据
+        List<BusinessOpportunity> businessOpportunities =
+                se_business_opportunityService.queryBizOpportunity(pageCount, currentPage);
+        // 查询总的条数
+        Integer count = se_business_opportunityService.queryCount();
+        return PageResult.success(businessOpportunities, count, currentPage);
     }
 
     @GetMapping(value = "/queryBizOppByKey")
-    @ResponseBody
-    public Resp queryBizOppByKey(
+    public Result queryBizOppByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {
         List<BusinessOpportunity> se_business_opportunity = se_business_opportunityService.queryBizOppByKey(keySearch);
-        if (se_business_opportunity.size() == 0) {
-            return Resp.error().setMsg("无数据");
-        } else {
-            return Resp.success().setData(
-                    se_business_opportunity
-            ).setMsg("成功");
-        }
+        return Result.success(se_business_opportunity);
     }
 
     @PostMapping(value = "/addBizOpp")
-    @ResponseBody
-    public Resp addBizOpp(
+    public Result addBizOpp(
             BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
-            return Resp.error().setMsg("不能为空");
+           return Result.error(CodeEum.PARAM_MISS);
         }
         try {
-            String result = se_business_opportunityService.addBizOpp(businessOpportunity);
-            return Resp.success().setMsg("插入成功");
+            se_business_opportunityService.addBizOpp(businessOpportunity);
+            return Result.success();
         } catch (Exception e) {
-            return Resp.error().setMsg(e.getMessage());
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value = "/editBizOpp")
-    @ResponseBody
-    public Resp editBizOpp(
+    public Result editBizOpp(
             BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
-            return Resp.error().setMsg("不能为空");
+            return Result.error(CodeEum.PARAM_MISS);
         }
         try {
-            String result = se_business_opportunityService.editBizOpp(businessOpportunity);
-            return Resp.success().setMsg("更新成功");
+            se_business_opportunityService.editBizOpp(businessOpportunity);
+            return Result.success();
         } catch (Exception e) {
-            return Resp.error().setMsg(e.getMessage());
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value = "/deleteBizOpp")
-    @ResponseBody
-    public Resp deleteBizOpp(
+    public Result deleteBizOpp(
             @RequestParam(value = "id") Integer id
     ) {
         try {
-            String result = se_business_opportunityService.deleteBizOpp(id);
-            return Resp.success().setMsg("删除成功");
+            se_business_opportunityService.deleteBizOpp(id);
+            return Result.success();
         } catch (Exception e) {
-            return Resp.error().setMsg(e.getMessage());
+            return Result.error(CodeEum.FAIL);
         }
     }
 }

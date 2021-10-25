@@ -1,15 +1,16 @@
-package com.scrm.marketing.util.resp;
-
+package com.scrm.service.util.resp;
 
 /**
  * @author fzk
- * @date 2021-10-14 19:51
+ * @date 2021-10-20 15:53
  */
 public class PageResult extends Result {
     // 数据总条目数
     private int total;
     // 当前页码
     private int pageNum;
+    // 数据总页数
+    private int totalPage;
 
     public PageResult() {
         super();
@@ -33,6 +34,10 @@ public class PageResult extends Result {
         return init(CodeEum.SUCCESS, data, total, pageNum);
     }
 
+    public static PageResult error() {
+        return init(CodeEum.ERROR, null, -1, -1);
+    }
+
     public static PageResult error(CodeEum codeEum) {
         return init(codeEum, null, -1, -1);
     }
@@ -44,16 +49,31 @@ public class PageResult extends Result {
         return total;
     }
 
-    public void setTotal(int total) {
+    public PageResult setTotal(int total) {
         this.total = total;
+        return this;
     }
 
     public int getPageNum() {
         return pageNum;
     }
 
-    public void setPageNum(int pageNum) {
+    public PageResult setPageNum(int pageNum) {
         this.pageNum = pageNum;
+        return this;
+    }
+
+    public PageResult setPage(Integer pageCount, Integer pageNum, int total) {
+        this.total = total;
+        if (pageCount == null || pageNum == null) {
+            return this;
+        }
+        this.pageNum = pageNum;
+        this.totalPage = total / pageCount;
+        if (total % pageCount != 0) {
+            this.totalPage = this.totalPage + 1;
+        }
+        return this;
     }
 
     @Override

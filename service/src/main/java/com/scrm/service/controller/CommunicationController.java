@@ -3,14 +3,12 @@ package com.scrm.service.controller;
 import com.scrm.service.entity.*;
 import com.scrm.service.service.CommunicationLogService;
 import com.scrm.service.service.CommunicationService;
-import com.scrm.service.util.resp.PageResp;
-import com.scrm.service.util.resp.Resp;
-import org.springframework.stereotype.Controller;
+import com.scrm.service.util.resp.CodeEum;
+import com.scrm.service.util.resp.PageResult;
+import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.math.BigDecimal;
-import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,172 +23,134 @@ public class CommunicationController {
     private CommunicationLogService communicationLogService;
 
     @GetMapping(value="/queryCommunication")
-    @ResponseBody
-    public PageResp queryCommunication(
-
+    public PageResult queryCommunication(
+            @RequestParam(value = "pageCount", required = false) Integer pageCount,
+            @RequestParam(value = "currentPage", required = false) Integer currentPage
     )
     {
-        return PageResp.success().setData(
-                communicationService.queryCommunication(1, 1)
-        ).setPage(1, 1, communicationService.queryCount()).setMsg("成功");
+        List<UserAndCommunication> userAndCommunications =
+                communicationService.queryCommunication(pageCount, currentPage);
+        Integer count = communicationService.queryCount();
+        return PageResult.success(userAndCommunications, count, currentPage);
     }
 
     @GetMapping(value="/queryCommunicationByKey")
-    @ResponseBody
-    public Resp queryCommunicationByKey(
-
+    public Result queryCommunicationByKey(
+            @RequestParam(value = "keySearch") String keySearch
     )
     {
-        List<UserAndCommunication> userAndCommunications = communicationService.queryCommunicationByKey("用");
+        List<UserAndCommunication> userAndCommunications = communicationService.queryCommunicationByKey(keySearch);
         if (userAndCommunications.size() == 0) {
-            return Resp.error().setMsg("无数据");
+            return Result.error(CodeEum.NOT_EXIST);
         } else {
-            return Resp.success().setData(userAndCommunications).setMsg("成功");
+            return Result.success(userAndCommunications);
         }
     }
 
     @PostMapping(value="/addCommunication")
-    @ResponseBody
-    public Resp addCommunication(
-
+    public Result addCommunication(
+            Communication communication
     )
     {
-        Communication communication = new Communication();
-        communication.setCustomerId((long) 1);
-        communication.setVisitTimes(3);
-        communication.setCallTimes(4);
-        communication.setMsgTimes(5);
-        communication.setWxTimes(6);
-
         if (communication == null) {
-            return Resp.error().setMsg("不能为空");
+            return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationService.addCommunication(communication);
-        if (result == null) {
-            return Resp.success().setMsg("插入成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationService.addCommunication(communication);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value="/editCommunication")
-    @ResponseBody
-    public Resp editCommunication(
-
+    public Result editCommunication(
+            Communication communication
     )
     {
-        Communication communication = new Communication();
-        communication.setId((long) 1);
-        communication.setCustomerId((long) 1);
-        communication.setVisitTimes(9);
-        communication.setCallTimes(8);
-        communication.setMsgTimes(7);
-        communication.setWxTimes(6);
-
         if (communication == null) {
-            return Resp.error().setMsg("不能为空");
+            return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationService.editCommunication(communication);
-        if (result == null) {
-            return Resp.success().setMsg("更新成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationService.editCommunication(communication);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value="/deleteCommunication")
-    @ResponseBody
-    public Resp deleteCommunication(
-
+    public Result deleteCommunication(
+            @RequestParam(value = "id") Integer id
     )
     {
-        String result = communicationService.deleteCommunication(2);
-        if (result == null) {
-            return Resp.success().setMsg("删除成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationService.deleteCommunication(id);
+            return Result.success();
+        }catch(Exception e) {
+                return Result.error(CodeEum.FAIL);
         }
     }
 
     @GetMapping(value="/queryCommunicationLog")
-    @ResponseBody
-    public Resp queryCommunicationLog(
-
+    public Result queryCommunicationLog(
+            @RequestParam(value = "id") Integer id
     )
     {
-        Communication communication = communicationLogService.queryCommunication(1);
-        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(1);
+        Communication communication = communicationLogService.queryCommunication(id);
+        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(id);
         List final_list = new ArrayList();
         final_list.add(communication);
         for (CommunicationLog communicationLog:communicationLogs
              ) {
             final_list.add(communicationLog);
         }
-        return Resp.success().setData(
-                final_list
-        ).setMsg("成功");
+        return Result.success(final_list);
     }
 
     @PostMapping(value="/addCommunicationLog")
-    @ResponseBody
-    public Resp addCommunicationLog(
-
+    public Result addCommunicationLog(
+            CommunicationLog communicationLog
     )
     {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        CommunicationLog communicationLog = new CommunicationLog();
-        communicationLog.setCommunicationId((long) 1);
-        communicationLog.setCommunicationWay(3);
-        communicationLog.setCommunicationContent("new");
-        communicationLog.setCommunicationTime(timestamp);
-
         if (communicationLog == null) {
-            return Resp.error().setMsg("不能为空");
+            return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationLogService.addCommunicationLog(communicationLog);
-        if (result == null) {
-            return Resp.success().setMsg("插入成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationLogService.addCommunicationLog(communicationLog);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value="/editCommunicationLog")
-    @ResponseBody
-    public Resp editCommunicationLog(
-
+    public Result editCommunicationLog(
+            CommunicationLog communicationLog
     )
     {
-        Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-        CommunicationLog communicationLog = new CommunicationLog();
-        communicationLog.setId((long) 1);
-        communicationLog.setCommunicationId((long) 1);
-        communicationLog.setCommunicationWay(3);
-        communicationLog.setCommunicationContent("xiugai");
-        communicationLog.setCommunicationTime(timestamp);
-
         if (communicationLog == null) {
-            return Resp.error().setMsg("不能为空");
+            return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationLogService.editCommunicationLog(communicationLog);
-        if (result == null) {
-            return Resp.success().setMsg("更新成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationLogService.editCommunicationLog(communicationLog);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
         }
     }
 
     @PostMapping(value="/deleteCommunicationLog")
     @ResponseBody
-    public Resp deleteCommunicationLog(
-
+    public Result deleteCommunicationLog(
+            @RequestParam(value = "id") Integer id
     )
     {
-        String result = communicationLogService.deleteCommunicationLog(2);
-        if (result == null) {
-            return Resp.success().setMsg("删除成功");
-        } else {
-            return Resp.error().setMsg(result);
+        try{
+            communicationLogService.deleteCommunicationLog(id);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
         }
     }
 }

@@ -12,11 +12,11 @@ public class PageResp extends Resp {
     private int totalPage;
 
     public static PageResp success() {
-        return new PageResp(State.SUCCESS);
+        return new PageResp(CodeEum.SUCCESS);
     }
 
     public static PageResp error() {
-        return new PageResp(State.ERROR);
+        return new PageResp(CodeEum.ERROR);
     }
 
     public PageResp setPage(Integer pageCount, Integer currentPage, int totalCount) {
@@ -44,9 +44,9 @@ public class PageResp extends Resp {
         return this;
     }
 
-    private PageResp(State stateEnum) {
-        this.setErrorCode(stateEnum.getErrorCode());
-        this.setMsg(stateEnum.getMsg());
+    private PageResp(CodeEum codeEum) {
+        this.setErrorCode(codeEum.getCode());
+        this.setMsg(codeEum.getMsg());
     }
 
     public int getTotalCount() {

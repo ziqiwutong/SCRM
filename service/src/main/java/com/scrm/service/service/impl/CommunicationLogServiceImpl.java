@@ -25,28 +25,28 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public String addCommunicationLog(CommunicationLog communicationLog) {
+    public String addCommunicationLog(CommunicationLog communicationLog) throws Exception{
         int result = communicationLogDao.addCommunicationLog(communicationLog);
         if (result < 1) {
-            return "插入失败";
+            throw new Exception("插入失败");
         }
         return null;
     }
 
     @Override
-    public String editCommunicationLog(CommunicationLog communicationLog) {
+    public String editCommunicationLog(CommunicationLog communicationLog) throws Exception{
         int result = communicationLogDao.editCommunicationLog(communicationLog);
         if (result < 1) {
-            return "更新失败";
+            throw new Exception("更新失败");
         }
         return null;
     }
 
     @Override
-    public String deleteCommunicationLog(Integer id) {
+    public String deleteCommunicationLog(Integer id) throws Exception{
         int result = communicationLogDao.deleteCommunicationLog(id);
         if (result < 1) {
-            return "删除失败";
+            throw new Exception("删除失败");
         }
         return null;
     }

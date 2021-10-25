@@ -107,4 +107,9 @@ public class ArticleController {
 
         return Result.success();
     }
+
+//    @GetMapping(path="/statistics/read")
+//    public Result queryArticleRead(){
+//
+//    }
 }
