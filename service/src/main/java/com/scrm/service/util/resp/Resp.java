@@ -5,7 +5,7 @@ import java.util.Map;
 
 public class Resp {
     public static Resp PARAM_WRONG;
-    private int errorCode;
+    private int code;
     private String msg;
     private Object data;
 
@@ -14,7 +14,7 @@ public class Resp {
     }
 
     private Resp(CodeEum codeEum) {
-        this.errorCode = codeEum.getCode();
+        this.code = codeEum.getCode();
         this.msg = codeEum.getMsg();
     }
 
@@ -39,7 +39,7 @@ public class Resp {
     }
 
     public boolean respSuccess() {
-        return this.errorCode == 0;
+        return this.code == 0;
     }
 
     public Resp put(String key, Object value) {
@@ -79,12 +79,12 @@ public class Resp {
         return this;
     }
 
-    public int getErrorCode() {
-        return this.errorCode;
+    public int getCode() {
+        return this.code;
     }
 
-    public void setErrorCode(int errorCode) {
-        this.errorCode = errorCode;
+    public void setCode(int code) {
+        this.code = code;
     }
 
     public Object getData() {
@@ -92,7 +92,7 @@ public class Resp {
     }
 
     public String toString() {
-        return "Resp{errorCode=" + this.errorCode + ", msg='" + this.msg + '\'' + ", data=" + this.data + '}';
+        return "Resp{errorCode=" + this.code + ", msg='" + this.msg + '\'' + ", data=" + this.data + '}';
     }
 
     static {

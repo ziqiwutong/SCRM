@@ -16,7 +16,9 @@ public class Label {
 
     private Integer labelObject;
 
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;
 
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String updateTime;
 }

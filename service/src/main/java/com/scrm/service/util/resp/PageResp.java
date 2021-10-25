@@ -45,7 +45,7 @@ public class PageResp extends Resp {
     }
 
     private PageResp(CodeEum codeEum) {
-        this.setErrorCode(codeEum.getCode());
+        this.setCode(codeEum.getCode());
         this.setMsg(codeEum.getMsg());
     }
 

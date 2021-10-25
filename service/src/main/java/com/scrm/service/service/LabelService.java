@@ -7,7 +7,7 @@ import java.util.List;
 public interface LabelService {
 
     /**
-     * 查询Test
+     * 查询Label
      * @param pageCount 每页数量
      * @param currentPage 当前页数
      * @return Label
@@ -21,28 +21,28 @@ public interface LabelService {
     Integer queryCount();
 
     /**
-     * 查询Test
+     * 查询Label
      * @param id Label ID
      * @return Label
      */
     Label queryById(Integer id);
 
     /**
-     * 插入Test
+     * 插入Label
      * @param label Label
      * @return null表示插入成功
      */
     String insert(Label label);
 
     /**
-     * 更新Test
+     * 更新Label
      * @param label Label
      * @return null表示更新成功
      */
     String update(Label label);
 
     /**
-     * 删除Test
+     * 删除Label
      * @param id Label ID
      */
     String delete(Integer id);

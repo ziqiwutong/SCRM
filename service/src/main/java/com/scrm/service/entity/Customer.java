@@ -1,8 +1,6 @@
 package com.scrm.service.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -34,13 +32,15 @@ public class Customer {
 
     private String followStaffName;
 
-    private String enterPoolData;
+    private String enterPoolDate;
 
     private String origin;
 
     private BigDecimal orderAmount;
 
     private Integer orderNumber;
+
+    private String customerLevel;
 
     private String customizeField;
 
@@ -60,8 +60,6 @@ public class Customer {
     private String position;
 
     private String hobby;
-
-    private String customerLevel;
 
     /* 企业客户字段 */
     private String legalPerson;
@@ -99,7 +97,9 @@ public class Customer {
 
     private String creditStatus;
 
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;
 
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String updateTime;
 }
