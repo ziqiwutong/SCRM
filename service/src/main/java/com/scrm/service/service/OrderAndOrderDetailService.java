@@ -10,7 +10,7 @@ import java.util.Map;
  * @create 2021-10-20 21:49
  */
 public interface OrderAndOrderDetailService {
-    Map<Object,Object> queryOrderAndOrderDetail(Long id);
+    Map<Object,Object> queryOrderAndOrderDetail(String id);
 
     List<Map<Object,Object> > queryOrder(Integer pageNum, Integer pageSize, Integer orderType);
 
@@ -18,13 +18,17 @@ public interface OrderAndOrderDetailService {
 
     List<Map<Object, Object> > queryOrderByKey(String keySearch, Integer orderType);
 
-    Integer deleteOrder(Integer orderID) throws Exception;
+    Integer deleteOrder(String orderID) throws Exception;
 
-    Integer deleteOrderWith(Integer orderID) throws Exception;
+    Integer deleteOrderWith(String orderID) throws Exception;
 
     Integer addOrder(OrderAndOrderDetail orderAndOrderDetail) throws Exception;
 
     Integer addOrderWith(OrderAndOrderDetail orderAndOrderDetail) throws Exception;
+
+    Integer editOrder(OrderAndOrderDetail orderAndOrderDetail) throws Exception;
+
+    Integer editOrderWith(OrderAndOrderDetail orderAndOrderDetail) throws Exception;
 
 
 
