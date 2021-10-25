@@ -12,9 +12,9 @@ public interface CommunicationService {
 
     List<UserAndCommunication> queryCommunicationByKey(String key);
 
-    String addCommunication(Communication communication);
+    String addCommunication(Communication communication) throws Exception;
 
-    String editCommunication(Communication communication);
+    String editCommunication(Communication communication) throws Exception;
 
-    String deleteCommunication(Integer id);
+    String deleteCommunication(Integer id) throws Exception;
 }

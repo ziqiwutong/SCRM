@@ -55,10 +55,10 @@ public class CommunicationController {
         if (communication == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationService.addCommunication(communication);
-        if (result == null) {
+        try{
+            communicationService.addCommunication(communication);
             return Result.success();
-        } else {
+        }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
         }
     }
@@ -71,10 +71,10 @@ public class CommunicationController {
         if (communication == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationService.editCommunication(communication);
-        if (result == null) {
+        try{
+            communicationService.editCommunication(communication);
             return Result.success();
-        } else {
+        }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
         }
     }
@@ -84,11 +84,11 @@ public class CommunicationController {
             @RequestParam(value = "id") Integer id
     )
     {
-        String result = communicationService.deleteCommunication(id);
-        if (result == null) {
+        try{
+            communicationService.deleteCommunication(id);
             return Result.success();
-        } else {
-            return Result.error(CodeEum.FAIL);
+        }catch(Exception e) {
+                return Result.error(CodeEum.FAIL);
         }
     }
 
@@ -116,10 +116,10 @@ public class CommunicationController {
         if (communicationLog == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationLogService.addCommunicationLog(communicationLog);
-        if (result == null) {
+        try{
+            communicationLogService.addCommunicationLog(communicationLog);
             return Result.success();
-        } else {
+        }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
         }
     }
@@ -132,10 +132,10 @@ public class CommunicationController {
         if (communicationLog == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
-        String result = communicationLogService.editCommunicationLog(communicationLog);
-        if (result == null) {
+        try{
+            communicationLogService.editCommunicationLog(communicationLog);
             return Result.success();
-        } else {
+        }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
         }
     }
@@ -146,10 +146,10 @@ public class CommunicationController {
             @RequestParam(value = "id") Integer id
     )
     {
-        String result = communicationLogService.deleteCommunicationLog(2);
-        if (result == null) {
+        try{
+            communicationLogService.deleteCommunicationLog(id);
             return Result.success();
-        } else {
+        }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
         }
     }

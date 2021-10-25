@@ -10,9 +10,9 @@ public interface CommunicationLogService {
 
     List<CommunicationLog> queryCommunicationLog(Integer id);
 
-    String addCommunicationLog(CommunicationLog communicationLog);
+    String addCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
-    String editCommunicationLog(CommunicationLog communicationLog);
+    String editCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
-    String deleteCommunicationLog(Integer id);
+    String deleteCommunicationLog(Integer id) throws Exception;
 }

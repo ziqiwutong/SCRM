@@ -5,6 +5,7 @@ import com.scrm.service.entity.Communication;
 import com.scrm.service.entity.UserAndCommunication;
 import com.scrm.service.service.CommunicationService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -28,28 +29,31 @@ public class CommunicationServiceImpl implements CommunicationService {
     }
 
     @Override
-    public String addCommunication(Communication communication) {
+    @Transactional//开启事务
+    public String addCommunication(Communication communication) throws Exception{
         int result = communicationDao.addCommunication(communication);
         if (result < 1) {
-            return "插入失败";
+            throw new Exception("插入失败");
         }
         return null;
     }
 
     @Override
-    public String editCommunication(Communication communication) {
+    @Transactional//开启事务
+    public String editCommunication(Communication communication) throws Exception{
         int result = communicationDao.editCommunication(communication);
         if (result < 1) {
-            return "更新失败";
+            throw new Exception("更新失败");
         }
         return null;
     }
 
     @Override
-    public String deleteCommunication(Integer id) {
+    @Transactional//开启事务
+    public String deleteCommunication(Integer id) throws Exception{
         int result = communicationDao.deleteCommunication(id);
         if (result < 1) {
-            return "删除失败";
+            throw new Exception("删除失败");
         }
         return null;
     }
