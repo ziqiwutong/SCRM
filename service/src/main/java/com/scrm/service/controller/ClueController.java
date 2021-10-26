@@ -25,7 +25,7 @@ public class ClueController {
     @Resource
     private ClueStatusService se_clue_statusService;
 
-    @GetMapping(value = "/queryClue")
+    @PostMapping(value = "/queryClue")
     public PageResult queryClue(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @RequestParam(value = "currentPage", required = false) Integer currentPage) {
@@ -34,7 +34,7 @@ public class ClueController {
         return PageResult.success(clues, count, currentPage);
     }
 
-    @GetMapping(value = "/queryClueByKey")
+    @PostMapping(value = "/queryClueByKey")
     public Result queryClueByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {
@@ -96,7 +96,7 @@ public class ClueController {
         }
     }
 
-    @GetMapping(value = "/queryClueStatus")
+    @PostMapping(value = "/queryClueStatus")
     public Result queryClueStatus(
             @RequestParam(value = "clueId") Integer clueId
     )
