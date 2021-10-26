@@ -21,7 +21,7 @@ public class OrderAndOrderDetailServiceImpl implements OrderAndOrderDetailServic
 
 
     @Override
-    public Map<Object,Object> queryOrderAndOrderDetail(Long id) {
+    public Map<Object,Object> queryOrderAndOrderDetail(String id) {
         return orderAndOrderDetailDao.queryOrderAndOrderDetail(id);
     }
 
@@ -43,7 +43,7 @@ public class OrderAndOrderDetailServiceImpl implements OrderAndOrderDetailServic
 
     @Override
     @Transactional
-    public Integer deleteOrder(Integer orderID) throws Exception {
+    public Integer deleteOrder(String orderID) throws Exception {
         int result = orderAndOrderDetailDao.deleteOrder(orderID);
         if (result < 1) {
             throw new Exception("删除失败");
@@ -52,7 +52,8 @@ public class OrderAndOrderDetailServiceImpl implements OrderAndOrderDetailServic
     }
 
     @Override
-    public Integer deleteOrderWith(Integer orderID) throws Exception {
+    @Transactional
+    public Integer deleteOrderWith(String orderID) throws Exception {
         int result = orderAndOrderDetailDao.deleteOrderWith(orderID);
         if (result < 1) {
             throw new Exception("删除失败");
@@ -78,6 +79,26 @@ public class OrderAndOrderDetailServiceImpl implements OrderAndOrderDetailServic
             throw new Exception("插入失败");
         }
         return 0;
+    }
+
+    @Override
+    @Transactional//开启事务
+    public Integer editOrder(OrderAndOrderDetail orderAndOrderDetail) throws Exception {
+        int result = orderAndOrderDetailDao.editOrder(orderAndOrderDetail);
+        if (result < 1) {
+            throw new Exception("更新失败");
+        }
+        return null;
+    }
+
+    @Override
+    @Transactional//开启事务
+    public Integer editOrderWith(OrderAndOrderDetail orderAndOrderDetail) throws Exception {
+        int result = orderAndOrderDetailDao.editOrderWith(orderAndOrderDetail);
+        if (result < 1) {
+            throw new Exception("更新失败");
+        }
+        return null;
     }
 
 

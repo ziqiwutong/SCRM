@@ -13,6 +13,7 @@ public class OrderAndOrderDetail extends OrderDetail{
     @JsonAlias({"orderType"})
     private boolean payFlag;
     private String orderStaff;
+    @JsonAlias({"orderID"})
     private String orderNum;//订单号
 
 }

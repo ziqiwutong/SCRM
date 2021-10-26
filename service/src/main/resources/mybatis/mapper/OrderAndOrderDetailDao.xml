@@ -24,7 +24,7 @@
         `product_image`, `order_num`, `product_amount`, `order_notes`, `order_source`,
         d.`create_time`, `pay_time`,`change_price`
         from se_order,se_order_detail as d
-        where order_id=se_order.id and d.`id`=#{orderId}
+        where order_id=se_order.id and order_num=#{orderId}
     </select>
 <!--limit #{key_offset},#{pageCount}-->
     <select id="queryOrder" resultMap="cor1">
@@ -66,11 +66,11 @@
     </select>
 
     <delete id="deleteOrder">
-        delete from se_order where id = #{orderID}
+        delete from se_order where order_num = #{orderID}
     </delete>
 
     <delete id="deleteOrderWith">
-        delete from se_order_detail where order_id=#{orderID}
+        delete from se_order_detail where order_id=(select id from se_order where order_num=#{orderID})
     </delete>
 
     <insert id="addOrder" parameterType="com.scrm.service.entity.OrderAndOrderDetail"
@@ -87,5 +87,45 @@
         #{productName}, #{productPrice}, #{productAmount}, #{customerName},
         #{productImage}, #{orderSource}, #{changePrice})
     </insert>
+
+    <update id="editOrder" parameterType="com.scrm.service.entity.OrderAndOrderDetail">
+        update se_order set id=id
+        <if test="payFlag != null">
+            ,pay_flag=#{payFlag}, success_flag=#{payFlag}
+        </if>
+        <if test="orderStaff != null">
+            ,order_staff=#{orderStaff}
+        </if>
+        where order_num = #{orderNum}
+    </update>
+
+    <update id="editOrderWith" parameterType="com.scrm.service.entity.OrderAndOrderDetail">
+        update se_order_detail set id=id
+        <if test="orderNotes!=null">
+            ,order_notes=#{orderNotes}
+        </if>
+        <if test="productName!=null">
+            ,product_name=#{productName}
+        </if>
+        <if test="productPrice!=null">
+            ,product_price=#{productPrice}
+        </if>
+        <if test="productAmount!=null">
+            ,product_amount=#{productAmount}
+        </if>
+        <if test="customerName">
+            ,customer_name=#{customerName}
+        </if>
+        <if test="productImage">
+            ,product_image=#{productImage}
+        </if>
+        <if test="orderSource">
+            ,order_source=#{orderSource}
+        </if>
+        <if test="changePrice">
+            ,change_price=#{changePrice}
+        </if>
+        where order_id=(select id from se_order where order_num=#{orderNum})
+    </update>
 
 </mapper>
