@@ -47,6 +47,8 @@ public class Customer {
     /* 个人客户字段 */
     private String numberAttribution;
 
+    private String belongCompany;
+
     private String wx;
 
     private String wxName;

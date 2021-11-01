@@ -23,8 +23,8 @@ public class TestController {
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage
     ) {
-        RestTemplate rest = new RestTemplate();
-        HttpEntity<String> response = rest.exchange("https://mp.weixin.qq.com/s/r3zslmUEY0qUZBO8VO2WtQ", HttpMethod.GET, null, String.class);
+//        RestTemplate rest = new RestTemplate();
+//        HttpEntity<String> response = rest.exchange("https://mp.weixin.qq.com/s/r3zslmUEY0qUZBO8VO2WtQ", HttpMethod.GET, null, String.class);
 
         return PageResp.success().setData(
                 testService.query(pageCount, currentPage)
