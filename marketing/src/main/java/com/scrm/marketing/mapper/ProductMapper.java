@@ -17,7 +17,7 @@ public interface ProductMapper extends BaseMapper<Product> {
     @Select("select * from se_product limit #{pageSize} offset #{offset}")
     List<Product> queryProPurchase(int offset, @NonNull Integer pageSize);
 
-    @Select("select * from se_product where type_id=#{typeId}")
+    @Select("SELECT * FROM se_product WHERE type_id=#{typeId}")
     List<Product> queryByTypeId(@NonNull Long typeId);
 
 }

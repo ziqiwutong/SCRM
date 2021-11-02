@@ -1,7 +1,10 @@
 package com.scrm.marketing;
 
+import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.druid.sql.visitor.functions.Char;
 import org.junit.jupiter.api.Test;
+import org.springframework.web.util.HtmlUtils;
 
 import java.util.*;
 
@@ -11,54 +14,18 @@ import java.util.*;
  */
 public class TestDemo {
     @Test
-    void test1(){
-        // 步长为30
-        int num=1-30;
-        for(int i=0;i<10;++i){
-            System.out.println(num=num+30);
-        }
+    void test1() {
+        Date nowDate=new Date();
+        Date lastWeek=DateUtil.lastWeek();
+        Date lastMonth=DateUtil.lastMonth();
+        System.out.println(DateUtil.endOfDay(lastWeek));
+        System.out.println(DateUtil.endOfDay(lastMonth));
+        System.out.println(DateUtil.endOfDay(nowDate));
     }
 
     @Test
     void test2(){
-        int m,n,u,r;
-        m=100;
-        n=50;
-        u=m*n;
-        do{
-            r=m%n;
-            m=n;
-            n=r;
-        }while (r!=0);
-        System.out.println(m);
-    }
-
-    @Test
-    void test3(){
-        int a=100,b=64,i,t;
-        for(t=1,i=2;i<=a&&i<=b;++i)
-            while (a%i==0&&b%i==0){
-                a/=i;
-                b/=i;
-                t*=i;
-            }
-        System.out.println(t);
-    }
-
-    @Test
-    void test4(){
-        List<Long> shareIds=new ArrayList<>();
-        shareIds.add(1L);
-        shareIds.add(1L);
-        shareIds.add(1L);
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        for (Long shareId : shareIds) {
-            sb.append(shareId);
-            sb.append(",");
-        }
-        sb.deleteCharAt(sb.length() - 1);
-        sb.append("]");
-        System.out.println(sb.toString());
+       String str= HtmlUtils.htmlEscape("<meta name=\"description\" content=\"史上最全操作系统教程\" />");
+        System.out.println(str);
     }
 }

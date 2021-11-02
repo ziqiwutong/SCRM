@@ -4,13 +4,10 @@ import cn.dev33.satoken.exception.*;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import static org.bouncycastle.asn1.x500.style.RFC4519Style.cn;
 
 /**
  * @author fzk

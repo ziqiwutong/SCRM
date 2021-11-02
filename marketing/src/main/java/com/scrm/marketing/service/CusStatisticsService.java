@@ -5,12 +5,13 @@ import com.scrm.marketing.util.resp.Result;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
-
 /**
  * @author fzk
- * @date 2021-10-20 22:37
+ * @date 2021-10-22 17:01
  */
-public interface ProCusBpLogService {
+public interface CusStatisticsService {
+    Result queryCusRead(Long customerId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
+
     /**
      * 分页查询所有客户购买情况
      *

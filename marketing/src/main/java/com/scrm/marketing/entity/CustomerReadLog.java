@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("mk_customer_read_log")
+@Deprecated(since = "2021-10-22", forRemoval = true)
 public class CustomerReadLog {
     @TableId(type = IdType.AUTO)
     private Long id;

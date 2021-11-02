@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2021-10-15 21:45
  */
 public class ArticleSqlProvider implements ProviderMethodResolver {
-    public static String queryPage(final int index, final int pageSize, final Integer examineFlag) {
+    public static String queryPage(final int offset, final int pageSize, final Integer examineFlag) {
 
         return new SQL() {{
             SELECT("id,author_id,author_name,article_title,article_image," +
@@ -22,11 +22,11 @@ public class ArticleSqlProvider implements ProviderMethodResolver {
                 WHERE("examine_flag=" + examineFlag);
             }
             LIMIT(pageSize);
-            OFFSET(index);
+            OFFSET(offset);
         }}.toString();
     }
 
-    public static String queryCount(final int index, final int pageSize, final Integer examineFlag) {
+    public static String queryCount(final int offset, final int pageSize, final Integer examineFlag) {
         return new SQL() {{
             SELECT("COUNT(*)");
             FROM("mk_article");

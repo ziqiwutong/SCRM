@@ -7,5 +7,6 @@ import com.scrm.marketing.entity.CustomerReadLog;
  * @author fzk
  * @date 2021-10-14 17:57
  */
+@Deprecated
 public interface CustomerReadLogMapper extends BaseMapper<CustomerReadLog> {
 }

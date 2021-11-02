@@ -23,4 +23,6 @@ public interface ArticleService {
     void delete(@NonNull Long id) throws MyException;
 
     void examine(@NonNull Long id,@NonNull  Long loginId,@NonNull  Integer examineFlag, String examineNotes) throws MyException;
+
+    Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
 }

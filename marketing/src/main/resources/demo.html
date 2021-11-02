@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+</head>
+<body>
+<script>
+    $(function () {
+        let url1 = "https://www.fzk-tx.top/mk/test/article";
+        let url2 = "https://www.fzk-tx.top/mk/test/article/huke";
+        let url;
+        if(confirm("选择自己解析的？")){
+            url=url1;
+        }else url=url2;
+
+
+        $.get(url, {
+            "articleUrl": "https://mp.weixin.qq.com/s/OP-W1yj4cn7F6b1baADmMA"
+        }, function (result) {
+            if (result.code === 200) {
+                $("body").append(result.data.html);
+            } else alert(result.msg);
+        })
+    })
+</script>
+</body>
+</html>

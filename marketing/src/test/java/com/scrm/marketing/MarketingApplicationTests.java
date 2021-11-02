@@ -21,7 +21,7 @@ class MarketingApplicationTests {
     @Resource
     private ArticleMapper articleMapper;
     @Resource
-    private ArticleCustomerReadMapper articleCustomerReadMapper;
+    private ArtCusReadMapper articleCustomerReadMapper;
     @Resource
     private ArticleShareRecordMapper articleShareRecordMapper;
     @Resource
@@ -66,9 +66,9 @@ class MarketingApplicationTests {
     void feignTest(){
         Map<String,Object> map=new HashMap<>();
 //        map.put("Authorization","eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySUQiOiJzY3JtMTIzIiwiaWF0IjoxNjM0NjQ2OTEwLCJleHAiOjE2MzUyNTE3MTB9.C3Tp_mN2u_K5erHX3LZj_hp5rR2hr4iUHR_ieZqCY7k");
-        map.put("id",1);
-        map.put("shareId",1);
-        Result result = testClient.getArticleDetail(map);
+        String result = testClient.getArticleDetail(map);
+//        System.out.println(result);
+        result = result.replaceAll("\\s", "");
         System.out.println(result);
     }
 

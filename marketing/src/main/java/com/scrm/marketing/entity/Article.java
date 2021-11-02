@@ -15,8 +15,6 @@ import org.springframework.lang.Nullable;
  * 文章表
  */
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @TableName("mk_article")
 public class Article {
     @TableId(type = IdType.AUTO)

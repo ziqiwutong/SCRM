@@ -23,7 +23,8 @@ public class ArticleCustomerRead {
 
     private Long articleId;
     private Long customerId;
-    private Long readTimeSum;
+    private Long readTime;
+    private String readDate;
 
     /**
      * 表修改记录属性

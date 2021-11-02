@@ -108,8 +108,33 @@ public class ArticleController {
         return Result.success();
     }
 
-//    @GetMapping(path="/statistics/read")
-//    public Result queryArticleRead(){
-//
-//    }
+    /**
+     * 查询文章阅读情况
+     * 情况1：无文章id，则分页查询文章总阅读时长，从 mk_article 表查
+     * 情况2：有文章id，则查询特定文章的7天或者30天的阅读时长，从 mk_article_customer_read 表查
+     *
+     * @param articleId 文章id
+     * @param sevenFlag 查7天的标记，true查7天，false 查30天
+     * @param pageNum   页码
+     * @param pageSize  页大小
+     * @return 返回Result或者PageResult
+     */
+    @GetMapping(path = "/statistics/read")
+    public Result queryArticleRead(
+            @RequestParam(name = "articleId", required = false) Long articleId,
+            @RequestParam(name = "sevenFlag", required = false) Boolean sevenFlag,
+            @RequestParam(name = "pageNum", required = false) Integer pageNum,
+            @RequestParam(name = "pageSize", required = false) Integer pageSize
+    ) {
+        // 1.参数检查
+        if (articleId == null) {
+            if (pageNum == null || pageSize == null)
+                return Result.error(CodeEum.PARAM_MISS);
+            else if (pageNum < 1 || pageSize < 1)
+                return Result.error(CodeEum.PARAM_ERROR);
+        } else if (sevenFlag == null)
+            return Result.error(CodeEum.PARAM_MISS);
+        // 2.调用service
+        return articleService.queryArticleRead(articleId, sevenFlag, pageNum, pageSize);
+    }
 }

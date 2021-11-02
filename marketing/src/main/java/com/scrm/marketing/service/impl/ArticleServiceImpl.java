@@ -1,11 +1,13 @@
 package com.scrm.marketing.service.impl;
 
+import cn.hutool.core.date.DateUtil;
 import com.scrm.marketing.entity.Article;
+import com.scrm.marketing.entity.ArticleCustomerRead;
 import com.scrm.marketing.entity.ArticleShareRecord;
 import com.scrm.marketing.entity.User;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.feign.UserClient;
-import com.scrm.marketing.mapper.ArticleCustomerReadMapper;
+import com.scrm.marketing.mapper.ArtCusReadMapper;
 import com.scrm.marketing.mapper.ArticleMapper;
 import com.scrm.marketing.mapper.ArticleShareRecordMapper;
 import com.scrm.marketing.mapper.UserMapper;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +42,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleShareRecordMapper articleShareRecordMapper;
     @Resource
-    private ArticleCustomerReadMapper articleCustomerReadMapper;
+    private ArtCusReadMapper articleCustomerReadMapper;
 
     @Override
     @Transactional//开启事务
@@ -162,5 +165,33 @@ public class ArticleServiceImpl implements ArticleService {
         // 2.执行修改操作
         if (articleMapper.examine(id, loginId, examineName, examineFlag, examineNotes) != 1)
             throw new MyException(CodeEum.CODE_ERROR, "审核失败");
+    }
+
+    @Override
+    public Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize) {
+        // 情况2：有文章id，则查询特定文章的7天或者30天的阅读时长，从 mk_article_customer_read 表查
+        if (articleId != null && sevenFlag != null) {
+            // 这里根据sevenFlag生成查询起始时间
+            // 注意：虽然read_date的比较应该以日期比较，但是这里用日期时间却工作得很好哦
+            Date startDate;
+            if (sevenFlag) startDate = DateUtil.lastWeek();
+                // 查询30天
+            else startDate = DateUtil.lastMonth();
+
+            // 从mk_article_customer_read表查
+            List<ArticleCustomerRead> articleCustomerReads =
+                    articleCustomerReadMapper.queryArticleRead(articleId, startDate);
+            return Result.success(articleCustomerReads);
+        }
+        // 情况1：无文章id，则分页查询文章总阅读时长，从 mk_article 表查
+        else {
+            // 计算偏移量
+            int offset = (pageNum - 1) * pageSize;
+            // 从mk_article表查询文章总阅读时长
+            List<Article> articles = articleMapper.queryPage(offset, pageSize, 1);
+            // 查询文章总数
+            int total = articleMapper.queryCount(offset, pageSize, 1);
+            return PageResult.success(articles, total, pageNum);
+        }
     }
 }

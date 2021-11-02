@@ -1,8 +1,11 @@
 package com.scrm.marketing.service.impl;
 
+import cn.hutool.core.date.DateUtil;
+import com.scrm.marketing.entity.ArticleCustomerRead;
 import com.scrm.marketing.entity.ProductCustomerBpLog;
+import com.scrm.marketing.mapper.ArtCusReadMapper;
 import com.scrm.marketing.mapper.ProCusBpLogMapper;
-import com.scrm.marketing.service.ProCusBpLogService;
+import com.scrm.marketing.service.CusStatisticsService;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
@@ -11,16 +14,42 @@ import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
  * @author fzk
- * @date 2021-10-20 22:38
+ * @date 2021-10-22 17:01
  */
 @Service
-public class ProCusBpLogServiceImpl implements ProCusBpLogService {
+public class CusStatisticsServiceImpl implements CusStatisticsService {
     @Resource
     private ProCusBpLogMapper bpLogMapper;
+    @Resource
+    private ArtCusReadMapper artCusReadMapper;
+
+    @Override
+    public Result queryCusRead(Long customerId, Boolean sevenFlag, Integer pageNum, Integer pageSize) {
+        List<ArticleCustomerRead> artCusReads;
+        // 情况1：无customerId，分页查询客户阅读总时长
+        if (customerId == null) {
+            // 计算偏移量
+            int offset = (pageNum - 1) * pageSize;
+
+            // 分页查询
+            artCusReads = artCusReadMapper.queryCusRead(null, null, offset, pageSize);
+            // 查询mk_article_customer_read表里的客户总数
+            int total = artCusReadMapper.queryCusCount();
+            return PageResult.success(artCusReads, total, pageNum);
+        }
+        // 情况2：有customerId，sevenFlag为true，查1周内客户每天阅读时长
+        // 情况3：有customerId，sevenFlag为false，查1个月内客户每天阅读时长
+        Date startDate = sevenFlag ? DateUtil.lastWeek() : DateUtil.lastMonth();
+
+        artCusReads = artCusReadMapper.queryCusRead(customerId, startDate, null, null);
+        return Result.success(artCusReads);
+    }
+
 
     @Override
     public PageResult queryCusPurchase(@NonNull Integer pageNum, @NonNull Integer pageSize) {
