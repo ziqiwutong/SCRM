@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @TableName("se_customer")
@@ -17,6 +18,9 @@ public class Customer {
     private Integer potential;
 
     private String customerName;
+
+    @TableField(exist = false)
+    private List<Label> customerLabels;
 
     private String historyName;
 

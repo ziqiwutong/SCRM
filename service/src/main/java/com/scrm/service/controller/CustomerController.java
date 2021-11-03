@@ -1,5 +1,6 @@
 package com.scrm.service.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Customer;
 import com.scrm.service.service.CustomerService;
 import com.scrm.service.util.resp.PageResp;
@@ -7,6 +8,8 @@ import com.scrm.service.util.resp.Resp;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
 
 @RequestMapping("/customer")
 @RestController
@@ -19,13 +22,25 @@ public class CustomerController {
     @ResponseBody
     public PageResp query(
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
-            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
+            @RequestParam HashMap map
     ) {
+        QueryWrapper<Customer> wrapper = new QueryWrapper<>();
+        for (Object o: map.keySet()) {
+            if (!(o instanceof String)) {
+                continue;
+            }
+            String key = (String)o;
+            if (key.equals("pageCount") || key.equals("currentPage")) {
+                continue;
+            }
+            wrapper.like(key.replaceAll("[A-Z]", "_$0").toLowerCase(), map.get(o));
+        }
         if (currentPage < 1) currentPage = 1;
         if (pageCount < 1) pageCount = 1;
         return PageResp.success().setData(
-                customerService.query(pageCount, currentPage)
-        ).setPage(pageCount, currentPage, customerService.queryCount()).setMsg("成功");
+                customerService.query(pageCount, currentPage, wrapper)
+        ).setPage(pageCount, currentPage, customerService.queryCount(wrapper)).setMsg("成功");
     }
 
     @GetMapping("/queryById")
@@ -57,6 +72,19 @@ public class CustomerController {
         }
     }
 
+    @PostMapping("/insertBatch")
+    @ResponseBody
+    public Resp insertBatch(
+            @RequestBody List<Customer> customers
+    ) {
+        String result = customerService.insertBatch(customers);
+        if (result == null) {
+            return Resp.success().setData(customers).setMsg("插入成功");
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
     @PostMapping("/update")
     @ResponseBody
     public Resp update(
@@ -81,6 +109,19 @@ public class CustomerController {
         String result = customerService.delete(id);
         if (result == null) {
             return Resp.success().setData(id).setMsg("删除成功");
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
+    @PostMapping("/deleteBatch")
+    @ResponseBody
+    public Resp deleteBatch(
+            @RequestBody List<Integer> ids
+    ) {
+        String result = customerService.deleteBatch(ids);
+        if (result == null) {
+            return Resp.success().setData(ids).setMsg("删除成功");
         } else {
             return Resp.error().setMsg(result);
         }
