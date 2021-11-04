@@ -5,25 +5,25 @@
 <mapper namespace="com.scrm.service.dao.CommunicationDao">
     <select id="queryCommunication" resultType="com.scrm.service.entity.UserAndCommunication">
         <bind name="key_offset" value="(currentPage-1)*pageCount"/>
-        select se_communication.customer_id, cms_user.username, cms_user.user_icon, cms_user.telephone, cms_department.department_name, cms_user.create_time
-        from se_communication
-        left join cms_user on se_communication.customer_id = cms_user.id
-        left join cms_department on cms_user.department_id = cms_department.id
+        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.customer_company, se_label.label_name, se_customer.enter_pool_date
+        from se_customer
+        left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
+        left join se_label on se_customer_label_relation.label_id = se_label.id
         <if test="pageCount != null and currentPage != null">
             limit #{key_offset},#{pageCount}
         </if>
     </select>
 
     <select id="queryCommunicationByKey" resultType="com.scrm.service.entity.UserAndCommunication">
-        select se_communication.customer_id, cms_user.username, cms_user.user_icon, cms_user.telephone, cms_department.department_name, cms_user.create_time
-        from se_communication
-        left join cms_user on se_communication.customer_id = cms_user.id
-        left join cms_department on cms_user.department_id = cms_department.id
-        where cms_user.username like "%"#{userName}"%"
+        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.customer_company, se_label.label_name, se_customer.enter_pool_date
+        from se_customer
+        left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
+        left join se_label on se_customer_label_relation.label_id = se_label.id
+        where se_customer.customer_name like "%"#{customerName}"%"
     </select>
 
     <select id="queryCount" resultType="Integer">
-        select count(customer_id) from se_communication
+        select count(id) from se_customer
     </select>
 
     <insert id="addCommunication" parameterType="com.scrm.service.entity.Communication"

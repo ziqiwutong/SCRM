@@ -143,4 +143,17 @@ public class ClueController {
             return Result.error(CodeEum.FAIL);
         }
     }
+
+    @PostMapping(value = "/deleteClueStatus")
+    public Result deleteClueStatus(
+            @RequestParam(value = "id") Integer id
+    )
+    {
+        try {
+            se_clue_statusService.deleteClueStatus(id);
+            return Result.success();
+        }catch(Exception e) {
+            return Result.error(CodeEum.FAIL);
+        }
+    }
 }

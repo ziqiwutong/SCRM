@@ -19,6 +19,10 @@
         where id = #{id}
     </update>
 
+    <delete id="deleteClueStatus">
+        delete from se_clue_status where id = #{id}
+    </delete>
+
     <select id="queryClue" resultType="com.scrm.service.entity.Clue">
         select * from se_clue where id = #{id}
     </select>

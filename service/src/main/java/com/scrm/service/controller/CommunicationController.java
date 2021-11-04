@@ -118,6 +118,7 @@ public class CommunicationController {
         }
         try{
             communicationLogService.addCommunicationLog(communicationLog);
+            communicationLogService.PlusCommunication(communicationLog.getCommunicationId(),communicationLog.getCommunicationWay());
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -143,11 +144,12 @@ public class CommunicationController {
     @PostMapping(value="/deleteCommunicationLog")
     @ResponseBody
     public Result deleteCommunicationLog(
-            @RequestParam(value = "id") Integer id
+            CommunicationLog communicationLog
     )
     {
         try{
-            communicationLogService.deleteCommunicationLog(id);
+            communicationLogService.deleteCommunicationLog(communicationLog.getId());
+            communicationLogService.MinusCommunication(communicationLog.getCommunicationId(),communicationLog.getCommunicationWay());
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);

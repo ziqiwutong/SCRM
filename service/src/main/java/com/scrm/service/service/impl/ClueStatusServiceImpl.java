@@ -42,6 +42,18 @@ public class ClueStatusServiceImpl implements ClueStatusService {
     }
 
     @Override
+    @Transactional//开启事务
+    public String deleteClueStatus(Integer id) throws Exception {
+        int result_status = se_clue_statusDao.deleteClueStatus(id);
+        if (result_status < 1){
+            throw new Exception("索引跟进记录删除失败");
+        }
+        else {
+            return "删除成功";
+        }
+    }
+
+    @Override
     public Clue queryClue(Integer clue_id) {
         return se_clue_statusDao.queryClue(clue_id);
     }

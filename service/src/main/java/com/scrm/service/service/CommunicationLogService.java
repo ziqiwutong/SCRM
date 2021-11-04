@@ -12,7 +12,11 @@ public interface CommunicationLogService {
 
     String addCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
+    Integer PlusCommunication(Long communicationId, Integer communicationWay) throws Exception;
+
     String editCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
-    String deleteCommunicationLog(Integer id) throws Exception;
+    String deleteCommunicationLog(Long id) throws Exception;
+
+    Integer MinusCommunication(Long communicationId, Integer communicationWay) throws Exception;
 }

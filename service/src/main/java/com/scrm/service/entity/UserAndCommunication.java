@@ -2,38 +2,48 @@ package com.scrm.service.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class UserAndCommunication {
-    private Long customerId;
-    private String username;
-    private String userIcon;
+    private Long id;
+    private String customerName;
+    private Integer customerType;
+    private String labelName;
     private String telephone;
-    private String departmentName;
-    private Timestamp createTime;
+    private String customerCompany;
+    private Date enterPoolDate;
 
-    public Long getCustomerId() {
-        return customerId;
+    public Long getId() {
+        return id;
     }
 
-    public void setCustomerId(Long customerId) {
-        this.customerId = customerId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public String getUserName() {
-        return username;
+    public String getCustomerName() {
+        return customerName;
     }
 
-    public void setUserName(String username) {
-        this.username = username;
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
     }
 
-    public String getUserIcon() {
-        return userIcon;
+    public Integer getCustomerType() {
+        return customerType;
     }
 
-    public void setUserIcon(String userIcon) {
-        this.userIcon = userIcon;
+    public void setCustomerType(Integer customerType) {
+        this.customerType = customerType;
+    }
+
+    public String getLabelName() {
+        return labelName;
+    }
+
+    public void setLabelName(String labelName) {
+        this.labelName = labelName;
     }
 
     public String getTelephone() {
@@ -44,20 +54,19 @@ public class UserAndCommunication {
         this.telephone = telephone;
     }
 
-    public String getDepartmentName() {
-        return departmentName;
+    public String getCustomerCompany() {
+        return customerCompany;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
+    public void setCustomerCompany(String customerCompany) {
+        this.customerCompany = customerCompany;
     }
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    public Timestamp getCreateTime() {
-        return createTime;
+    public Date getEnterPoolDate() {
+        return enterPoolDate;
     }
 
-    public void setCreateTime(Timestamp createTime) {
-        this.createTime = createTime;
+    public void setEnterPoolDate(Date enterPoolDate) {
+        this.enterPoolDate = enterPoolDate;
     }
 }

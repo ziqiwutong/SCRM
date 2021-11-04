@@ -13,7 +13,7 @@ public class BusinessOpportunity {
     private String boName;
     private Date boDate;
     private String boStatus;
-    private String boFollowStatus;
+    private Integer boFollowStatus;
     private String boEditor;
     private String boTemplate;
     private String boResponsible;
@@ -63,11 +63,11 @@ public class BusinessOpportunity {
         this.boStatus = boStatus;
     }
 
-    public String getBoFollowStatus() {
+    public Integer getBoFollowStatus() {
         return boFollowStatus;
     }
 
-    public void setBoFollowStatus(String boFollowStatus) {
+    public void setBoFollowStatus(Integer boFollowStatus) {
         this.boFollowStatus = boFollowStatus;
     }
 

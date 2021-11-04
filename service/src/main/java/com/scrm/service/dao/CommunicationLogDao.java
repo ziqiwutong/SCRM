@@ -14,7 +14,11 @@ public interface CommunicationLogDao {
 
     Integer addCommunicationLog(CommunicationLog communicationLog);
 
+    Integer PlusCommunication(Long communicationId, Integer communicationWay);
+
     Integer editCommunicationLog(CommunicationLog communicationLog);
 
-    Integer deleteCommunicationLog(Integer id);
+    Integer deleteCommunicationLog(Long id);
+
+    Integer MinusCommunication(Long communicationId, Integer communicationWay);
 }

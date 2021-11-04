@@ -14,5 +14,7 @@ public interface ClueStatusDao {
 
     Integer editClueStatus(ClueStatus se_clue_status);
 
+    Integer deleteClueStatus(Integer id);
+
     Clue queryClue(Integer clue_id);
 }
