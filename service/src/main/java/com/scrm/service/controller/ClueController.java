@@ -29,7 +29,7 @@ public class ClueController {
     public PageResult queryClue(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @RequestParam(value = "currentPage", required = false) Integer currentPage) {
-        List<Clue> clues = se_clueService.queryClue(pageCount, pageCount);
+        List<Clue> clues = se_clueService.queryClue(pageCount, currentPage);
         Integer count = se_clueService.queryCount();
         return PageResult.success(clues, count, currentPage);
     }
@@ -44,7 +44,7 @@ public class ClueController {
 
     @PostMapping(value = "/addClue")
     public Result addClue(
-            Clue se_clue
+            @RequestBody  Clue se_clue
     ) {
         if (se_clue == null) {
             return Result.error(CodeEum.PARAM_MISS);
@@ -59,7 +59,7 @@ public class ClueController {
 
     @PostMapping(value = "/editClue")
     public Result editClue(
-            Clue se_clue
+            @RequestBody Clue se_clue
     )
     {
         if (se_clue == null) {
@@ -114,7 +114,7 @@ public class ClueController {
 
     @PostMapping(value = "/addClueStatus")
     public Result addClueStatus(
-            ClueStatus se_clue_status
+            @RequestBody ClueStatus se_clue_status
     )
     {
         if (se_clue_status == null) {
@@ -130,7 +130,7 @@ public class ClueController {
 
     @PostMapping(value = "/editClueStatus")
     public Result editClueStatus(
-            ClueStatus se_clue_status
+            @RequestBody ClueStatus se_clue_status
     )
     {
         if (se_clue_status == null) {

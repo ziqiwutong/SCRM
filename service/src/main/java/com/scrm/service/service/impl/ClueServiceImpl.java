@@ -57,9 +57,6 @@ public class ClueServiceImpl implements ClueService {
         if (result_clue < 1 & result_status < 1) {
             throw new Exception("删除失败");
         }
-        else if (result_clue < 1 | result_status < 1){
-            throw new Exception("索引本身或者索引跟进记录删除失败");
-        }
         else {
             return "删除成功";
         }

@@ -8,7 +8,6 @@ public class ClueStatus {
     private Long id;
     private Long clueId;
     private String clueEditor;
-    private String clueStatus;
     private String clueNotes;
     private Timestamp createTime;
     private Timestamp updateTime;
@@ -17,7 +16,9 @@ public class ClueStatus {
         return id;
     }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public Long getClueId() {
         return clueId;
@@ -33,14 +34,6 @@ public class ClueStatus {
 
     public void setClueEditor(String clueEditor) {
         this.clueEditor = clueEditor;
-    }
-
-    public String getClueStatus() {
-        return clueStatus;
-    }
-
-    public void setClueStatus(String clueStatus) {
-        this.clueStatus = clueStatus;
     }
 
     public String getClueNotes() {
