@@ -70,6 +70,11 @@ public class Result {
         this.data = data;
     }
 
+    public Result addMsg(String addMsg) {
+        this.msg = this.msg + ": " + addMsg;
+        return this;
+    }
+
     @Override
     public String toString() {
         return "Result{" +
@@ -77,6 +82,23 @@ public class Result {
                 ", msg='" + msg + '\'' +
                 ", data=" + data +
                 '}';
+    }
+
+    /*从常量池拿实例方法*/
+    public static ResultCache SUCCESS() {
+        return ResultCache.SUCCESS_CACHE;
+    }
+
+    public static ResultCache PARAM_MISS() {
+        return ResultCache.PARAM_MISS_CACHE;
+    }
+
+    public static ResultCache PARAM_ERROR() {
+        return ResultCache.PARAM_ERROR_CACHE;
+    }
+
+    public static ResultCache FAIL() {
+        return ResultCache.FAIL_CACHE;
     }
 }
 

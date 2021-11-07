@@ -3,15 +3,19 @@ package com.scrm.marketing.controller;
 import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
+import com.alibaba.nacos.common.utils.StringUtils;
 import com.scrm.marketing.entity.Article;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.service.ArticleService;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
+import com.scrm.marketing.util.resp.ResultCache;
+import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author fzk
@@ -35,24 +39,43 @@ public class ArticleController {
     }
 
     @GetMapping(path = "/queryPage")
-    public PageResult queryPage(
+    public Result queryPage(
             @RequestParam("pageNum") int pageNum,
             @RequestParam("pageSize") int pageSize,
             @RequestParam("examineFlag") Integer examineFlag
     ) {
         // 参数检查
         if (pageNum < 1 || pageSize < 1)
-            return PageResult.error(CodeEum.PARAM_ERROR);
+            return Result.PARAM_ERROR();
         // 调用service
         return articleService.queryPage(pageNum, pageSize, examineFlag);
+    }
+
+    @GetMapping(path = "/queryByTitle")
+    public Result queryByTitle(
+            @RequestParam("title") String title
+    ) {
+        if (Strings.trimToNull(title) == null)
+            return Result.PARAM_ERROR();
+        // 调用service
+        List<Article> articles=articleService.queryByTitle(title);
+        return Result.success(articles);
     }
 
     @PostMapping(path = "/insert")
     @SaCheckPermission("article-add")//拥有文章增加权限
     public Result insert(@RequestBody Article article) throws MyException {
-        // 检查参数
+        // 1.1 检查参数：必须有标题,内容,文章类型
         if (article == null)
-            return Result.error(CodeEum.PARAM_MISS);
+            return Result.PARAM_MISS();
+        if (article.getArticleTitle() == null || article.getArticleContext() == null || article.getArticleType() == null)
+            return Result.PARAM_MISS();
+
+        // 1.2 转载公众号文章相关属性检查
+        if (article.getArticleType().equals(Article.ARTICLE_TYPE_REPRINT)) {
+            if (article.getArticleOriginAuthor() == null || article.getArticleAccountName() == null || article.getArticlePower() == null)
+                return Result.PARAM_MISS();
+        }
 
         // 获取loginId
         Long loginId = Long.parseLong(StpUtil.getLoginId().toString());

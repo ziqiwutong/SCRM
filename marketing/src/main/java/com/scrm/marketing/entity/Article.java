@@ -17,6 +17,16 @@ import org.springframework.lang.Nullable;
 @Data
 @TableName("mk_article")
 public class Article {
+    /**
+     * 常量
+     */
+    public static int ARTICLE_TYPE_ORIGIN = 0;// 原创
+    public static int ARTICLE_TYPE_REPRINT = 1;// 转载
+    public static int EXAMINE_FLAG_WAIT = 0;//待审核
+    public static int EXAMINE_FLAG_ACCESS = 1;//审核通过
+    public static int EXAMINE_FLAG_NOT_ACCESS = 2;//审核不通过
+
+
     @TableId(type = IdType.AUTO)
     private Long id;
 
@@ -45,6 +55,13 @@ public class Article {
     private String examineName;
     private String examineNotes;
 
+    /**
+     * 转载文章相关属性
+     */
+    private String articleOriginAuthor;
+    private String articleAccountName;
+    private String articlePower;// 原公众号地址
+    private Integer articleType;// 文章类型，0原创，1转载
     /**
      * 表修改记录属性
      */

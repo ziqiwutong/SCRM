@@ -7,6 +7,8 @@ import com.scrm.marketing.util.resp.Result;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
+import java.util.List;
+
 /**
  * @author fzk
  * @date 2021-10-14 20:24
@@ -25,4 +27,6 @@ public interface ArticleService {
     void examine(@NonNull Long id,@NonNull  Long loginId,@NonNull  Integer examineFlag, String examineNotes) throws MyException;
 
     Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
+
+    List<Article> queryByTitle(String title);
 }

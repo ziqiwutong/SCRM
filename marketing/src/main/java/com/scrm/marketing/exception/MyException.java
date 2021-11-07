@@ -1,17 +1,15 @@
 package com.scrm.marketing.exception;
 
-import com.scrm.marketing.util.resp.CodeEum;
-
 /**
  * @author fzk
  * @date 2021-10-14 19:16
  */
-public class MyException extends Exception {
+public class MyException extends RuntimeException {
     private int code;
 
-    public MyException(int code,String msg) {
+    public MyException(int code, String msg) {
         super(msg);
-        this.code=code;
+        this.code = code;
     }
 
     public int getCode() {

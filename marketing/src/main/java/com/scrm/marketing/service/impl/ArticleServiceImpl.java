@@ -12,7 +12,7 @@ import com.scrm.marketing.mapper.ArticleMapper;
 import com.scrm.marketing.mapper.ArticleShareRecordMapper;
 import com.scrm.marketing.mapper.UserMapper;
 import com.scrm.marketing.service.ArticleService;
-import com.scrm.marketing.util.MyConstant;
+import com.scrm.marketing.util.MyAssert;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
@@ -102,8 +102,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    @Transactional
-    public void insert(Article article, @NonNull Long loginId) throws MyException {
+    public void insert(Article article, @NonNull Long loginId) {
         // 1、获取用户信息
         // 1.1 从Redis查
 
@@ -116,6 +115,8 @@ public class ArticleServiceImpl implements ArticleService {
 //        String username = userMap.get("username").toString();
 
         User user = userMapper.selectById(loginId);
+        if (user == null)
+            throw new MyException(CodeEum.CODE_PARAM_ERROR, "loginId" + loginId + "not exists");
         // 2、完善article属性
         article.setAuthorId(loginId);//作者id
         article.setAuthorName(user.getUsername());//作者名称
@@ -123,7 +124,11 @@ public class ArticleServiceImpl implements ArticleService {
         article.setArticleViewTimes(0);
         article.setArticleReadTimeSum(0L);
 
-        article.setExamineFlag(MyConstant.EXAMINE_WAIT);//审核标记：待审核
+        /**
+         * 目前暂时先全部审核通过
+         */
+        article.setExamineFlag(Article.EXAMINE_FLAG_ACCESS);//审核标记：待审核
+
 
         // 3、插入
         if (articleMapper.insert(article) != 1)
@@ -132,10 +137,9 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    @Transactional//开启事务
     public void update(@NonNull Article article, Long loginId) throws MyException {
         if (articleMapper.updateById(article) != 1)
-            throw new MyException(CodeEum.ERROR.getCode(), "修改失败");
+            throw new MyException(CodeEum.ERROR.getCode(), "文章不存在");
     }
 
     @Override
@@ -193,5 +197,18 @@ public class ArticleServiceImpl implements ArticleService {
             int total = articleMapper.queryCount(offset, pageSize, 1);
             return PageResult.success(articles, total, pageNum);
         }
+    }
+
+    /**
+     * 默认根据标题模糊查询审核通过的文章
+     *
+     * @param title 标题
+     * @return list
+     */
+    @Override
+    public List<Article> queryByTitle(String title) {
+        MyAssert.notNull("title can not be null", title);
+        // 查询通过审核的文章
+        return articleMapper.queryByTitle(title, Article.EXAMINE_FLAG_ACCESS);
     }
 }
