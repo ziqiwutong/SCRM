@@ -10,6 +10,8 @@ import java.util.List;
 public interface ClueStatusDao {
     List<ClueStatus> queryClueStatus(Integer id);
 
+    ClueStatus queryClueEditStatus(Integer id);
+
     Integer addClueStatus(ClueStatus se_clue_status);
 
     Integer editClueStatus(ClueStatus se_clue_status);

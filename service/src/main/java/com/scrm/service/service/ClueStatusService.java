@@ -8,6 +8,8 @@ import java.util.List;
 public interface ClueStatusService {
     List<ClueStatus> queryClueStatus(Integer id);
 
+    ClueStatus queryClueEditStatus(Integer id);
+
     String addClueStatus(ClueStatus se_clue_status) throws Exception;
 
     String editClueStatus(ClueStatus se_clue_status) throws Exception;

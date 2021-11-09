@@ -8,6 +8,11 @@
         where clue_id = #{clueId} order by create_time asc
     </select>
 
+    <select id="queryClueEditStatus" resultType="com.scrm.service.entity.ClueStatus">
+        select id,clue_id,clue_editor,clue_notes,create_time from se_clue_status
+        where id = #{id}
+    </select>
+
     <insert id="addClueStatus" parameterType="com.scrm.service.entity.ClueStatus"
             keyProperty="id" useGeneratedKeys="true">
         insert into se_clue_status (clue_id, clue_editor, clue_notes)

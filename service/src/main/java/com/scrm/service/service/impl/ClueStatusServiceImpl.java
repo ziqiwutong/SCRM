@@ -22,6 +22,9 @@ public class ClueStatusServiceImpl implements ClueStatusService {
     }
 
     @Override
+    public ClueStatus queryClueEditStatus(Integer id) { return se_clue_statusDao.queryClueEditStatus(id); }
+
+    @Override
     @Transactional//开启事务
     public String addClueStatus(ClueStatus se_clue_status) throws Exception{
         int result = se_clue_statusDao.addClueStatus(se_clue_status);

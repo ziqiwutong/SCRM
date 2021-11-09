@@ -112,6 +112,15 @@ public class ClueController {
         return Result.success(final_list);
     }
 
+    @PostMapping(value = "/queryClueEditStatus")
+    public Result queryClueEditStatus(
+            @RequestParam(value = "id") Integer id
+    )
+    {
+        ClueStatus clueStatus = se_clue_statusService.queryClueEditStatus(id);
+        return Result.success(clueStatus);
+    }
+
     @PostMapping(value = "/addClueStatus")
     public Result addClueStatus(
             @RequestBody ClueStatus se_clue_status
