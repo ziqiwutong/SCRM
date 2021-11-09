@@ -31,7 +31,7 @@ public class LabelController {
     @GetMapping("/queryById")
     @ResponseBody
     public Resp queryById(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "id") Long id
     ) {
         Label label = labelService.queryById(id);
         if (null == label) {
@@ -76,7 +76,7 @@ public class LabelController {
     @GetMapping("/delete")
     @ResponseBody
     public Resp delete(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "id") Long id
     ) {
         String result = labelService.delete(id);
         if (result == null) {

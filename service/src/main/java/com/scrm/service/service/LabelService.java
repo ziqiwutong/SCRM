@@ -25,7 +25,7 @@ public interface LabelService {
      * @param id Label ID
      * @return Label
      */
-    Label queryById(Integer id);
+    Label queryById(Long id);
 
     /**
      * 插入Label
@@ -45,5 +45,5 @@ public interface LabelService {
      * 删除Label
      * @param id Label ID
      */
-    String delete(Integer id);
+    String delete(Long id);
 }
