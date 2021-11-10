@@ -1,0 +1,25 @@
+server:
+  port: 30001
+
+spring:
+  application:
+    name: manage
+  cloud:
+    nacos:
+      discovery: # 配置nacos注册中心服务发现
+        server-addr: http://localhost:8848  #配置的Nacos地址
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
+#        group: "test_group"
+  datasource:
+    url: jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+mybatis-plus:
+  mapper-locations: classpath:mybatis/mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true # 开启驼峰命名
+    # 配置日志  选择了默认的控制台输出  如果选择log4j或slf4j，需要导入包
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    call-setters-on-nulls: true

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 
@@ -161,6 +162,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                     ));
                 }
                 result.add(firmRelation);
+                if (result.size() >= 5000) break;
                 stack.pop();
                 continue;
             }
@@ -173,7 +175,10 @@ public class CustomerRestServiceImpl implements CustomerRestService {
             stack.push(link);
             current = next;
         }
-        return result;
+
+        result.sort(Comparator.comparingInt(ArrayList::size));
+
+        return new ArrayList<>(result.subList(0, Math.min(result.size(), 10)));
     }
 
     @Data
