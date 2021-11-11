@@ -41,7 +41,7 @@ public class CustomerController {
                     continue;
                 }
                 String column = (String)order;
-                wrapper.orderByAsc(column.replaceAll("[A-Z]", "_$0").toLowerCase());
+                wrapper.orderByAsc(camelToUnderscore(column));
                 continue;
             }
             if (key.equals("desc")) {
@@ -50,16 +50,31 @@ public class CustomerController {
                     continue;
                 }
                 String column = (String)order;
-                wrapper.orderByDesc(column.replaceAll("[A-Z]", "_$0").toLowerCase());
+                wrapper.orderByDesc(camelToUnderscore(column));
                 continue;
             }
-            wrapper.like(key.replaceAll("[A-Z]", "_$0").toLowerCase(), map.get(o));
+            if (key.startsWith("eq_")) {
+                wrapper.eq(camelToUnderscore(key.substring(3)), map.get(o));
+            } else if (key.startsWith("in_")) {
+                Object order = map.get(o);
+                if (!(order instanceof String)) {
+                    continue;
+                }
+                String column = (String)order;
+                wrapper.in(camelToUnderscore(key.substring(3)), (Object[]) column.split("▓"));
+            } else if (key.startsWith("like_")) {
+                wrapper.like(camelToUnderscore(key.substring(5)), map.get(o));
+            }
         }
         if (currentPage < 1) currentPage = 1;
         if (pageCount < 1) pageCount = 1;
         return PageResp.success().setData(
                 customerService.query(pageCount, currentPage, wrapper)
         ).setPage(pageCount, currentPage, customerService.queryCount(wrapper)).setMsg("成功");
+    }
+
+    private String camelToUnderscore(String camel) {
+        return camel.replaceAll("[A-Z]", "_$0").toLowerCase();
     }
 
     @GetMapping("/queryById")
