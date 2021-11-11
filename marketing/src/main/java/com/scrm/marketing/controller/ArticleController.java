@@ -8,9 +8,7 @@ import com.scrm.marketing.entity.Article;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.service.ArticleService;
 import com.scrm.marketing.util.resp.CodeEum;
-import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.util.resp.ResultCache;
 import org.apache.logging.log4j.util.Strings;
 import org.springframework.web.bind.annotation.*;
 
@@ -58,17 +56,17 @@ public class ArticleController {
         if (Strings.trimToNull(title) == null)
             return Result.PARAM_ERROR();
         // 调用service
-        List<Article> articles=articleService.queryByTitle(title);
+        List<Article> articles = articleService.queryByTitle(title);
         return Result.success(articles);
     }
 
     @PostMapping(path = "/insert")
     @SaCheckPermission("article-add")//拥有文章增加权限
     public Result insert(@RequestBody Article article) throws MyException {
-        // 1.1 检查参数：必须有标题,内容,文章类型
+        // 1.1 检查参数：必须有标题,内容,文章类型,文章背景图
         if (article == null)
             return Result.PARAM_MISS();
-        if (article.getArticleTitle() == null || article.getArticleContext() == null || article.getArticleType() == null)
+        if (article.getArticleTitle() == null || article.getArticleContext() == null || article.getArticleType() == null || article.getArticleImage() == null)
             return Result.PARAM_MISS();
 
         // 1.2 转载公众号文章相关属性检查

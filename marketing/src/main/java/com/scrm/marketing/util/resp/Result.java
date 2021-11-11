@@ -13,7 +13,6 @@ public class Result {
     public Result() {
     }
 
-
     public Result(int code, String msg, Object data) {
         this.code = code;
         this.msg = msg;
@@ -21,31 +20,26 @@ public class Result {
     }
 
     public static Result success() {
-        return init(CodeEum.SUCCESS, null);
+        return ResultCache.SUCCESS;
     }
 
     public static Result success(Object data) {
-        return init(CodeEum.CODE_SUCCESS, "ok", data);
+        return new Result(CodeEum.SUCCESS.getCode(), CodeEum.SUCCESS.getMsg(), data);
     }
 
     public static Result error(CodeEum codeEum) {
-        return init(codeEum.getCode(), codeEum.getMsg(), null);
+        return new Result(codeEum.getCode(), codeEum.getMsg(), null);
     }
 
-    public static Result error(CodeEum codeEum, Object data) {
-        return init(codeEum.getCode(), codeEum.getMsg(), data);
+    public static Result error(CodeEum codeEum, String msg) {
+        return new Result(codeEum.getCode(), codeEum.getMsg(), null).addMsg(msg);
     }
 
     public static Result init(int code, String msg, Object data) {
         return new Result(code, msg, data);
     }
 
-    public static Result init(CodeEum codeEum, Object data) {
-        return new Result(codeEum.getCode(), codeEum.getMsg(), data);
-    }
-
     /*getter和setter方法*/
-
     public int getCode() {
         return code;
     }
@@ -84,21 +78,50 @@ public class Result {
                 '}';
     }
 
-    /*从常量池拿实例方法*/
-    public static ResultCache SUCCESS() {
-        return ResultCache.SUCCESS_CACHE;
+    /* 获取常量的方法 */
+    public static Result PARAM_MISS() {
+        return ResultCache.PARAM_MISS;
     }
 
-    public static ResultCache PARAM_MISS() {
-        return ResultCache.PARAM_MISS_CACHE;
+    public static Result PARAM_ERROR() {
+        return ResultCache.PARAM_ERROR;
     }
 
-    public static ResultCache PARAM_ERROR() {
-        return ResultCache.PARAM_ERROR_CACHE;
+    public static Result FAIL() {
+        return ResultCache.FAIL;
     }
 
-    public static ResultCache FAIL() {
-        return ResultCache.FAIL_CACHE;
+
+    /* 缓存 */
+    private static class ResultCache extends Result {
+        public static final Result SUCCESS = new ResultCache(200, "ok", null);
+        public static final Result PARAM_MISS = new ResultCache(CodeEum.PARAM_MISS.getCode(), CodeEum.PARAM_MISS.getMsg(), null);
+        public static final Result PARAM_ERROR = new ResultCache(CodeEum.PARAM_ERROR.getCode(), CodeEum.PARAM_ERROR.getMsg(), null);
+        public static final Result FAIL = new ResultCache(CodeEum.FAIL.getCode(), CodeEum.FAIL.getMsg(), null);
+
+        public ResultCache(int code, String msg, Object data) {
+            super(code, msg, data);
+        }
+
+        @Override
+        public void setCode(int code) {
+            throw new RuntimeException("常量不支持修改");
+        }
+
+        @Override
+        public void setMsg(String msg) {
+            throw new RuntimeException("常量不支持修改");
+        }
+
+        @Override
+        public Result addMsg(String msg) {
+            throw new RuntimeException("常量不支持修改");
+        }
+
+        @Override
+        public void setData(Object data) {
+            throw new RuntimeException("常量不支持修改");
+        }
     }
 }
 

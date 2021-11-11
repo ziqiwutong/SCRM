@@ -71,7 +71,7 @@ public class ArticleServiceImpl implements ArticleService {
                 articleShareRecord.setArticleId(id);//文章id
                 articleShareRecord.setShareId(shareId);// 分享者id
                 articleShareRecord.setShowShareFlag(true);//默认展示分享标记
-                articleShareRecord.setReadRecord("");
+                articleShareRecord.setReadRecord(null);
                 if (1 != articleShareRecordMapper.insert(articleShareRecord))
                     throw new MyException(CodeEum.ERROR.getCode(), "分享记录添加失败");
 

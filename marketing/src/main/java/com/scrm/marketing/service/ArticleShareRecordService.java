@@ -1,6 +1,7 @@
 package com.scrm.marketing.service;
 
 import com.scrm.marketing.util.resp.Result;
+import com.scrm.marketing.wx.WxUserInfoResult;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 
@@ -14,4 +15,6 @@ public interface ArticleShareRecordService {
     Result queryShareRecord(Long articleId, @Nullable List<Long> shareIds);
 
     Result querySharePerson(@NonNull Long articleId);
+
+    void addReadRecord(WxUserInfoResult wxUserInfo);
 }

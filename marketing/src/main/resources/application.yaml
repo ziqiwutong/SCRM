@@ -63,3 +63,6 @@ my:
     secret: "scrm"
     timeout: 604800 # Token有效期，一周，单位：s
     loginIdKey: userID
+  wx:
+    appId: "wx45421563894fc3f3"
+    appSecret: "fb33e5dca7e5d506da38936fd99414a7"

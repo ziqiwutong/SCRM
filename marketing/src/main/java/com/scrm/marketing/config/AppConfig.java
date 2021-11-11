@@ -9,16 +9,16 @@ import org.springframework.web.client.RestTemplate;
  * @author fzk
  * @date 2021-11-09 16:58
  */
-@Configuration
-public class AppConfig {
-    /**
-     * 放个RestTemplate
-     *
-     * @return RestTemplate
-     */
-    @Bean
-    @LoadBalanced
-    public RestTemplate restTemplate() {
-        return new RestTemplate();
-    }
-}
+//@Configuration
+//public class AppConfig {
+//    /**
+//     * 放个RestTemplate
+//     *
+//     * @return RestTemplate
+//     */
+//    @Bean
+//    @LoadBalanced
+//    public RestTemplate restTemplate() {
+//        return new RestTemplate();
+//    }
+//}

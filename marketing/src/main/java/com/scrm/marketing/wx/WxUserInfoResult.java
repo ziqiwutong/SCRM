@@ -9,7 +9,7 @@ import java.util.List;
  * @date 2021-11-09 17:17
  */
 @Data
-public class UserInfoResult {
+public class WxUserInfoResult {
     /**
      * 正确时返回的JSON数据包如下
      */
@@ -20,7 +20,7 @@ public class UserInfoResult {
     private String province;
     private String city;
     private String country;
-    private String headimgUrl;
+    private String headimgurl;
     private List<String> privilege;
     private String unionid;
 
@@ -30,4 +30,14 @@ public class UserInfoResult {
      */
     private Integer errcode;
     private String errmsg;
+
+    /**
+     * 业务需求附加的属性
+     */
+    private Integer readTime;// 阅读时长,单位s
+    private String readDate;// 阅读日期
+    private String readerStatus;// 阅读者状态：不是客户则为null
+
+    private Long articleId;// 文章id
+    private Long shareId;// 分享者id
 }
