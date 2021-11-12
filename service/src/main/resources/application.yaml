@@ -11,9 +11,9 @@ spring:
         namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
 #        group: "test_group"
   datasource:
-    url: jdbc:mysql://106.15.235.113:3306/scrm?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3306/practicedb?useUnicode=true&characterEncoding=utf-8
     username: root
-    password: "!MySQL123456"
+    password: admin
     driver-class-name: com.mysql.cj.jdbc.Driver
 
 #mybatis:
