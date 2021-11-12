@@ -2,8 +2,10 @@ package com.scrm.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.dao.CustomerDao;
+import com.scrm.service.dao.CustomerRelationDao;
 import com.scrm.service.dao.LabelDao;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.CustomerRelation;
 import com.scrm.service.service.CustomerService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,6 +18,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Resource
     private CustomerDao customerDao;
+
+    @Resource
+    private CustomerRelationDao customerRelationDao;
 
     @Resource
     private LabelDao labelDao;
@@ -37,7 +42,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer queryById(Integer id) {
+    public Customer queryById(Long id) {
         return customerDao.selectById(id);
     }
 
@@ -73,7 +78,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String delete(Integer id) {
+    public String delete(Long id) {
         int result = customerDao.deleteById(id);
         if (result < 1) {
             return "删除失败";
@@ -82,11 +87,28 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public String deleteBatch(List<Integer> idList) {
+    public String deleteBatch(List<Long> idList) {
         int result = customerDao.deleteBatchIds(idList);
         if (result < 1) {
             return "删除失败";
         }
         return null;
+    }
+
+    @Override
+    public String insertRelation(CustomerRelation relation) {
+        int result = customerRelationDao.insert(relation);
+        if (result < 1) {
+            return "插入失败";
+        }
+        return null;
+    }
+
+    @Override
+    public List<CustomerRelation> queryRelationById(Long id) {
+        QueryWrapper<CustomerRelation> wrapper = new QueryWrapper<>();
+        wrapper.eq("customer_id", id);
+        wrapper.orderByAsc("create_time");
+        return customerRelationDao.selectList(wrapper);
     }
 }

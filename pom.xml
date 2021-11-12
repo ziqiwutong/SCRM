@@ -12,6 +12,7 @@
         <module>service</module>
         <module>gateway</module>
         <module>marketing</module>
+        <module>manage</module>
     </modules>
 
     <parent>

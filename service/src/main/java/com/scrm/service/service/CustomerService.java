@@ -2,6 +2,7 @@ package com.scrm.service.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.CustomerRelation;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface CustomerService {
      * 查询Customer
      * @param pageCount 每页数量
      * @param currentPage 当前页数
-     * @return Customer
+     * @return List<Customer>
      */
     List<Customer> query(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper);
 
@@ -27,7 +28,7 @@ public interface CustomerService {
      * @param id Customer ID
      * @return Customer
      */
-    Customer queryById(Integer id);
+    Customer queryById(Long id);
 
     /**
      * 插入Customer
@@ -54,11 +55,25 @@ public interface CustomerService {
      * 删除Customer
      * @param id Customer ID
      */
-    String delete(Integer id);
+    String delete(Long id);
 
     /**
      * 批量删除Customer
      * @param idList Customer ID List
      */
-    String deleteBatch(List<Integer> idList);
+    String deleteBatch(List<Long> idList);
+
+    /**
+     * 插入CustomerRelation
+     * @param relation CustomerRelation
+     * @return null表示插入成功
+     */
+    String insertRelation(CustomerRelation relation);
+
+    /**
+     * 查询CustomerRelation
+     * @param id Customer ID
+     * @return List<CustomerRelation>
+     */
+    List<CustomerRelation> queryRelationById(Long id);
 }

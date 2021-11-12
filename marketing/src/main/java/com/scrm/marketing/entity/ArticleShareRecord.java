@@ -21,12 +21,7 @@ public class ArticleShareRecord {
 
     private Long articleId;
     private Long shareId;
-    /**
-     * 分享者链接应该是不会用了
-     */
-    @Deprecated
-    private String shareLink;
-    @TableField
+
     private Boolean showShareFlag;
 
     /**

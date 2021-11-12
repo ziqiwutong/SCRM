@@ -3,8 +3,11 @@ package com.scrm.marketing.exception;
 import cn.dev33.satoken.exception.*;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
+import org.springframework.web.bind.MissingRequestValueException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -67,5 +70,19 @@ public class GlobalExceptionHandler {
 
         // 返回给前端
         return result;
+    }
+
+    /**
+     * 未提供参数异常
+     *
+     * @param me 未提供参数异常
+     * @return 返回Result
+     */
+    @ExceptionHandler({MissingRequestValueException.class})
+    public Result handle(MissingRequestValueException me) {
+        if (me instanceof MissingServletRequestParameterException) {
+            return Result.error(CodeEum.PARAM_MISS, me.getMessage());
+        }
+        return Result.error(CodeEum.PARAM_ERROR, me.getMessage());
     }
 }

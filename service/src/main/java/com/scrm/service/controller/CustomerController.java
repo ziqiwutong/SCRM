@@ -2,6 +2,7 @@ package com.scrm.service.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.CustomerRelation;
 import com.scrm.service.service.CustomerService;
 import com.scrm.service.util.resp.PageResp;
 import com.scrm.service.util.resp.Resp;
@@ -34,7 +35,36 @@ public class CustomerController {
             if (key.equals("pageCount") || key.equals("currentPage")) {
                 continue;
             }
-            wrapper.like(key.replaceAll("[A-Z]", "_$0").toLowerCase(), map.get(o));
+            if (key.equals("asc")) {
+                Object order = map.get(o);
+                if (!(order instanceof String)) {
+                    continue;
+                }
+                String column = (String)order;
+                wrapper.orderByAsc(camelToUnderscore(column));
+                continue;
+            }
+            if (key.equals("desc")) {
+                Object order = map.get(o);
+                if (!(order instanceof String)) {
+                    continue;
+                }
+                String column = (String)order;
+                wrapper.orderByDesc(camelToUnderscore(column));
+                continue;
+            }
+            if (key.startsWith("eq_")) {
+                wrapper.eq(camelToUnderscore(key.substring(3)), map.get(o));
+            } else if (key.startsWith("in_")) {
+                Object order = map.get(o);
+                if (!(order instanceof String)) {
+                    continue;
+                }
+                String column = (String)order;
+                wrapper.in(camelToUnderscore(key.substring(3)), (Object[]) column.split("▓"));
+            } else if (key.startsWith("like_")) {
+                wrapper.like(camelToUnderscore(key.substring(5)), map.get(o));
+            }
         }
         if (currentPage < 1) currentPage = 1;
         if (pageCount < 1) pageCount = 1;
@@ -43,10 +73,14 @@ public class CustomerController {
         ).setPage(pageCount, currentPage, customerService.queryCount(wrapper)).setMsg("成功");
     }
 
+    private String camelToUnderscore(String camel) {
+        return camel.replaceAll("[A-Z]", "_$0").toLowerCase();
+    }
+
     @GetMapping("/queryById")
     @ResponseBody
     public Resp queryById(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "id") Long id
     ) {
         Customer customer = customerService.queryById(id);
         if (null == customer) {
@@ -104,7 +138,7 @@ public class CustomerController {
     @GetMapping("/delete")
     @ResponseBody
     public Resp delete(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "id") Long id
     ) {
         String result = customerService.delete(id);
         if (result == null) {
@@ -117,13 +151,42 @@ public class CustomerController {
     @PostMapping("/deleteBatch")
     @ResponseBody
     public Resp deleteBatch(
-            @RequestBody List<Integer> ids
+            @RequestBody List<Long> ids
     ) {
         String result = customerService.deleteBatch(ids);
         if (result == null) {
             return Resp.success().setData(ids).setMsg("删除成功");
         } else {
             return Resp.error().setMsg(result);
+        }
+    }
+
+    @PostMapping("/relation/insert")
+    @ResponseBody
+    public Resp insertRelation(
+            @RequestBody CustomerRelation relation
+    ) {
+        if (relation == null) {
+            return Resp.error().setMsg("不能为空");
+        }
+        String result = customerService.insertRelation(relation);
+        if (result == null) {
+            return Resp.success().setData(relation).setMsg("插入成功");
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
+    @GetMapping("/relation/query")
+    @ResponseBody
+    public Resp queryRelationById(
+            @RequestParam(value = "id") Long id
+    ) {
+        List<CustomerRelation> relation = customerService.queryRelationById(id);
+        if (relation != null) {
+            return Resp.success().setData(relation);
+        } else {
+            return Resp.error().setMsg("获取失败");
         }
     }
 }

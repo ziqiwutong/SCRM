@@ -29,7 +29,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public Label queryById(Integer id) {
+    public Label queryById(Long id) {
         return labelDao.selectById(id);
     }
 
@@ -52,7 +52,7 @@ public class LabelServiceImpl implements LabelService {
     }
 
     @Override
-    public String delete(Integer id) {
+    public String delete(Long id) {
         int result = labelDao.deleteById(id);
         if (result < 1) {
             return "删除失败";

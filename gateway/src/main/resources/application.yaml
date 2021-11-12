@@ -1,6 +1,6 @@
 #微服务建议一定要写服务端口号和微服务名称
 server:
-  port: 30001
+  port: 30000
 
 spring:
   application:
@@ -11,12 +11,19 @@ spring:
       discovery: # 配置nacos注册中心服务发现
         server-addr: http://101.34.5.36:8848  #配置的Nacos地址
         namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
-        group: "test_group"
+#        group: "test_group"
     gateway:
       discovery:
         locator:
           enabled: true  #开启从注册中心动态创建路由的功能，利用微服务名称进行路由(默认false)
       routes:
+        - id: manage # 路由的id,没有规定规则但要求唯一,建议配合服务名
+          #匹配后提供服务的路由地址
+          uri: lb://manage
+          predicates:
+            - Path=/cms/** # 断言，路径相匹配的进行路由
+          filters:
+            - StripPrefix=1
         - id: service # 路由的id,没有规定规则但要求唯一,建议配合服务名
           #匹配后提供服务的路由地址
           uri: lb://service
@@ -31,12 +38,12 @@ spring:
             - Path=/mk/** # 断言，路径相匹配的进行路由
 #          filters:
 #            - StripPrefix=1
-        - id: picture # 路由的id,没有规定规则但要求唯一,建议配合服务名
+        - id: file # 路由的id,没有规定规则但要求唯一,建议配合服务名
           #匹配后提供服务的路由地址
           # 这里踩了一个大坑，微服务名字一定不能和断言的路劲相同！！！
-          uri: lb://picture
+          uri: lb://manage
           predicates:
-            - Path=/pic/** # 断言，路径相匹配的进行路由
+            - Path=/file/** # 断言，路径相匹配的进行路由
 #          filters:
 #            - StripPrefix=1
       loadbalancer:
