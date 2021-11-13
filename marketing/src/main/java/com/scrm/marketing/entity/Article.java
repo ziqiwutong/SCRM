@@ -20,11 +20,13 @@ public class Article {
     /**
      * 常量
      */
-    public static int ARTICLE_TYPE_ORIGIN = 0;// 原创
-    public static int ARTICLE_TYPE_REPRINT = 1;// 转载
-    public static int EXAMINE_FLAG_WAIT = 0;//待审核
-    public static int EXAMINE_FLAG_ACCESS = 1;//审核通过
-    public static int EXAMINE_FLAG_NOT_ACCESS = 2;//审核不通过
+    public static final int ARTICLE_TYPE_ORIGIN = 0;// 原创
+    public static final int ARTICLE_TYPE_REPRINT = 1;// 转载
+    public static final int EXAMINE_FLAG_WAIT = 0;//待审核
+    public static final int EXAMINE_FLAG_ACCESS = 1;//审核通过
+    public static final int EXAMINE_FLAG_NOT_ACCESS = 2;//审核不通过
+    public static final int MATERIAL_TYPE_PERSONAL = 0;// 个人素材
+    public static final int MATERIAL_TYPE_ENTERPRISE = 1;// 企业素材
 
 
     @TableId(type = IdType.AUTO)
@@ -62,6 +64,8 @@ public class Article {
     private String articleAccountName;
     private String articlePower;// 原公众号地址
     private Integer articleType;// 文章类型，0原创，1转载
+
+    private Integer materialType; // 0-个人素材; 1-企业素材
     /**
      * 表修改记录属性
      */

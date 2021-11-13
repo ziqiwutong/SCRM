@@ -1,9 +1,7 @@
 package com.scrm.marketing.controller;
 
-import cn.dev33.satoken.annotation.SaCheckLogin;
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.stp.StpUtil;
-import com.alibaba.nacos.common.utils.StringUtils;
 import com.scrm.marketing.entity.Article;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.service.ArticleService;
@@ -26,7 +24,7 @@ public class ArticleController {
     private ArticleService articleService;
 
     @GetMapping(path = "/detail")
-    @SaCheckLogin
+    //@SaCheckLogin
     public Result getArticleDetail(
             @RequestParam("id") Long id,
             @RequestParam(value = "shareId", required = false) Long shareId) throws MyException {
@@ -40,13 +38,20 @@ public class ArticleController {
     public Result queryPage(
             @RequestParam("pageNum") int pageNum,
             @RequestParam("pageSize") int pageSize,
-            @RequestParam("examineFlag") Integer examineFlag
+            @RequestParam(name = "examineFlag", required = false) Integer examineFlag,
+            @RequestParam(name = "materialType", required = false) Integer materialType
     ) {
-        // 参数检查
+        // 参数检查：materialType必须为0或1，examineFlag必须为0,1,2
         if (pageNum < 1 || pageSize < 1)
             return Result.PARAM_ERROR();
+        if (materialType != null)
+            if (materialType != Article.MATERIAL_TYPE_PERSONAL && materialType != Article.MATERIAL_TYPE_ENTERPRISE)
+                return Result.PARAM_ERROR();
+        if (examineFlag != null)
+            if (examineFlag != Article.EXAMINE_FLAG_WAIT && examineFlag != Article.EXAMINE_FLAG_ACCESS && examineFlag != Article.EXAMINE_FLAG_NOT_ACCESS)
+                return Result.PARAM_ERROR();
         // 调用service
-        return articleService.queryPage(pageNum, pageSize, examineFlag);
+        return articleService.queryPage(pageNum, pageSize, examineFlag, materialType);
     }
 
     @GetMapping(path = "/queryByTitle")
@@ -74,10 +79,16 @@ public class ArticleController {
             if (article.getArticleOriginAuthor() == null || article.getArticleAccountName() == null || article.getArticlePower() == null)
                 return Result.PARAM_MISS();
         }
+        // 1.3 参数合法性检查：materialType
+        if (article.getMaterialType() != null) {
+            int materialType = article.getMaterialType();
+            if (materialType != Article.MATERIAL_TYPE_PERSONAL && materialType != Article.MATERIAL_TYPE_ENTERPRISE)
+                return Result.PARAM_ERROR();
+        }
 
-        // 获取loginId
+        // 2.获取loginId
         Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
-        // 调用service
+        // 3.调用service
         articleService.insert(article, loginId);
         return Result.success();
     }
@@ -87,7 +98,19 @@ public class ArticleController {
     public Result update(@RequestBody Article article) throws MyException {
         // 1、检查参数
         if (article == null || article.getId() == null)
-            return Result.error(CodeEum.PARAM_MISS);
+            return Result.PARAM_MISS();
+        // 1.1 参数合法性检查：materialType,examineFlag
+        if (article.getMaterialType() != null) {
+            int materialType = article.getMaterialType();
+            if (materialType != Article.MATERIAL_TYPE_PERSONAL && materialType != Article.MATERIAL_TYPE_ENTERPRISE)
+                return Result.PARAM_ERROR();
+        }
+        if (article.getExamineFlag() != null) {
+            int examineFlag = article.getExamineFlag();
+            if (examineFlag != Article.EXAMINE_FLAG_WAIT && examineFlag != Article.EXAMINE_FLAG_ACCESS && examineFlag != Article.EXAMINE_FLAG_NOT_ACCESS)
+                return Result.PARAM_ERROR();
+        }
+
         // 2、获取loginId
         Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
 
@@ -102,7 +125,7 @@ public class ArticleController {
     public Result delete(@RequestParam("id") Long id) throws MyException {
         // 1、检查参数
         if (id == null)
-            return Result.error(CodeEum.PARAM_MISS);
+            return Result.PARAM_MISS();
 
         // 2、调用service
         articleService.delete(id);
@@ -116,9 +139,11 @@ public class ArticleController {
             @RequestParam("examineFlag") Integer examineFlag,
             @RequestParam("examineNotes") String examineNotes
     ) throws MyException {
-        // 1.参数检查
+        // 1.参数检查：examineFlag必须合法
         if (id == null || examineFlag == null)
             return Result.error(CodeEum.PARAM_MISS);
+        if (examineFlag != Article.EXAMINE_FLAG_WAIT && examineFlag != Article.EXAMINE_FLAG_ACCESS && examineFlag != Article.EXAMINE_FLAG_NOT_ACCESS)
+            return Result.PARAM_ERROR();
 
         // 2、获取loginId
         Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
@@ -150,11 +175,11 @@ public class ArticleController {
         // 1.参数检查
         if (articleId == null) {
             if (pageNum == null || pageSize == null)
-                return Result.error(CodeEum.PARAM_MISS);
+                return Result.PARAM_MISS();
             else if (pageNum < 1 || pageSize < 1)
-                return Result.error(CodeEum.PARAM_ERROR);
+                return Result.PARAM_ERROR();
         } else if (sevenFlag == null)
-            return Result.error(CodeEum.PARAM_MISS);
+            return Result.PARAM_ERROR();
         // 2.调用service
         return articleService.queryArticleRead(articleId, sevenFlag, pageNum, pageSize);
     }

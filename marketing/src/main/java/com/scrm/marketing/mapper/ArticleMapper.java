@@ -27,11 +27,11 @@ public interface ArticleMapper extends BaseMapper<Article> {
      */
     @SelectProvider(ArticleSqlProvider.class)
     // 默认实现中，会将映射器方法的调用解析到实现的同名方法上
-    List<Article> queryPage(int offset, int pageSize, Integer examineFlag);
+    List<Article> queryPage(int offset, int pageSize, Integer examineFlag, Integer materialType);
 
     @SelectProvider(ArticleSqlProvider.class)
         // 默认实现中，会将映射器方法的调用解析到实现的同名方法上
-    int queryCount(int offset, int pageSize, Integer examineFlag);
+    int queryCount(int offset, int pageSize, Integer examineFlag, Integer materialType);
 
     @Update("UPDATE mk_article SET examine_id=#{loginId},examine_name=#{examineName}, " +
             " examine_flag=#{examineFlag},examine_notes=#{examineNotes} " +
@@ -42,6 +42,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "product_id,article_view_times,article_read_time_sum," +
             "examine_flag,examine_id,examine_name,examine_notes," +
             "article_origin_author,article_account_name,article_power,article_type," +
+            "material_type," +
             "create_time,update_time" +
             "   FROM mk_article" +
             "   WHERE examine_flag=#{examineFlag}" +

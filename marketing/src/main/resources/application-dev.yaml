@@ -2,10 +2,10 @@ spring:
   cloud:
     nacos:
       discovery: # 配置nacos注册中心服务发现
-        server-addr: http://101.34.5.36:8848  #配置的Nacos地址
+        server-addr: "http://101.34.5.36:8848"  #配置的Nacos地址
         namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
         # 以下3个配置，如果上线服务器测试，则开启第一个group即可；
         # 如果是要进行内网穿透，让服务器的gateway服务指向本地的，则3个都开启
         group: "test_group"
-        ip: haxavi.natappfree.cc # 内网穿透给出的域名地址，不能写协议，而且每次都会变
+        ip: "7qemy5.natappfree.cc"  # 内网穿透给出的域名地址，不能写协议，而且每次都会变
         port: 80

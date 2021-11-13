@@ -3,7 +3,9 @@ package com.scrm.marketing.util;
 
 import com.scrm.marketing.exception.MyException;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -11,7 +13,6 @@ import java.util.Date;
  * @date 2021-07-15 21:34
  */
 public class MyDateTimeUtil {
-
     public static String getNowDate() {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
@@ -19,7 +20,7 @@ public class MyDateTimeUtil {
     }
 
     public static String getNowTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         return simpleDateFormat.format(new Date());
     }
 
@@ -54,39 +55,16 @@ public class MyDateTimeUtil {
      * @return 只有是规范化的字符串且是每月最后一天才返回true
      */
     public static boolean isLastDay(String date) {
-        if (!isDateFormat(date))
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            format.setLenient(false);
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(format.parse(date));
+            calendar.add(Calendar.DATE, 1);
+            if (calendar.get(Calendar.DATE) != 1)
+                return false;
+        } catch (ParseException e) {
             return false;
-
-        String[] split = date.split("-");
-        int year = Integer.parseInt(split[0]);
-        int month = Integer.parseInt(split[1]);
-        int day = Integer.parseInt(split[2]);
-
-        switch (month) {
-            // 31天的那种
-            case 1:
-            case 3:
-            case 5:
-            case 7:
-            case 8:
-            case 10:
-            case 12:
-                if (day != 31)
-                    return false;
-                break;
-            case 2:
-                if (year % 4 == 0 && day != 29)
-                    return false;
-                else if (year % 4 != 0 && day != 28)
-                    return false;
-                break;
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-                if (day != 30)
-                    return false;
-                break;
         }
         return true;
     }
@@ -98,61 +76,12 @@ public class MyDateTimeUtil {
      * @return 传入字符串规范化返回true
      */
     public static boolean isDateFormat(String date) {
-        if (date == null || "".equals(date))
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+        try {
+            format.setLenient(false);
+            format.parse(date);
+        } catch (ParseException e) {
             return false;
-
-        // 1.判断是否是纯数字+'-'
-        char[] chars = date.toCharArray();
-        for (char ch : chars) {
-            if ((ch != '-') && (ch < '0' || ch > '9'))
-                return false;
-        }
-        // 2.根据'-'分割
-        if (!date.contains("-"))
-            return false;
-
-        String[] split = date.split("-");
-        if (split.length != 3)
-            return false;
-
-        if (split[0].length() != 4 || split[1].length() != 2 || split[2].length() != 2)
-            return false;
-
-        // 3.分别判断年月日
-        int year = Integer.parseInt(split[0]);
-        if (year < 1970 || year > 2070)
-            return false;
-        if (split[1].compareTo("01") < 0 || split[1].compareTo("12") > 0)
-            return false;
-        if (split[2].compareTo("01") < 0 || split[2].compareTo("31") > 0)
-            return false;
-
-        int month = Integer.parseInt(split[1]);
-        int day = Integer.parseInt(split[2]);
-
-        switch (month) {
-            // 31天的那种
-//            case 1:
-//            case 3:
-//            case 5:
-//            case 7:
-//            case 8:
-//            case 10:
-//            case 12:
-//                return true;
-            case 2:
-                if (year % 4 == 0 && day > 29)
-                    return false;
-                else if (year % 4 != 0 && day > 28)
-                    return false;
-                break;
-            case 4:
-            case 6:
-            case 9:
-            case 11:
-                if (day > 30)
-                    return false;
-                break;
         }
         return true;
     }

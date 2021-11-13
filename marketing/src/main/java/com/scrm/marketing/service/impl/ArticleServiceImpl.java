@@ -6,7 +6,6 @@ import com.scrm.marketing.entity.ArticleCustomerRead;
 import com.scrm.marketing.entity.ArticleShareRecord;
 import com.scrm.marketing.entity.User;
 import com.scrm.marketing.exception.MyException;
-import com.scrm.marketing.feign.UserClient;
 import com.scrm.marketing.mapper.ArtCusReadMapper;
 import com.scrm.marketing.mapper.ArticleMapper;
 import com.scrm.marketing.mapper.ArticleShareRecordMapper;
@@ -35,8 +34,8 @@ import java.util.Map;
 public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleMapper articleMapper;
-    @Resource
-    private UserClient userClient;
+    //    @Resource
+//    private UserClient userClient;
     @Resource
     private UserMapper userMapper;
     @Resource
@@ -46,7 +45,7 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional//开启事务
-    public Result getArticleDetail(Long id, @Nullable Long shareId) throws MyException {
+    public Result getArticleDetail(Long id, Long shareId) throws MyException {
         Article article = articleMapper.selectById(id);
         if (article == null)
             return Result.error(CodeEum.NOT_EXIST);
@@ -64,13 +63,13 @@ public class ArticleServiceImpl implements ArticleService {
             List<ArticleShareRecord> articleShareRecords =
                     articleShareRecordMapper.selectByAIdAndSid(id, shareId);
 
-            ArticleShareRecord articleShareRecord = null;
+            ArticleShareRecord articleShareRecord;
             // 2.3 没有记录，则新增
             if (articleShareRecords.isEmpty()) {
                 articleShareRecord = new ArticleShareRecord();
                 articleShareRecord.setArticleId(id);//文章id
                 articleShareRecord.setShareId(shareId);// 分享者id
-                articleShareRecord.setShowShareFlag(true);//默认展示分享标记
+                //articleShareRecord.setShowShareFlag(true);//默认展示分享标记
                 articleShareRecord.setReadRecord(null);
                 if (1 != articleShareRecordMapper.insert(articleShareRecord))
                     throw new MyException(CodeEum.ERROR.getCode(), "分享记录添加失败");
@@ -78,26 +77,26 @@ public class ArticleServiceImpl implements ArticleService {
             }
             // 2.4 有1条记录
             else if (articleShareRecords.size() == 1) {
-                articleShareRecord = articleShareRecords.get(0);
+                //articleShareRecord = articleShareRecords.get(0);
             }
             // 2.5 多条记录，抛异常
             else
                 throw new MyException(CodeEum.ERROR.getCode(), "分享记录表存在多条相关记录");
 
-            Map<String, Object> map = new HashMap<>();
+            Map<String, Object> map = new HashMap<>(2);
             map.put("article", article);
             map.put("user", shareUser);
-            map.put("showShareFlag", articleShareRecord.getShowShareFlag());
+            //map.put("showShareFlag", articleShareRecord.getShowShareFlag());
             return Result.success(map);
         }
 
     }
 
     @Override
-    public PageResult queryPage(int pageNum, int pageSize, Integer examineFlag) {
+    public PageResult queryPage(int pageNum, int pageSize, Integer examineFlag, Integer materialType) {
         int index = (pageNum - 1) * pageSize;
-        int total = articleMapper.queryCount(index, pageSize, examineFlag);
-        List<Article> articles = articleMapper.queryPage(index, pageSize, examineFlag);
+        int total = articleMapper.queryCount(index, pageSize, examineFlag, materialType);
+        List<Article> articles = articleMapper.queryPage(index, pageSize, examineFlag, materialType);
         return PageResult.success(articles, total, pageNum);
     }
 
@@ -124,11 +123,19 @@ public class ArticleServiceImpl implements ArticleService {
         article.setArticleViewTimes(0);
         article.setArticleReadTimeSum(0L);
 
-        /**
+        /*
          * 目前暂时先全部审核通过
          */
         article.setExamineFlag(Article.EXAMINE_FLAG_ACCESS);//审核标记：待审核
 
+        if (article.getMaterialType() == null)
+            article.setMaterialType(Article.MATERIAL_TYPE_PERSONAL);//默认是个人素材
+
+        /*
+         * 对于createTime和updateTime设为null
+         */
+        article.setCreateTime(null);
+        article.setUpdateTime(null);
 
         // 3、插入
         if (articleMapper.insert(article) != 1)
@@ -137,9 +144,15 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void update(@NonNull Article article, Long loginId) throws MyException {
+    public void update(Article article, Long loginId) throws MyException {
+        MyAssert.notNull("article can not be null and loginId", article, loginId);
+        /*
+         * 对于createTime和updateTime设为null
+         */
+        article.setCreateTime(null);
+        article.setUpdateTime(null);
         if (articleMapper.updateById(article) != 1)
-            throw new MyException(CodeEum.ERROR.getCode(), "文章不存在");
+            throw new MyException(CodeEum.NOT_EXIST.getCode(), "文章不存在");
     }
 
     @Override
@@ -187,14 +200,14 @@ public class ArticleServiceImpl implements ArticleService {
                     articleCustomerReadMapper.queryArticleRead(articleId, startDate);
             return Result.success(articleCustomerReads);
         }
-        // 情况1：无文章id，则分页查询文章总阅读时长，从 mk_article 表查
+        // 情况1：无文章id，则分页查询文章总阅读时长，从 mk_article 表查：审核通过，无论哪种materialType
         else {
             // 计算偏移量
             int offset = (pageNum - 1) * pageSize;
             // 从mk_article表查询文章总阅读时长
-            List<Article> articles = articleMapper.queryPage(offset, pageSize, 1);
+            List<Article> articles = articleMapper.queryPage(offset, pageSize, Article.EXAMINE_FLAG_ACCESS, null);
             // 查询文章总数
-            int total = articleMapper.queryCount(offset, pageSize, 1);
+            int total = articleMapper.queryCount(offset, pageSize, Article.EXAMINE_FLAG_ACCESS, null);
             return PageResult.success(articles, total, pageNum);
         }
     }

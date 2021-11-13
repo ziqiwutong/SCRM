@@ -22,6 +22,7 @@ public class ArticleShareRecord {
     private Long articleId;
     private Long shareId;
 
+    @Deprecated(since = "2021-11-13", forRemoval = true)
     private Boolean showShareFlag;
 
     /**
