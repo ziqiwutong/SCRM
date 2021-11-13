@@ -4,6 +4,7 @@ import com.scrm.service.dao.CommunicationDao;
 import com.scrm.service.dao.CommunicationLogDao;
 import com.scrm.service.entity.Communication;
 import com.scrm.service.entity.CommunicationLog;
+import com.scrm.service.entity.UserAndCommunication;
 import com.scrm.service.service.CommunicationLogService;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +15,11 @@ import java.util.List;
 public class CommunicationLogServiceImpl implements CommunicationLogService {
     @Resource
     private CommunicationLogDao communicationLogDao;
+
+    @Override
+    public UserAndCommunication queryCommunicationUser(Integer id) {
+        return communicationLogDao.queryCommunicationUser(id);
+    }
 
     @Override
     public Communication queryCommunication(Integer id) {
@@ -53,7 +59,7 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public String deleteCommunicationLog(Long id) throws Exception{
+    public String deleteCommunicationLog(Integer id) throws Exception{
         int result = communicationLogDao.deleteCommunicationLog(id);
         if (result < 1) {
             throw new Exception("删除失败");
@@ -62,7 +68,7 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer MinusCommunication(Long communicationId, Integer communicationWay) throws Exception {
+    public Integer MinusCommunication(Integer communicationId, Integer communicationWay) throws Exception {
         int result = communicationLogDao.MinusCommunication(communicationId, communicationWay);
         if (result < 1) {
             throw new Exception("更新沟通次数失败");

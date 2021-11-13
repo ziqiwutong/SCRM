@@ -57,4 +57,13 @@ public class CommunicationServiceImpl implements CommunicationService {
         }
         return null;
     }
+
+    @Override
+    public Integer deleteCommunicationLog(Integer id) throws Exception {
+        int result = communicationDao.deleteCommunicationLog(id);
+        if (result < 1) {
+            throw new Exception("删除失败");
+        }
+        return null;
+    }
 }

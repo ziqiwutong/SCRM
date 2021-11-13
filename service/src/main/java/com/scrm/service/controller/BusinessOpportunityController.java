@@ -40,7 +40,7 @@ public class BusinessOpportunityController {
 
     @PostMapping(value = "/addBizOpp")
     public Result addBizOpp(
-            BusinessOpportunity businessOpportunity
+            @RequestBody BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
            return Result.error(CodeEum.PARAM_MISS);
@@ -55,7 +55,7 @@ public class BusinessOpportunityController {
 
     @PostMapping(value = "/editBizOpp")
     public Result editBizOpp(
-            BusinessOpportunity businessOpportunity
+            @RequestBody BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
             return Result.error(CodeEum.PARAM_MISS);

@@ -49,7 +49,7 @@ public class CommunicationController {
 
     @PostMapping(value="/addCommunication")
     public Result addCommunication(
-            Communication communication
+            @RequestBody Communication communication
     )
     {
         if (communication == null) {
@@ -65,7 +65,7 @@ public class CommunicationController {
 
     @PostMapping(value="/editCommunication")
     public Result editCommunication(
-            Communication communication
+            @RequestBody Communication communication
     )
     {
         if (communication == null) {
@@ -86,6 +86,7 @@ public class CommunicationController {
     {
         try{
             communicationService.deleteCommunication(id);
+            communicationService.deleteCommunicationLog(id);
             return Result.success();
         }catch(Exception e) {
                 return Result.error(CodeEum.FAIL);
@@ -97,9 +98,11 @@ public class CommunicationController {
             @RequestParam(value = "id") Integer id
     )
     {
+        UserAndCommunication userAndCommunication = communicationLogService.queryCommunicationUser(id);
         Communication communication = communicationLogService.queryCommunication(id);
         List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(id);
         List final_list = new ArrayList();
+        final_list.add(userAndCommunication);
         final_list.add(communication);
         for (CommunicationLog communicationLog:communicationLogs
              ) {
@@ -110,7 +113,7 @@ public class CommunicationController {
 
     @PostMapping(value="/addCommunicationLog")
     public Result addCommunicationLog(
-            CommunicationLog communicationLog
+            @RequestBody CommunicationLog communicationLog
     )
     {
         if (communicationLog == null) {
@@ -127,7 +130,7 @@ public class CommunicationController {
 
     @PostMapping(value="/editCommunicationLog")
     public Result editCommunicationLog(
-            CommunicationLog communicationLog
+            @RequestBody CommunicationLog communicationLog
     )
     {
         if (communicationLog == null) {
@@ -144,12 +147,14 @@ public class CommunicationController {
     @PostMapping(value="/deleteCommunicationLog")
     @ResponseBody
     public Result deleteCommunicationLog(
-            CommunicationLog communicationLog
+            @RequestParam(value = "id") Integer id,
+            @RequestParam(value = "communicationId") Integer communicationId,
+            @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
         try{
-            communicationLogService.deleteCommunicationLog(communicationLog.getId());
-            communicationLogService.MinusCommunication(communicationLog.getCommunicationId(),communicationLog.getCommunicationWay());
+            communicationLogService.deleteCommunicationLog(id);
+            communicationLogService.MinusCommunication(communicationId,communicationWay);
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);

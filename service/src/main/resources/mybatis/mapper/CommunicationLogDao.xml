@@ -3,6 +3,15 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.scrm.service.dao.CommunicationLogDao">
+    <select id="queryCommunicationUser" resultType="com.scrm.service.entity.UserAndCommunication">
+        select se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_label.label_name, se_customer.enter_pool_date
+        from se_communication
+        left join se_customer on se_communication.customer_id = se_customer.id
+        left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
+        left join se_label on se_customer_label_relation.label_id = se_label.id
+        where se_communication.id = #{id}
+    </select>
+
     <select id="queryCommunication" resultType="com.scrm.service.entity.Communication">
         select *
         from se_communication where se_communication.id = #{id}
@@ -16,11 +25,12 @@
 
     <insert id="addCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_communication_log (id, communication_id, communication_way, communication_content, communication_time)
-        values(#{id}, #{communicationId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
+        insert into se_communication_log (communication_id, communication_way, communication_content, communication_time)
+        values(#{communicationId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
     </insert>
 
     <update id="PlusCommunication" parameterType="com.scrm.service.entity.Communication">
+        <bind name="id" value="communicationId"/>
         <choose>
             <when test="communicationWay != null and communicationWay == 0">
                 update se_communication set visit_times = visit_times + 1
@@ -51,6 +61,7 @@
     </delete>
 
     <update id="MinusCommunication" parameterType="com.scrm.service.entity.Communication">
+        <bind name="id" value="communicationId"/>
         <choose>
             <when test="communicationWay != null and communicationWay == 0">
                 update se_communication set visit_times = visit_times - 1

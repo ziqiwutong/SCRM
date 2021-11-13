@@ -11,7 +11,7 @@ public class UserAndCommunication {
     private Integer customerType;
     private String labelName;
     private String telephone;
-    private String customerCompany;
+    private String belongCompany;
     private Date enterPoolDate;
 
     public Long getId() {
@@ -54,12 +54,12 @@ public class UserAndCommunication {
         this.telephone = telephone;
     }
 
-    public String getCustomerCompany() {
-        return customerCompany;
+    public String getBelongCompany() {
+        return belongCompany;
     }
 
-    public void setCustomerCompany(String customerCompany) {
-        this.customerCompany = customerCompany;
+    public void setBelongCompany(String belongCompany) {
+        this.belongCompany = belongCompany;
     }
 
     public Date getEnterPoolDate() {
