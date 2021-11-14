@@ -27,7 +27,7 @@ public class ProStatisticsServiceImpl implements ProStatisticsService {
 
     @Override
     public Result queryProPurchase(@Nullable Long typeId, @Nullable Integer pageNum, @Nullable Integer pageSize) {
-        List<Product> products = null;
+        List<Product> products;
         // 1、如果typeId不为空
         if (typeId != null) {
             products = productMapper.queryByTypeId(typeId);
