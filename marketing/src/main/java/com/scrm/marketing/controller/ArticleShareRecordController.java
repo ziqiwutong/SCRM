@@ -1,6 +1,9 @@
 package com.scrm.marketing.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scrm.marketing.service.ArticleShareRecordService;
+import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
 import com.scrm.marketing.wx.WxUserInfoResult;
@@ -22,7 +25,7 @@ public class ArticleShareRecordController {
     @GetMapping(path = "/shareRecord")
     public Result queryShareRecord(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(value = "shareId", required = false) List<Long> shareIds
+            @RequestParam(name="shareId",required = false)List<Long> shareIds
     ) {
         // 参数检查
         if (articleId == null || articleId < 1L)
@@ -51,7 +54,7 @@ public class ArticleShareRecordController {
      * @return result
      */
     @PostMapping(path = "/addReadRecord")
-    public Result addReadRecord(@RequestBody WxUserInfoResult wxUserInfo) {
+    public Result addReadRecord(@RequestBody WxUserInfoResult wxUserInfo) throws JsonProcessingException {
         // 1.参数检查：微信openid,readTime,articleId,shareId
         if (wxUserInfo == null || wxUserInfo.getOpenid() == null || wxUserInfo.getReadTime() == null)
             return Result.PARAM_MISS();

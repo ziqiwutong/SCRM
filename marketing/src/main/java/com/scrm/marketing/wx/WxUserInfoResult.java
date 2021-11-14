@@ -2,7 +2,6 @@ package com.scrm.marketing.wx;
 
 import lombok.Data;
 
-import java.util.List;
 
 /**
  * @author fzk
@@ -21,7 +20,7 @@ public class WxUserInfoResult {
     private String city;
     private String country;
     private String headimgurl;
-    private List<String> privilege;
+    //private List<String> privilege; // 这个和项目影响不大
     private String unionid;
 
 

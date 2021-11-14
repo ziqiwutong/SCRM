@@ -22,13 +22,13 @@ public class ArticleShareRecord {
     private Long articleId;
     private Long shareId;
 
-    @Deprecated(since = "2021-11-13", forRemoval = true)
-    private Boolean showShareFlag;
-
     /**
      * 阅读记录，存JSON串
      */
     private String readRecord;
+    private String openids;// 不同的微信openid集合JSON串
+    private Integer readTimes;// 阅读次数
+    private Integer readPeople;// 阅读人数
 
     /**
      * 表修改记录属性

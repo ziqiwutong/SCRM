@@ -1,10 +1,15 @@
 package com.scrm.marketing;
 
 import cn.hutool.core.date.DateUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.scrm.marketing.util.MyJsonUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -29,7 +34,9 @@ public class TestDemo {
     }
 
     @Test
-    void test3() {
-        RestTemplate restTemplate = new RestTemplate();
+    void test3() throws JsonProcessingException {
+        String content="[1,2,,3,'sfe']";
+        List<Integer> integers = MyJsonUtil.toBeanArray(content, Integer.class);
+        System.out.println(integers);
     }
 }

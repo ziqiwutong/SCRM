@@ -15,18 +15,36 @@ public class ArticleShareRecordSqlProvider implements ProviderMethodResolver {
         return new SQL() {{
             SELECT("*");
             FROM("mk_article_share_record");
-            WHERE("article_id="+articleId.toString());
-            if (shareIds != null && shareIds.size() != 0) {
-                StringBuilder sb = new StringBuilder();
-                sb.append("(");
-                for (Long shareId : shareIds) {
-                    sb.append(shareId);
-                    sb.append(",");
+            WHERE("article_id=" + articleId.toString());
+            if (shareIds != null) {
+                if (shareIds.size() == 1) {
+                    WHERE("share_id=" + shareIds.get(0));
                 }
-                sb.deleteCharAt(sb.length() - 1);
-                sb.append(")");
-                WHERE("share_id in "+sb.toString());
+                if (shareIds.size() > 1) {
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("(");
+                    for (Long shareId : shareIds) {
+                        sb.append(shareId);
+                        sb.append(",");
+                    }
+                    sb.deleteCharAt(sb.length() - 1);
+                    sb.append(")");
+                    WHERE("share_id in " + sb.toString());
+                }
             }
+        }}.toString();
+    }
+
+    public String addReadRecord(final Long id, final String newReadRecord_json, final boolean newOpenidFlag, final String newOpenids_json) {
+        return new SQL() {{
+            UPDATE("mk_article_share_record");
+            SET("read_record=#{newReadRecord_json}");
+            SET("read_times=read_times+1");
+            if (newOpenidFlag) {
+                SET("openids=#{newOpenids_json}");
+                SET("read_people=read_people+1");
+            }
+            WHERE("id=" + id);
         }}.toString();
     }
 }

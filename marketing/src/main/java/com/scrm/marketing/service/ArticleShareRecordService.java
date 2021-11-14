@@ -1,5 +1,6 @@
 package com.scrm.marketing.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scrm.marketing.util.resp.Result;
 import com.scrm.marketing.wx.WxUserInfoResult;
 import org.springframework.lang.NonNull;
@@ -16,5 +17,5 @@ public interface ArticleShareRecordService {
 
     Result querySharePerson(@NonNull Long articleId);
 
-    void addReadRecord(WxUserInfoResult wxUserInfo);
+    void addReadRecord(WxUserInfoResult wxUserInfo) throws JsonProcessingException;
 }

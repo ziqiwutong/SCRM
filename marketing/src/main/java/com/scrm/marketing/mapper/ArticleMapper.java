@@ -49,4 +49,7 @@ public interface ArticleMapper extends BaseMapper<Article> {
             "   AND article_title LIKE '%' #{title} '%' ")
     List<Article> queryByTitle(String title, int examineFlag);
 
+    @Update("UPDATE mk_article SET article_view_times=article_view_times+1,article_read_time_sum=article_read_time_sum + #{readTime} WHERE id=#{articleId}")
+    int addArticleRead(Long articleId, long readTime);
+
 }
