@@ -22,6 +22,7 @@ import java.util.Map;
 @RequestMapping("/order")
 @RestController
 public class OrderAndOrderDetailController {
+    /*
     @Resource
     OrderAndOrderDetailService orderAndOrderDetailService;
 
@@ -75,13 +76,17 @@ public class OrderAndOrderDetailController {
             @RequestParam(value = "orderID") String orderID,
             @RequestParam(value = "userID") String userID) {
         try {
-            Integer result = orderAndOrderDetailService.deleteOrderWith(orderID);
+            Integer result = orderAndOr
+            derDetailService.deleteOrderWith(orderID);
             result = orderAndOrderDetailService.deleteOrder(orderID);
             return Resp.success().setMsg("删除成功");
         } catch (Exception e) {
             return Resp.error().setMsg(e.getMessage());
         }
     }
+*/
+    @Resource
+    OrderAndOrderDetailService orderAndOrderDetailService;
 
     @PostMapping(value = "/addOrder")
     @ResponseBody

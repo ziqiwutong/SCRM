@@ -12,31 +12,27 @@ import java.sql.Timestamp;
 
 /**
  * @author Ganyunhui
- * @create 2021-10-20 21:01
+ * @create 2021-11-03 20:09
  */
 @Data
-@TableName("se_order")
-public class Order {
+@TableName("se_order_product")
+public class OrderPruduct {
     @TableId(type = IdType.AUTO)
     private Long id;
-    @JsonAlias({"orderID"})
-    private String orderNum;
-    private Long customerId;
-    @JsonAlias({"orderBuyer"})
-    private String customerName;
-    private String orderStaff;
-    @JsonAlias({"productPrice"})
+    private Long orderId;
+    private Long productId;
+    private String productName;
+    @JsonAlias({"productPic"})
+    private String productImage;
+    @JsonAlias({"productBuyAmount"})
+    private int productAmount;
     private BigDecimal originPrice;
     @JsonAlias({"priceChange"})
     private BigDecimal changePrice;
     private BigDecimal lastPrice;
     private BigDecimal receivedAmount;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Timestamp payTime;
-    private String saleChannel;
-    private String orderSource;
-    @JsonAlias({"orderType"})
-    private int orderStatus;
+    @JsonAlias({"notes"})
+    private String orderNotes;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Timestamp createTime;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

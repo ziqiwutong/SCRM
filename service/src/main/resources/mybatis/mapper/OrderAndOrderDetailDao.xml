@@ -5,13 +5,13 @@
 <mapper namespace="com.scrm.service.dao.OrderAndOrderDetailDao">
     <resultMap id="cor1" type="java.util.LinkedHashMap">
         <result property="productName" column="product_name" />
-        <result property="orderType" column="pay_flag" />
-        <result property="productPrice" column="product_price" />
+        <result property="orderType" column="order_status" />
+        <result property="productPrice" column="origin_price" />
+        <result property="productBuyAmount" column="product_amount" />
         <result property="orderBuyer" column="customer_name" />
         <result property="orderStaff" column="order_staff" />
         <result property="productPic" column="product_image" />
         <result property="orderID" column="order_num" />
-        <result property="productBuyAmount" column="product_amount" />
         <result property="notes" column="order_notes" />
         <result property="orderSource" column="order_source" />
         <result property="orderTime" column="create_time"/>
@@ -75,52 +75,62 @@
 
     <insert id="addOrder" parameterType="com.scrm.service.entity.OrderAndOrderDetail"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_order(pay_flag,order_staff,success_flag)
-        values(#{payFlag}, #{orderStaff}, #{payFlag})
+        <bind name="orderNum" value="@com.scrm.service.util.order.GenerateNum@getInstance().GenerateOrder()"/>
+        insert into se_order(order_num,customer_id,order_status,order_staff,customer_name,order_source,
+        origin_price,change_price)
+        values(#{orderNum},3,#{orderStatus}, #{orderStaff},#{customerName},
+        #{orderSource},#{originPrice},#{changePrice})
     </insert>
 
     <insert id="addOrderWith" parameterType="com.scrm.service.entity.OrderAndOrderDetail"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_order_detail(order_id, order_notes, product_name, product_price,
-        product_amount, customer_name,product_image,order_source, change_price)
-        values((select id from se_order order by id desc limit 1), #{orderNotes},
-        #{productName}, #{productPrice}, #{productAmount}, #{customerName},
-        #{productImage}, #{orderSource}, #{changePrice})
+        insert into se_order_product(product_id,order_id, order_notes, product_name,
+         origin_price,product_amount,product_image, change_price)
+        values(9,(select id from se_order order by id desc limit 1), #{orderNotes},
+        #{productName}, #{originPrice}, #{productAmount},
+        #{productImage}, #{changePrice})
     </insert>
 
     <update id="editOrder" parameterType="com.scrm.service.entity.OrderAndOrderDetail">
         update se_order set id=id
-        <if test="payFlag != null">
-            ,pay_flag=#{payFlag}, success_flag=#{payFlag}
+        <if test="orderStatus != null">
+            ,order_status=#{orderStatus}
         </if>
         <if test="orderStaff != null">
             ,order_staff=#{orderStaff}
         </if>
+        <if test="customerName != null">
+            ,customer_name=#{customerName}
+        </if>
+        <if test="orderSource != null">
+            ,order_source=#{orderSource}
+        </if>
+        <if test="originPrice != null">
+            ,origin_price=#{originPrice}
+        </if>
+        <if test="changePrice != null">
+            ,change_price=#{changePrice}
+        </if>
+
         where order_num = #{orderNum}
     </update>
 
     <update id="editOrderWith" parameterType="com.scrm.service.entity.OrderAndOrderDetail">
-        update se_order_detail set id=id
+        update se_order_product set id=id
         <if test="orderNotes!=null">
             ,order_notes=#{orderNotes}
         </if>
         <if test="productName!=null">
             ,product_name=#{productName}
         </if>
-        <if test="productPrice!=null">
-            ,product_price=#{productPrice}
+        <if test="originPrice!=null">
+            ,origin_price=#{originPrice}
         </if>
         <if test="productAmount!=null">
             ,product_amount=#{productAmount}
         </if>
-        <if test="customerName">
-            ,customer_name=#{customerName}
-        </if>
         <if test="productImage">
             ,product_image=#{productImage}
-        </if>
-        <if test="orderSource">
-            ,order_source=#{orderSource}
         </if>
         <if test="changePrice">
             ,change_price=#{changePrice}
