@@ -64,6 +64,13 @@ public interface CustomerService {
     String deleteBatch(List<Long> idList);
 
     /**
+     * 给用户打标签
+     * @param id
+     * @param labelIds Label ID List
+     */
+    String label(Long id, List<Long> labelIds);
+
+    /**
      * 插入CustomerRelation
      * @param relation CustomerRelation
      * @return null表示插入成功

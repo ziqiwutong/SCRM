@@ -32,6 +32,10 @@ public class Customer {
 
     private String customerStatus;
 
+    private Long createUserId;
+
+    private String createUserName;
+
     private Long followStaffId;
 
     private String followStaffName;

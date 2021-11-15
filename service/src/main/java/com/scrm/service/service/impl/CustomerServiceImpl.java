@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -92,6 +93,23 @@ public class CustomerServiceImpl implements CustomerService {
         if (result < 1) {
             return "删除失败";
         }
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public String label(Long id, List<Long> labelIds) {
+        List<Long> old = labelDao.queryLabelIdByCustomerId(id);
+        ArrayList<Long> delete = new ArrayList<>();
+        for (Long label : old) {
+            if (!labelIds.contains(label)) {
+                delete.add(label);
+            } else {
+                labelIds.remove(label);
+            }
+        }
+        if (delete.size() > 0) labelDao.deleteCustomerRelations(id, delete);
+        if (labelIds.size() > 0) labelDao.insertCustomerRelations(id, labelIds);
         return null;
     }
 

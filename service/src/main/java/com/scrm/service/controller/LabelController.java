@@ -2,7 +2,6 @@ package com.scrm.service.controller;
 
 import com.scrm.service.entity.Label;
 import com.scrm.service.service.LabelService;
-import com.scrm.service.util.resp.PageResp;
 import com.scrm.service.util.resp.Resp;
 import org.springframework.web.bind.annotation.*;
 
@@ -17,15 +16,10 @@ public class LabelController {
 
     @GetMapping("/query")
     @ResponseBody
-    public PageResp query(
-            @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
-            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage
+    public Resp query(
+            @RequestParam(value = "object", required = false, defaultValue = "-1") Integer object
     ) {
-        if (currentPage < 1) currentPage = 1;
-        if (pageCount < 1) pageCount = 1;
-        return PageResp.success().setData(
-                labelService.query(pageCount, currentPage)
-        ).setPage(pageCount, currentPage, labelService.queryCount()).setMsg("成功");
+        return Resp.success().setData(labelService.query(object)).setMsg("成功");
     }
 
     @GetMapping("/queryById")
@@ -34,7 +28,7 @@ public class LabelController {
             @RequestParam(value = "id") Long id
     ) {
         Label label = labelService.queryById(id);
-        if (null == label) {
+        if (label == null) {
             return Resp.error().setMsg("无数据");
         } else {
             return Resp.success().setData(label).setMsg("成功");

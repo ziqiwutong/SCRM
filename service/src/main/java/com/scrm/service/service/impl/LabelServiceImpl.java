@@ -7,6 +7,8 @@ import com.scrm.service.service.LabelService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -16,11 +18,23 @@ public class LabelServiceImpl implements LabelService {
     private LabelDao labelDao;
 
     @Override
-    public List<Label> query(Integer pageCount, Integer currentPage) {
+    public ArrayList<ArrayList<Label>> query(Integer object) {
         QueryWrapper<Label> wrapper = new QueryWrapper<>();
-        int offset = (currentPage - 1) * pageCount;
-        wrapper.last(" limit " + offset + "," + pageCount);
-        return labelDao.selectList(wrapper);
+        if (object != -1) {
+            wrapper.eq("label_object", object);
+        }
+        List<Label> list = labelDao.selectList(wrapper);
+        HashMap<String, ArrayList<Label>> map = new HashMap<>();
+        for (Label label : list) {
+            ArrayList<Label> labels = map.getOrDefault(label.getLabelType(), new ArrayList<>());
+            labels.add(label);
+            map.put(label.getLabelType(), labels);
+        }
+        ArrayList<ArrayList<Label>> result = new ArrayList<>();
+        for (String key : map.keySet()) {
+            result.add(map.get(key));
+        }
+        return result;
     }
 
     @Override

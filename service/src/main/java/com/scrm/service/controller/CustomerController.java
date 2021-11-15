@@ -68,9 +68,10 @@ public class CustomerController {
         }
         if (currentPage < 1) currentPage = 1;
         if (pageCount < 1) pageCount = 1;
+        int total = customerService.queryCount(wrapper);
         return PageResp.success().setData(
                 customerService.query(pageCount, currentPage, wrapper)
-        ).setPage(pageCount, currentPage, customerService.queryCount(wrapper)).setMsg("成功");
+        ).setPage(pageCount, currentPage, total).setMsg("成功");
     }
 
     private String camelToUnderscore(String camel) {
@@ -156,6 +157,23 @@ public class CustomerController {
         String result = customerService.deleteBatch(ids);
         if (result == null) {
             return Resp.success().setData(ids).setMsg("删除成功");
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
+    @PostMapping("/label")
+    @ResponseBody
+    public Resp label(
+            @RequestParam(value = "id") Long id,
+            @RequestBody List<Long> labelIds
+    ) {
+        if (labelIds == null) {
+            return Resp.error().setMsg("不能为空");
+        }
+        String result = customerService.label(id, labelIds);
+        if (result == null) {
+            return Resp.success().setData(null).setMsg("更新成功");
         } else {
             return Resp.error().setMsg(result);
         }

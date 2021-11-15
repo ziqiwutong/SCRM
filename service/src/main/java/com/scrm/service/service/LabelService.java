@@ -2,17 +2,16 @@ package com.scrm.service.service;
 
 import com.scrm.service.entity.Label;
 
-import java.util.List;
+import java.util.ArrayList;
 
 public interface LabelService {
 
     /**
      * 查询Label
-     * @param pageCount 每页数量
-     * @param currentPage 当前页数
+     * @param object 标签对象
      * @return Label
      */
-    List<Label> query(Integer pageCount, Integer currentPage);
+    ArrayList<ArrayList<Label>> query(Integer object);
 
     /**
      * 查询Label总数量
