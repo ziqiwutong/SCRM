@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Customer;
 import com.scrm.service.entity.CustomerRelation;
 
+import java.util.HashSet;
 import java.util.List;
 
 public interface CustomerService {
@@ -65,10 +66,10 @@ public interface CustomerService {
 
     /**
      * 给用户打标签
-     * @param id
+     * @param customerIds Customer ID Set
      * @param labelIds Label ID List
      */
-    String label(Long id, List<Long> labelIds);
+    String label(HashSet<Long> customerIds, List<Long> labelIds);
 
     /**
      * 插入CustomerRelation

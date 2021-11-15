@@ -1,5 +1,6 @@
 package com.scrm.manage.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.manage.entity.User;
 import com.scrm.manage.service.UserService;
 import com.scrm.manage.util.resp.*;
@@ -18,13 +19,19 @@ public class UserController {
     @ResponseBody
     public Resp query(
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
-            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
+            @RequestParam(value = "name", required = false, defaultValue = "") String name
     ) {
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
+        if (!name.isEmpty()){
+            wrapper.like("username", name);
+        }
+        int total = userService.queryCount(wrapper);
         if (currentPage < 1) currentPage = 1;
         if (pageCount < 1) pageCount = 1;
         return PageResp.success().setData(
-                userService.query(pageCount, currentPage)
-        ).setPage(pageCount, currentPage, userService.queryCount());
+                userService.query(pageCount, currentPage, wrapper)
+        ).setPage(pageCount, currentPage, total);
     }
 
     @GetMapping("/queryById")

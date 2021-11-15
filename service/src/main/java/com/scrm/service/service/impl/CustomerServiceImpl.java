@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 @Service
@@ -98,18 +99,21 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     @Transactional
-    public String label(Long id, List<Long> labelIds) {
-        List<Long> old = labelDao.queryLabelIdByCustomerId(id);
-        ArrayList<Long> delete = new ArrayList<>();
-        for (Long label : old) {
-            if (!labelIds.contains(label)) {
-                delete.add(label);
-            } else {
-                labelIds.remove(label);
+    public String label(HashSet<Long> customerIds, List<Long> labelIds) {
+        for (Long id: customerIds) {
+            List<Long> old = labelDao.queryLabelIdByCustomerId(id);
+            ArrayList<Long> delete = new ArrayList<>();
+            ArrayList<Long> add = new ArrayList<>(labelIds);
+            for (Long label : old) {
+                if (!add.contains(label)) {
+                    delete.add(label);
+                } else {
+                    add.remove(label);
+                }
             }
+            if (delete.size() > 0) labelDao.deleteCustomerRelations(id, delete);
+            if (add.size() > 0) labelDao.insertCustomerRelations(id, add);
         }
-        if (delete.size() > 0) labelDao.deleteCustomerRelations(id, delete);
-        if (labelIds.size() > 0) labelDao.insertCustomerRelations(id, labelIds);
         return null;
     }
 

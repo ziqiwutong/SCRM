@@ -9,8 +9,7 @@ import com.scrm.service.util.resp.Resp;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @RequestMapping("/customer")
 @RestController
@@ -165,13 +164,18 @@ public class CustomerController {
     @PostMapping("/label")
     @ResponseBody
     public Resp label(
-            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "id") String id,
             @RequestBody List<Long> labelIds
     ) {
         if (labelIds == null) {
             return Resp.error().setMsg("不能为空");
         }
-        String result = customerService.label(id, labelIds);
+        String[] ids = id.split(",");
+        HashSet<Long> customerIds = new HashSet<>();
+        for (String item: ids) {
+            customerIds.add(Long.valueOf(item));
+        }
+        String result = customerService.label(customerIds, labelIds);
         if (result == null) {
             return Resp.success().setData(null).setMsg("更新成功");
         } else {

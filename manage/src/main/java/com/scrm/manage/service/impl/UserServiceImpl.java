@@ -16,16 +16,15 @@ public class UserServiceImpl implements UserService {
     private UserDao userDao;
     
     @Override
-    public List<User> query(Integer pageCount, Integer currentPage) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
+    public List<User> query(Integer pageCount, Integer currentPage, QueryWrapper<User> wrapper) {
         int offset = (currentPage - 1) * pageCount;
         wrapper.last(" limit " + offset + "," + pageCount);
         return userDao.selectList(wrapper);
     }
 
     @Override
-    public Integer queryCount() {
-        return userDao.selectCount(null);
+    public Integer queryCount(QueryWrapper<User> wrapper) {
+        return userDao.selectCount(wrapper);
     }
 
     @Override
