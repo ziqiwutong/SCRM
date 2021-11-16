@@ -1,15 +1,15 @@
 package com.scrm.marketing;
 
 import cn.hutool.core.date.DateUtil;
+import cn.hutool.core.util.RandomUtil;
+import cn.hutool.crypto.digest.DigestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.scrm.marketing.util.MyJsonUtil;
+import com.scrm.marketing.util.MyRandomUtil;
+import com.scrm.marketing.wx.WxUserInfoResult;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.HtmlUtils;
 
-import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -35,8 +35,22 @@ public class TestDemo {
 
     @Test
     void test3() throws JsonProcessingException {
-        String content="[1,2,,3,'sfe']";
-        List<Integer> integers = MyJsonUtil.toBeanArray(content, Integer.class);
-        System.out.println(integers);
+        String arrayJson="[{\"openid\":\"oSLXk6DwZJ1VcXZQH4aPfk\",\"nickname\":\"南阁子123\",\"sex\":\"0\",\"province\":\"\",\"city\":\"\",\"country\":\"\",\"headimgurl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/XK9TOvt9x3OQF7tPHwtxlC4BrAMicfRAV6fibz29N5FDQYZtDqa0Ndbhy2WuCqp4YPC383nqyRjn9V05GSOn3q9A/132\",\"unionid\":null,\"errcode\":12,\"errmsg\":null,\"readTime\":89,\"readDate\":\"2021-11-13\",\"readerStatus\":null,\"articleId\":10,\"shareId\":1},{\"openid\":\"oSLXk6DwDDX455ZJ1VcXZQH4aPfk\",\"nickname\":\"南阁子\",\"sex\":\"0\",\"province\":\"\",\"city\":\"\",\"country\":\"\",\"headimgurl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/XK9TOvt9x3OQF7tPHwtxlC4BrAMicfRAV6fibz29N5FDQYZtDqa0Ndbhy2WuCqp4YPC383nqyRjn9V05GSOn3q9A/132\",\"unionid\":null,\"errcode\":null,\"errmsg\":null,\"readTime\":89,\"readDate\":\"2021-11-13\",\"readerStatus\":null,\"articleId\":10,\"shareId\":1},{\"openid\":\"oSLXk6DwDDX455ZJ1VcXZQH4aPfk\",\"nickname\":\"南阁子\",\"sex\":\"0\",\"province\":\"\",\"city\":\"\",\"country\":\"\",\"headimgurl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/XK9TOvt9x3OQF7tPHwtxlC4BrAMicfRAV6fibz29N5FDQYZtDqa0Ndbhy2WuCqp4YPC383nqyRjn9V05GSOn3q9A/132\",\"unionid\":null,\"errcode\":null,\"errmsg\":null,\"readTime\":89,\"readDate\":\"2021-11-13\",\"readerStatus\":null,\"articleId\":10,\"shareId\":1}]";
+        String json = "{\"openid\":\"oSLXk6DwZJ1VcXZQH4aPfk\",\"nickname\":\"南阁子123\",\"sex\":\"0\",\"province\":\"\",\"city\":\"\",\"country\":\"\",\"headimgurl\":\"https://thirdwx.qlogo.cn/mmopen/vi_32/XK9TOvt9x3OQF7tPHwtxlC4BrAMicfRAV6fibz29N5FDQYZtDqa0Ndbhy2WuCqp4YPC383nqyRjn9V05GSOn3q9A/132\",\"unionid\":null,\"errcode\":null,\"errmsg\":null,\"readTime\":89,\"readDate\":\"2021-11-13\",\"readerStatus\":null,\"articleId\":10,\"shareId\":1}";
+        WxUserInfoResult userInfoResult = MyJsonUtil.toBean(json, WxUserInfoResult.class);
+        String s = MyJsonUtil.toJsonStr(userInfoResult);
+        System.out.println(s);
+
+//        List<WxUserInfoResult> wxUserInfoResults = MyJsonUtil.toBeanList(arrayJson, WxUserInfoResult.class);
+//        wxUserInfoResults.forEach(System.out::println);
+    }
+
+    @Test
+    void test4(){
+        String s = RandomUtil.randomStringUpper(16);
+        System.out.println(s);
+        String s1 = MyRandomUtil.randomStr(16);
+        System.out.println(s1);
+        System.out.println(s1.length());
     }
 }

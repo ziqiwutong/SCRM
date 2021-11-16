@@ -1,6 +1,6 @@
 package com.scrm.marketing.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
+import com.alibaba.fastjson.JSON;
 import com.scrm.marketing.entity.ArticleShareRecord;
 import com.scrm.marketing.entity.wrapper.ArticleShareRecordWrapper;
 import com.scrm.marketing.entity.User;
@@ -66,9 +66,9 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
                 if (openidList_json == null || openidList_json.length() == 0 || "[]".equals(openidList_json))
                     continue;
                 try {
-                    List<String> openidList = MyJsonUtil.toArray(openidList_json, String.class);
+                    List<String> openidList = JSON.parseArray(openidList_json, String.class);
                     set.addAll(openidList);
-                } catch (JsonProcessingException e) {
+                } catch (Exception e) {
                     //e.printStackTrace();
                     //忽略异常
                 }
@@ -91,7 +91,7 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
      */
     @Override
     @Transactional// 开启事务
-    public void addReadRecord(WxUserInfoResult wxUserInfo) throws JsonProcessingException {
+    public void addReadRecord(WxUserInfoResult wxUserInfo) {
         MyAssert.notNull("wxUserInfo can not be null", wxUserInfo);
 
         /*
@@ -116,8 +116,8 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
             // 1.1.处理readDate和readerStatus
             wxUserInfo.setReadDate(MyDateTimeUtil.getNowDate());
             System.out.println("======warning：当前并未处理readerStatus====================================");
-            newWxRecord = MyJsonUtil.writeToString(wxUserInfo);
-        } catch (JsonProcessingException e) {
+            newWxRecord = MyJsonUtil.toJsonStr(wxUserInfo);
+        } catch (Exception e) {
             //e.printStackTrace();
             return;// 直接返回吧
         }
@@ -159,10 +159,10 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
             newOpenids_json = strBuilder.toString();
             newOpenidFlag = true;
         } else {
-            List<String> openidList = MyJsonUtil.toArray(openids_json, String.class);
+            List<String> openidList = JSON.parseArray(openids_json, String.class);
             Set<String> set = new HashSet<>(openidList);
             if (set.add(newOpenid)) {
-                newOpenids_json = MyJsonUtil.writeToString(set);
+                newOpenids_json = MyJsonUtil.toJsonStr(set);
                 newOpenidFlag = true;
             } else {
                 // 说明此openid已经存在

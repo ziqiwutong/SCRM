@@ -20,6 +20,8 @@ public class AccessTokenResult {
     /**
      * 请求失败的属性
      */
+    @SuppressWarnings("all")
     private Integer errcode;
+    @SuppressWarnings("all")
     private String errmsg;
 }

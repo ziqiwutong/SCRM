@@ -1,5 +1,6 @@
 package com.scrm.marketing.wx;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import lombok.Data;
 
 
@@ -27,7 +28,9 @@ public class WxUserInfoResult {
     /**
      * 错误时微信会返回JSON数据包
      */
+    @JSONField(serialize = false)
     private Integer errcode;
+    @JSONField(serialize = false)
     private String errmsg;
 
     /**
@@ -37,6 +40,8 @@ public class WxUserInfoResult {
     private String readDate;// 阅读日期
     private String readerStatus;// 阅读者状态：不是客户则为null
 
+    @JSONField(serialize = false)
     private Long articleId;// 文章id
+    @JSONField(serialize = false)
     private Long shareId;// 分享者id
 }

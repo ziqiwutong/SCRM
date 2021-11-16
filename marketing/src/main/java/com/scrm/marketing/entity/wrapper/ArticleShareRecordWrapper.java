@@ -8,6 +8,7 @@ import java.util.List;
  * @author fzk
  * @date 2021-11-13 23:01
  */
+@SuppressWarnings("unused")
 public class ArticleShareRecordWrapper {
     private int readTimes;
     private int readPeople;

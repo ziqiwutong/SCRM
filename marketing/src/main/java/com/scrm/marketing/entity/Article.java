@@ -76,6 +76,7 @@ public class Article {
     /**
      * 提供一些检查属性合法性的静态方法：检验标准以插入到数据库为准
      */
+    @SuppressWarnings("unused")
     public static boolean checkExamineFlag(Article article) {
         if (article == null) return false;
         if (article.getMaterialType() == null) return false;
@@ -83,6 +84,7 @@ public class Article {
         return examineFlag == EXAMINE_FLAG_WAIT || examineFlag == EXAMINE_FLAG_ACCESS || examineFlag == EXAMINE_FLAG_NOT_ACCESS;
     }
 
+    @SuppressWarnings("unused")
     public static boolean checkMaterialType(Article article) {
         if (article == null) return false;
         if (article.getMaterialType() == null) return false;
@@ -90,7 +92,7 @@ public class Article {
         return materialType == MATERIAL_TYPE_PERSONAL || materialType == MATERIAL_TYPE_ENTERPRISE;
     }
 
-
+    @SuppressWarnings("unused")
     public static boolean checkArticleType(Article article) {
         if (article == null) return false;
         if (article.getArticleType() == null) return false;

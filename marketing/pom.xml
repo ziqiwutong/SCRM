@@ -33,6 +33,12 @@
             <artifactId>jaxb-api</artifactId>
             <version>2.3.1</version>
         </dependency>
+        <!--fastjson 工具-->
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+            <version>1.2.78</version>
+        </dependency>
         <!--Hutool工具-->
         <dependency>
             <groupId>cn.hutool</groupId>
