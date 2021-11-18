@@ -21,6 +21,7 @@ public interface ProCusBpLogMapper extends BaseMapper<ProductCustomerBpLog> {
      *
      * @return 返回int
      */
+    @SuppressWarnings("all")
     @Select("SELECT COUNT(DISTINCT customer_id) FROM mk_product_customer_bp_log;")
     int queryCusCount();
 

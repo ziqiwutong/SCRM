@@ -11,7 +11,7 @@ import java.util.List;
  * @date 2021-10-20 0:20
  */
 public class ArticleShareRecordSqlProvider implements ProviderMethodResolver {
-    public String selectByAidAndSids(final Long articleId, @Nullable final List<Long> shareIds) {
+    public static String selectByAidAndSids(final Long articleId, @Nullable final List<Long> shareIds) {
         return new SQL() {{
             SELECT("*");
             FROM("mk_article_share_record");
@@ -35,7 +35,7 @@ public class ArticleShareRecordSqlProvider implements ProviderMethodResolver {
         }}.toString();
     }
 
-    public String addReadRecord(final Long id, final String newReadRecord_json, final boolean newOpenidFlag, final String newOpenids_json) {
+    public static String addReadRecord(final Long id, final String newReadRecord_json, final boolean newOpenidFlag, final String newOpenids_json) {
         return new SQL() {{
             UPDATE("mk_article_share_record");
             SET("read_record=#{newReadRecord_json}");

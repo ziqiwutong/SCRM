@@ -12,11 +12,12 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-20 21:34
  */
-@Repository
 public interface ProductMapper extends BaseMapper<Product> {
+    @SuppressWarnings("all")
     @Select("select * from se_product limit #{pageSize} offset #{offset}")
     List<Product> queryProPurchase(int offset, @NonNull Integer pageSize);
 
+    @SuppressWarnings("all")
     @Select("SELECT * FROM se_product WHERE type_id=#{typeId}")
     List<Product> queryByTypeId(@NonNull Long typeId);
 

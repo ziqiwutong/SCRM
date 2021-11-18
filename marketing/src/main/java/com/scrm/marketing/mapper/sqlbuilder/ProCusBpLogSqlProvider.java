@@ -9,7 +9,7 @@ import org.apache.ibatis.jdbc.SQL;
  * @see com.scrm.marketing.mapper.ProCusBpLogMapper#queryCusPurchase(Long, Long, Integer, Integer)
  */
 public class ProCusBpLogSqlProvider implements ProviderMethodResolver {
-    public String queryCusPurchase(Long customerId, Long productTypeId, Integer offset, Integer pageSize) {
+    public static String queryCusPurchase(Long customerId, Long productTypeId, Integer offset, Integer pageSize) {
         int condition;
         // 情况1：分页查询所有客户购买情况
         if (customerId == null) condition = 1;
@@ -46,7 +46,7 @@ public class ProCusBpLogSqlProvider implements ProviderMethodResolver {
     }
 
 
-    public String queryProBrowse(Long productTypeId) {
+    public static String queryProBrowse(Long productTypeId) {
         String sql;
         // 情况1：查询所有产品类型的总浏览时长
         if (productTypeId == null)
@@ -66,7 +66,7 @@ public class ProCusBpLogSqlProvider implements ProviderMethodResolver {
         return sql;
     }
 
-    public String queryCusBrowse(Long customerId, Integer offset, Integer pageSize) {
+    public static String queryCusBrowse(Long customerId, Integer offset, Integer pageSize) {
         String sql;
         // 情况1：分页查询客户浏览总时长
         if (customerId == null) {

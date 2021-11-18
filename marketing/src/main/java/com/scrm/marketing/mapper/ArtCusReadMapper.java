@@ -4,10 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.scrm.marketing.entity.ArticleCustomerRead;
 import com.scrm.marketing.mapper.sqlbuilder.ArtCusReadSqlProvider;
 import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
-import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
@@ -16,11 +14,12 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-14 17:55
  */
-@Repository
 public interface ArtCusReadMapper extends BaseMapper<ArticleCustomerRead> {
+    @SuppressWarnings("all")
     @Delete("DELETE FROM mk_article_customer_read WHERE article_id=#{articleId}")
     int deleteByArticleId(Long articleId);
 
+    @SuppressWarnings("all")
     @Select("SELECT article_id,SUM(read_time) read_time,read_date " +
             " FROM mk_article_customer_read" +
             " WHERE article_id=#{articleId} " +
@@ -29,6 +28,7 @@ public interface ArtCusReadMapper extends BaseMapper<ArticleCustomerRead> {
     List<ArticleCustomerRead> queryArticleRead(Long articleId, Date startDate);
 
     @SelectProvider(ArtCusReadSqlProvider.class)
+    @SuppressWarnings("all")
     List<ArticleCustomerRead> queryCusRead(Long customerId, Date startDate, Integer offset, Integer pageSize);
 
 
@@ -37,6 +37,7 @@ public interface ArtCusReadMapper extends BaseMapper<ArticleCustomerRead> {
      *
      * @return 客户数
      */
+    @SuppressWarnings("all")
     @Select("SELECT COUNT(DISTINCT customer_id) FROM mk_article_customer_read;")
     int queryCusCount();
 }

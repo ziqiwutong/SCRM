@@ -1,4 +1,4 @@
-package com.scrm.marketing.wx;
+package com.scrm.marketing.share.wx;
 
 import lombok.Data;
 

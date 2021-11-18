@@ -13,9 +13,11 @@ import java.util.List;
  * @date 2021-10-14 17:56
  */
 public interface ArticleShareRecordMapper extends BaseMapper<ArticleShareRecord> {
+    @SuppressWarnings("all")
     @Delete("DELETE FROM mk_article_share_record WHERE article_id=#{articleId}")
     int deleteByArticleId(Long articleId);
 
+    @SuppressWarnings("all")
     @Select("SELECT * FROM mk_article_share_record WHERE article_id=#{articleId} AND share_id=#{shareId}")
     List<ArticleShareRecord> selectByAIdAndSid(Long articleId, Long shareId);
 

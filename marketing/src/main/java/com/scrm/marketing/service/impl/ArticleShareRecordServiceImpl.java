@@ -14,7 +14,7 @@ import com.scrm.marketing.util.MyDateTimeUtil;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.wx.WxUserInfoResult;
+import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;

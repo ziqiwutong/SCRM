@@ -99,7 +99,7 @@ public class Result {
         public static final Result PARAM_ERROR = new ResultCache(CodeEum.PARAM_ERROR.getCode(), CodeEum.PARAM_ERROR.getMsg(), null);
         public static final Result FAIL = new ResultCache(CodeEum.FAIL.getCode(), CodeEum.FAIL.getMsg(), null);
 
-        public ResultCache(int code, String msg, Object data) {
+        private ResultCache(int code, String msg, Object data) {
             super(code, msg, data);
         }
 

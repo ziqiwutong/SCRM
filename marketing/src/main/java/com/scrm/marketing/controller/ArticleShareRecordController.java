@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scrm.marketing.service.ArticleShareRecordService;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.wx.WxUserInfoResult;
+import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;

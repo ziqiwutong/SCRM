@@ -2,7 +2,7 @@ package com.scrm.marketing.service;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.wx.WxUserInfoResult;
+import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 

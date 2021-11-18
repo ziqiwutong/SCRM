@@ -2,14 +2,17 @@ package com.scrm.marketing;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.scrm.marketing.share.iuap.AccessToken;
+import com.scrm.marketing.util.MyDigestUtil;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.MyRandomUtil;
-import com.scrm.marketing.wx.WxUserInfoResult;
+import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.HtmlUtils;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 /**
@@ -52,5 +55,15 @@ public class TestDemo {
         String s1 = MyRandomUtil.randomStr(16);
         System.out.println(s1);
         System.out.println(s1.length());
+        for(int i=0;i<5;i++){
+            System.out.println(MyRandomUtil.randomStr(16));
+        }
+    }
+
+    @Test
+    void test5() throws NoSuchAlgorithmException, InvalidKeyException {
+        String s= MyDigestUtil.sha256_mac("hello","1");
+        System.out.println(s);
+        System.out.println(s+null);
     }
 }

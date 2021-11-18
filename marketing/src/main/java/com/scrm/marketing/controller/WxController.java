@@ -4,10 +4,10 @@ import cn.hutool.crypto.digest.DigestUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.wx.AccessTokenResult;
-import com.scrm.marketing.wx.GlobalAccessToken;
-import com.scrm.marketing.wx.JsapiTicket;
-import com.scrm.marketing.wx.WxUserInfoResult;
+import com.scrm.marketing.share.wx.AccessTokenResult;
+import com.scrm.marketing.share.wx.GlobalAccessToken;
+import com.scrm.marketing.share.wx.JsapiTicket;
+import com.scrm.marketing.share.wx.WxUserInfoResult;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -35,12 +35,6 @@ public class WxController {
     private String appSecret;
     @Value("${my.wx.token}")
     private String token;
-
-    private static final String oauthAccessTokenUrl = "https://api.weixin.qq.com/sns/oauth2/access_token";
-    private static final String userInfoUrl = "https://api.weixin.qq.com/sns/userinfo";
-
-    private static final String globalAccessTokenUrl = "https://api.weixin.qq.com/cgi-bin/token";
-    private static final String jsapi_ticketUrl = "https://api.weixin.qq.com/cgi-bin/ticket/getticket";
 
     private static final GlobalAccessToken globalAccessToken = new GlobalAccessToken();
     private static final JsapiTicket global_jsapi_ticket = new JsapiTicket();
@@ -118,15 +112,15 @@ public class WxController {
         // 3.根据ticket 以及 其他参数 sha1加密生成signature
         String noncestr = MyRandomUtil.randomStr(16);
         long timestamp = System.currentTimeMillis();
-        String signature = ticket_signature(jsapi_ticket.getTicket(), noncestr, timestamp, url);
+        String signature = JsapiTicket.ticket_signature(jsapi_ticket.getTicket(), noncestr, timestamp, url);
 
         // 4.返回
-        TicketSignatureWrapper ticketSignatureWrapper = new TicketSignatureWrapper(appId, signature, noncestr, timestamp);
+        JsapiTicket.TicketSignatureWrapper ticketSignatureWrapper = new JsapiTicket.TicketSignatureWrapper(appId, signature, noncestr, timestamp);
         return Result.success(ticketSignatureWrapper);
     }
 
     private AccessTokenResult getAccessToken(String code) {
-        String url = oauthAccessTokenUrl + "?appid=" + appId + "&secret=" + appSecret + "&code=" + code + "&grant_type=authorization_code";
+        String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appId + "&secret=" + appSecret + "&code=" + code + "&grant_type=authorization_code";
         AccessTokenResult result = restTemplate.getForObject(url, AccessTokenResult.class);
 
         if (result == null || result.getAccess_token() == null) return null;
@@ -134,13 +128,12 @@ public class WxController {
     }
 
     private WxUserInfoResult getWxUserInfo(String access_token, String openid) {
-        String url = userInfoUrl + "?access_token=" + access_token + "&openid=" + openid + "&lang=zh_CN";
+        String url = "https://api.weixin.qq.com/sns/userinfo?access_token=" + access_token + "&openid=" + openid + "&lang=zh_CN";
         WxUserInfoResult userInfoResult = restTemplate.getForObject(url, WxUserInfoResult.class);
         if (userInfoResult == null || userInfoResult.getErrcode() != null)
             return null;
         return userInfoResult;
     }
-
 
     private GlobalAccessToken getGlobalAccessToken() {
         if (globalAccessToken.getAccess_token() != null && System.currentTimeMillis() < globalAccessToken.getValidBefore())
@@ -151,7 +144,7 @@ public class WxController {
                     return globalAccessToken;
 
                 // "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
-                String url = globalAccessTokenUrl + "?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret;
+                String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret;
                 GlobalAccessToken accessToken = restTemplate.getForObject(url, GlobalAccessToken.class);
                 if (accessToken == null || accessToken.getAccess_token() == null)
                     return null;
@@ -164,7 +157,6 @@ public class WxController {
         }
     }
 
-
     private JsapiTicket getJsapi_ticket(String accessToken) {
         if (global_jsapi_ticket.getTicket() != null && System.currentTimeMillis() < global_jsapi_ticket.getValidBefore())
             return global_jsapi_ticket;
@@ -174,7 +166,7 @@ public class WxController {
                     return global_jsapi_ticket;
 
                 // "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
-                String url = jsapi_ticketUrl + "?access_token=" + accessToken + "&type=jsapi";
+                String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=jsapi";
                 JsapiTicket ticket = restTemplate.getForObject(url, JsapiTicket.class);
                 if (ticket == null || ticket.getTicket() == null) return null;
 
@@ -183,59 +175,6 @@ public class WxController {
                 global_jsapi_ticket.setValidBefore(System.currentTimeMillis() + (ticket.getExpires_in() - 200) * 1000);
                 return global_jsapi_ticket;
             }
-        }
-    }
-
-    private String ticket_signature(String jsapi_ticket, String noncestr, long timestamp, String url) {
-        String str = "jsapi_ticket=" + jsapi_ticket + "&noncestr=" + noncestr + "&timestamp=" + timestamp + "&url=" + url;
-        // sha1加密
-        return DigestUtil.sha1Hex(str);
-    }
-
-    @SuppressWarnings("unused")
-    private static class TicketSignatureWrapper {
-        private String appId;
-        private String signature;
-        private String noncestr;
-        private long timestamp;
-
-        public TicketSignatureWrapper(String appId, String signature, String noncestr, long timestamp) {
-            this.appId = appId;
-            this.signature = signature;
-            this.noncestr = noncestr;
-            this.timestamp = timestamp;
-        }
-
-        public String getAppId() {
-            return appId;
-        }
-
-        public void setAppId(String appId) {
-            this.appId = appId;
-        }
-
-        public String getSignature() {
-            return signature;
-        }
-
-        public void setSignature(String signature) {
-            this.signature = signature;
-        }
-
-        public String getNoncestr() {
-            return noncestr;
-        }
-
-        public void setNoncestr(String noncestr) {
-            this.noncestr = noncestr;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(long timestamp) {
-            this.timestamp = timestamp;
         }
     }
 }

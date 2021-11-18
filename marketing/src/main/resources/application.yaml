@@ -67,5 +67,8 @@ my:
     appId: "wx45421563894fc3f3"
     appSecret: "fb33e5dca7e5d506da38936fd99414a7"
     token: scrm
-#    appId: "wx8cfd402efecab262"
-#    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
+  #    appId: "wx8cfd402efecab262"
+  #    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
+  iuap:
+    appKey: ""    # 目前还没有
+    appSecret: "" # 目前还没有

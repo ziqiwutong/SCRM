@@ -14,7 +14,6 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-14 17:03
  */
-@Repository
 public interface ArticleMapper extends BaseMapper<Article> {
     /**
      * 除了文章内容外，其余字段均查询出来了
