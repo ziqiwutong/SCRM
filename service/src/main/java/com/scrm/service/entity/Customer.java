@@ -57,7 +57,7 @@ public class Customer {
 
     private String belongCompany;
 
-    private String wx;
+    private String wxOpenid;
 
     private String wxName;
 

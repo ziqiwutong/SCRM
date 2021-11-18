@@ -2,8 +2,14 @@ package com.scrm.service.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baidubce.http.ApiExplorerClient;
+import com.baidubce.http.AppSigner;
+import com.baidubce.http.HttpMethodName;
+import com.baidubce.model.ApiExplorerRequest;
+import com.baidubce.model.ApiExplorerResponse;
 import com.scrm.service.service.CustomerRestService;
 import com.scrm.service.vo.FirmRelation;
+import com.scrm.service.vo.PhoneAttribution;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import org.springframework.http.HttpEntity;
@@ -20,36 +26,98 @@ import java.util.LinkedList;
 public class CustomerRestServiceImpl implements CustomerRestService {
 
     @Override
+    public PhoneAttribution queryPhoneAttribution(String phone) {
+        String path = "https://hcapi02.api.bdymkt.com/mobile";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+        request.setCredentials(
+                "5defc1ad0447491a834e77815c1372f4",
+                "8bcb9ec79eda49c29ced1a60c5fe7c2d"
+        );
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("mobile", phone);
+
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            String code = body.getString("code");
+            JSONObject data = body.getJSONObject("data");
+            if (code != null && code.equals("200")) {
+                return new PhoneAttribution(
+                        data.getInteger("num"),
+                        data.getString("types"),
+                        data.getString("isp"),
+                        data.getString("prov"),
+                        data.getString("city"),
+                        data.getString("area_code"),
+                        data.getString("city_code"),
+                        data.getString("zip_code")
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public String scanBusinessCard(String url) {
+        String path = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_card";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.POST, path);
+        request.addHeaderParameter("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+        String accessToken = "";
+        request.setJsonBody("url=" + url);
+
+        ApiExplorerClient client = new ApiExplorerClient();
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            // 返回结果格式为Json字符串
+            System.out.println(response.getResult());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public ArrayList<ArrayList<FirmRelation>> queryRelationBetweenFirm(String firmA, String firmB) {
         RestTemplate rest = new RestTemplate();
 
+//        String appKey = "86b6b347-4143-48ad-b8ff-51592d446a40";
+//        String secretKey = "1c90b493-48a3-473c-89a3-7f08e1989b28";
 //        String enterprises = firmA + "," + firmB;
 //        String jobUrl = "https://api.qixin.com/APIService/relation/createFindRelationTask" +
-//                "?appkey=86b6b347-4143-48ad-b8ff-51592d446a40" +
-//                "&secret_key=1c90b493-48a3-473c-89a3-7f08e1989b28" +
+//                "?appkey=" + appKey +
+//                "&secret_key=" + secretKey +
 //                "&enterprises=" +
 //                enterprises;
 
         String jobUrl = "https://www.fastmock.site/mock/e89826b10151d3ddafd81e87b0cf7110/api/createFindRelationTask";
 
-        HttpEntity<String> jobResponse = rest.exchange(jobUrl, HttpMethod.GET, null, String.class);
-
-        JSONObject body = JSONObject.parseObject(jobResponse.getBody());
-        String status = body.getString("status");
-        if (!(status != null && status.equals("200"))) {
+        String key;
+        JSONObject data;
+        try {
+            HttpEntity<String> jobResponse = rest.exchange(jobUrl, HttpMethod.GET, null, String.class);
+            JSONObject body = JSONObject.parseObject(jobResponse.getBody());
+            String status = body.getString("status");
+            if (!(status != null && status.equals("200"))) {
+                return null;
+            }
+            String message = body.getString("message");
+            if (!(message != null && message.equals("操作成功"))) {
+                return null;
+            }
+            data = body.getJSONObject("data");
+            key = data.getString("key");
+            if (key == null) return null;
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-        String message = body.getString("message");
-        if (!(message != null && message.equals("操作成功"))) {
-            return null;
-        }
-        JSONObject data = body.getJSONObject("data");
-        String key = data.getString("key");
-        if (key == null) return null;
 
 //        String infoUrl = "https://api.qixin.com/APIService/relation/getFindRelationResult" +
-//                "?appkey=86b6b347-4143-48ad-b8ff-51592d446a40" +
-//                "&secret_key=1c90b493-48a3-473c-89a3-7f08e1989b28" +
+//                "?appkey=" + appKey +
+//                "&secret_key=" + secretKey +
 //                "&key=" +
 //                key;
 
@@ -57,18 +125,22 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                 "?key=" +
                 key;
 
-        HttpEntity<String> infoResponse = rest.exchange(infoUrl, HttpMethod.GET, null, String.class);
-
-        body = JSONObject.parseObject(infoResponse.getBody());
-        status = body.getString("status");
-        if (!(status != null && status.equals("200"))) {
+        try {
+            HttpEntity<String> infoResponse = rest.exchange(infoUrl, HttpMethod.GET, null, String.class);
+            JSONObject body = JSONObject.parseObject(infoResponse.getBody());
+            String status = body.getString("status");
+            if (!(status != null && status.equals("200"))) {
+                return null;
+            }
+            String message = body.getString("message");
+            if (!(message != null && message.equals("操作成功"))) {
+                return null;
+            }
+            data = body.getJSONObject("data");
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
-        message = body.getString("message");
-        if (!(message != null && message.equals("操作成功"))) {
-            return null;
-        }
-        data = body.getJSONObject("data");
 
         return getRelation(data);
     }
