@@ -11,21 +11,21 @@ import java.util.Base64;
 
 /**
  * 调用接口令牌 access_token 是应用调用开放平台业务接口的凭证，有效期为2小时,过期后需要重新获取
- * 请求地址："https://api.diwork.com/open-auth/selfAppAuth/getAccessToken?appKey=xxx&timestamp=xxx&signature=xxx";
+ * 请求地址：https://openapi.yonyoucloud.com/token?appid=exx&secret=xxx
  *
  * @author fzk
  * @date 2021-11-18 17:06
  */
 @Data
 public class AccessToken {
-    private String code; // 结果码，正确返回 "00000"
-    private String message; // 结果信息，若有错误，该字段会返回具体错误信息
+    private String code; // 结果码，正确返回 "0"
+    private String msg; // 结果信息，若有错误，该字段会返回具体错误信息
     private AccessTokenHolder data;
 
     @Data
     public static class AccessTokenHolder {
         private String access_token; // 接口令牌 access_token
-        private Integer expire; // 有效期，单位秒, 默认7200
+        private Integer expiresIn; // 有效期，单位秒, 默认7200
 
         private long validBefore; // 默认应该是得到access_token时间+7000s的时间戳
 

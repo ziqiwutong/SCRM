@@ -1,6 +1,7 @@
 package com.scrm.marketing.controller;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
@@ -8,7 +9,6 @@ import com.scrm.marketing.share.wx.AccessTokenResult;
 import com.scrm.marketing.share.wx.GlobalAccessToken;
 import com.scrm.marketing.share.wx.JsapiTicket;
 import com.scrm.marketing.share.wx.WxUserInfoResult;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -26,7 +26,6 @@ import java.util.Arrays;
  */
 @RestController
 @RequestMapping("/mk/wx")
-@Slf4j
 public class WxController {
 
     @Value("${my.wx.appId}")
@@ -62,8 +61,7 @@ public class WxController {
         // 2.sha1加密之后的字符串可与signature对比，标识该请求来源于微信
         if (signature.equals(DigestUtil.sha1Hex(s))) return echostr;// 成功则原样返回
 
-        else System.out.println("=================warning: signature校验失败，不过还是直接返回echostr=====================");
-        log.error("signature校验失败，不过还是直接返回echostr");
+        else MyLoggerUtil.warning("=================warning: signature校验失败，不过还是直接返回echostr=====================");
         return echostr;
     }
 
@@ -79,16 +77,16 @@ public class WxController {
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        System.out.println("获取到的code: " + code);
+        //System.out.println("获取到的code: " + code);
         // 1.根据code获取access_token
         AccessTokenResult accessTokenResult = getAccessToken(code);
         if (accessTokenResult == null) return Result.error(CodeEum.ERROR, "获取access_token失败");
-        System.out.println("获取到的access_token: " + accessTokenResult);
+        //System.out.println("获取到的access_token: " + accessTokenResult);
 
         // 2.根据access_token获取userinfo
         WxUserInfoResult wxUserInfo = getWxUserInfo(accessTokenResult.getAccess_token(), accessTokenResult.getOpenid());
         if (wxUserInfo == null) return Result.error(CodeEum.ERROR, "获取微信用户信息失败");
-        System.out.println("获取到的微信用户信息: " + wxUserInfo);
+        //System.out.println("获取到的微信用户信息: " + wxUserInfo);
 
         // 3.state处理
         /*暂时没有用到state*/

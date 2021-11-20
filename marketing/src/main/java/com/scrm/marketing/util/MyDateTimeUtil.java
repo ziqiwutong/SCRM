@@ -1,8 +1,6 @@
 package com.scrm.marketing.util;
 
 
-import com.scrm.marketing.exception.MyException;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,22 +10,36 @@ import java.util.Date;
  * @author fzk
  * @date 2021-07-15 21:34
  */
+@SuppressWarnings("unused")
 public class MyDateTimeUtil {
+    /**
+     * SimpleDateFormat不是线程安全的，多个线程同时调用format方法会使得内部数据结构被并发访问破坏
+     * 使用同步开销大，使用局部变量有点浪费
+     * 所以使用 <strong>线程局部变量<strong/>
+     */
+    public static final ThreadLocal<SimpleDateFormat> timeFormat =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"));
+    public static final ThreadLocal<SimpleDateFormat> dateFormat =
+            ThreadLocal.withInitial(() -> new SimpleDateFormat("yyyy-MM-dd"));
+
     public static String getNowDate() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        SimpleDateFormat simpleDateFormat = dateFormat.get();
 
         return simpleDateFormat.format(new Date());
     }
 
     public static String getNowTime() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat simpleDateFormat = timeFormat.get();
+
         return simpleDateFormat.format(new Date());
     }
 
     /**
      * 自定义日期或时间格式
      *
-     * @param pattern 自定义格式，如：yyyy-MM-dd HH:mm:ss // 24小时制
+     * @param pattern 自定义格式，如：yyyy-MM-dd HH:mm:ss 为24小时制;  yyyy-MM-dd HH:mm:ss 为12小时制
      * @return 返回当前的日期或时间
      */
     public static String getNowDateOrTime(String pattern) {
@@ -91,18 +103,11 @@ public class MyDateTimeUtil {
      *
      * @param startDate 正确为2021-07-01这种
      * @param endDate   正确为2021-07-31这种
-     * @return 正确返回true，其他情况抛异常
+     * @return 正确返回true，其他情况返回false
      */
-    public static boolean isStartAndEndRight(String startDate, String endDate) throws MyException {
-        if (!MyDateTimeUtil.isFirstDay(startDate) || !MyDateTimeUtil.isLastDay(endDate))
-            throw new MyException(400, "日期格式不正确，正确格式：" +
-                    "开始日期2021-07-01，结束日期2021-07-31；" +
-                    "或开始日期不是每月第一天；" +
-                    "或结束日期不是每月最后一天");
-
-        if (startDate.compareTo(endDate) > 0)
-            throw new MyException(400, "开始日期：" + startDate + " 大于结束日期：" + endDate);
-
-        return true;
+    public static boolean isStartAndEndRight(String startDate, String endDate) {
+        return MyDateTimeUtil.isFirstDay(startDate) &&
+                MyDateTimeUtil.isLastDay(endDate) &&
+                startDate.compareTo(endDate) < 0;
     }
 }

@@ -2,7 +2,10 @@ package com.scrm.marketing.util;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import java.io.UnsupportedEncodingException;
+import java.math.BigInteger;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 /**
@@ -37,5 +40,26 @@ public class MyDigestUtil {
             sb.append(stmp);
         }
         return sb.toString().toLowerCase();
+    }
+
+    /**
+     * md5加密
+     *
+     * @param str 待加密字符串
+     * @return 加密后的字符串
+     */
+    public static String md5Hex(String str) {
+        byte[] digest = null;
+        try {
+            MessageDigest md5 = MessageDigest.getInstance("md5");
+            digest = md5.digest(str.getBytes("utf-8"));
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        //16是表示转换为16进制数
+        String md5Str = new BigInteger(1, digest).toString(16);
+        return md5Str;
     }
 }

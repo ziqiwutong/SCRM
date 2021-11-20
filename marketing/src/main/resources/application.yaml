@@ -70,5 +70,5 @@ my:
   #    appId: "wx8cfd402efecab262"
   #    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
   iuap:
-    appKey: ""    # 目前还没有
-    appSecret: "" # 目前还没有
+    appid: "20b486cefc83889f"
+    secret: "4b8f340cb3b127950bfb4c632d355c5ab5330bb1bd7b4e7307ccf68217e5"

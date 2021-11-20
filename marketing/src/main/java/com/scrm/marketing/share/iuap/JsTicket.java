@@ -1,6 +1,11 @@
 package com.scrm.marketing.share.iuap;
 
+import cn.hutool.crypto.digest.DigestUtil;
+import cn.hutool.crypto.digest.MD5;
+import com.scrm.marketing.util.MyDigestUtil;
 import lombok.Data;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * GET请求地址：https://api.diwork.com/yonbip/uspace/jsbridge/jsticket?access_token=xxx
@@ -10,7 +15,9 @@ import lombok.Data;
  */
 @Data
 public class JsTicket {
-    private String code;
+    private String error_code; // 成功为 "0"
+    private String error; // 成功为 "success"
+    private String error_description; // 成功为 ""
     private JsTicketHolder data;
 
 
@@ -29,5 +36,12 @@ public class JsTicket {
             return jsTicketCache != null &&
                     System.currentTimeMillis() < jsTicketCache.getValidBefore();
         }
+    }
+
+    public static String signature(String agentId, String jsTicket, long timeStamp) {
+        // 1.三个参数按照如下拼接
+        String to_signature = "agentId=" + agentId + "&jsTicket=" + jsTicket + "&timeStamp=" + timeStamp;
+        // 2.使用md5加密方式对拼接字符串加密
+        return MyDigestUtil.md5Hex(to_signature);
     }
 }

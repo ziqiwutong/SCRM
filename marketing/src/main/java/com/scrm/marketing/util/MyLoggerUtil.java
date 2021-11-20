@@ -21,6 +21,10 @@ public class MyLoggerUtil {
         getLogger().severe(supplier);
     }
 
+    public static void warning(String msg){
+        getLogger().warning(msg);
+    }
+
     public static void warning(Supplier<String> supplier) {
         getLogger().warning(supplier);
     }
