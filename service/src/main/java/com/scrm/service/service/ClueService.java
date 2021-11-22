@@ -5,7 +5,7 @@ import com.scrm.service.entity.Clue;
 import java.util.List;
 
 public interface ClueService {
-    List<Clue> queryClue(Integer pageCount, Integer currentPage);
+    List<Clue> queryClue(Integer pageCount, Integer currentPage, String clueList);
 
     List<Clue> queryClueByKey(String key);
 

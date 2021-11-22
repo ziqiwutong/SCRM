@@ -13,10 +13,11 @@ public class BusinessOpportunity {
     private String boName;
     private Date boDate;
     private String boStatus;
-    private Integer boFollowStatus;
+    private String boFullStage;
+    private Integer boFollowStage;
     private String boEditor;
-    private String boTemplate;
     private String boResponsible;
+    private Long boResponsibleId;
     private BigDecimal boAmount;
     private Date boExpectDate;
     private String boNotes;
@@ -63,12 +64,20 @@ public class BusinessOpportunity {
         this.boStatus = boStatus;
     }
 
-    public Integer getBoFollowStatus() {
-        return boFollowStatus;
+    public String getBoFullStage() {
+        return boFullStage;
     }
 
-    public void setBoFollowStatus(Integer boFollowStatus) {
-        this.boFollowStatus = boFollowStatus;
+    public void setBoFullStage(String boFullStage) {
+        this.boFullStage = boFullStage;
+    }
+
+    public Integer getBoFollowStage() {
+        return boFollowStage;
+    }
+
+    public void setBoFollowStage(Integer boFollowStage) {
+        this.boFollowStage = boFollowStage;
     }
 
     public String getBoEditor() {
@@ -79,20 +88,20 @@ public class BusinessOpportunity {
         this.boEditor = boEditor;
     }
 
-    public String getBoTemplate() {
-        return boTemplate;
-    }
-
-    public void setBoTemplate(String boTemplate) {
-        this.boTemplate = boTemplate;
-    }
-
     public String getBoResponsible() {
         return boResponsible;
     }
 
     public void setBoResponsible(String boResponsible) {
         this.boResponsible = boResponsible;
+    }
+
+    public Long getBoResponsibleId() {
+        return boResponsibleId;
+    }
+
+    public void setBoResponsibleId(Long boResponsibleId) {
+        this.boResponsibleId = boResponsibleId;
     }
 
     public BigDecimal getBoAmount() {

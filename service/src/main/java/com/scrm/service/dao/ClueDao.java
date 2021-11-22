@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface ClueDao {
-    List<Clue> queryClue(Integer pageCount, Integer currentPage);
+    List<Clue> queryClue(Integer pageCount, Integer currentPage, String clueList);
 
     List<Clue> queryClueByKey(String key);
 

@@ -15,8 +15,8 @@ public class ClueServiceImpl implements ClueService {
     private ClueDao se_clueDao;
 
     @Override
-    public List<Clue> queryClue(Integer pageCount, Integer currentPage) {
-        return se_clueDao.queryClue(pageCount, currentPage);
+    public List<Clue> queryClue(Integer pageCount, Integer currentPage, String clueList) {
+        return se_clueDao.queryClue(pageCount, currentPage, clueList);
     }
 
     @Override

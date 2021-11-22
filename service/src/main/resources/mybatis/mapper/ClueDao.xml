@@ -5,7 +5,11 @@
 <mapper namespace="com.scrm.service.dao.ClueDao">
     <select id="queryClue" resultType="com.scrm.service.entity.Clue">
         <bind name="key_offset" value="(currentPage-1)*pageCount"/>
-        select * from se_clue order by id asc
+        select * from se_clue
+        <if test="clueList != null">
+            where clue_status = replace(#{clueList}, '''', '')
+        </if>
+        order by id asc
         <if test="pageCount != null and currentPage != null">
             limit #{key_offset},#{pageCount}
         </if>

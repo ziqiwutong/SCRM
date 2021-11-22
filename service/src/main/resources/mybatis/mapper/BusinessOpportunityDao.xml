@@ -21,12 +21,12 @@
 
     <insert id="addBizOpp" parameterType="com.scrm.service.entity.BusinessOpportunity"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_business_opportunity (id, customer_id, bo_name, bo_date, bo_status, bo_follow_status, bo_editor, bo_template, bo_responsible, bo_amount, bo_expect_date, bo_notes)
-        values(#{id}, #{customerId}, #{boName}, #{boDate}, #{boStatus}, #{boFollowStatus}, #{boEditor}, #{boTemplate}, #{boResponsible}, #{boAmount}, #{boExpectDate}, #{boNotes})
+        insert into se_business_opportunity (id, customer_id, bo_name, bo_date, bo_status, bo_full_stage, bo_follow_stage, bo_editor, bo_responsible, bo_responsible_id, bo_amount, bo_expect_date, bo_notes)
+        values(#{id}, #{customerId}, #{boName}, #{boDate}, #{boStatus}, #{boFullStage}, #{boFollowStage}, #{boEditor}, #{boResponsible}, #{boResponsibleId}, #{boAmount}, #{boExpectDate}, #{boNotes})
     </insert>
 
     <update id="editBizOpp" parameterType="com.scrm.service.entity.BusinessOpportunity">
-        update se_business_opportunity set customer_id = #{customerId}, bo_name = #{boName}, bo_date = #{boDate}, bo_status = #{boStatus}, bo_follow_status = #{boFollowStatus}, bo_editor = #{boEditor}, bo_template = #{boTemplate}, bo_responsible = #{boResponsible}, bo_amount = #{boAmount}
+        update se_business_opportunity set customer_id = #{customerId}, bo_name = #{boName}, bo_date = #{boDate}, bo_status = #{boStatus}, bo_full_stage = #{boFullStage}, bo_follow_stage = #{boFollowStage}, bo_editor = #{boEditor}, bo_responsible = #{boResponsible}, bo_responsible_id = #{boResponsibleId}, bo_amount = #{boAmount}, bo_expect_date = #{boExpectDate}, bo_notes = #{boNotes}
         where id = #{id}
     </update>
 

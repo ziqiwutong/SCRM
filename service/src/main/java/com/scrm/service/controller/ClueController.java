@@ -10,58 +10,77 @@ import com.scrm.service.util.resp.PageResult;
 import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
-
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(value = "/clue")
+import javax.annotation.Resource;
+
+/**
+ * @author Zitong Li
+ * @create 2021-11-10 21:57
+ */
+
+@RequestMapping(value = "/clue") //Mapping requests
 @RestController
 public class ClueController {
     @Resource
-    private ClueService se_clueService;
+    private ClueService se_clueService; //Declare service class
 
     @Resource
     private ClueStatusService se_clue_statusService;
 
-    @PostMapping(value = "/queryClue")
+    @PostMapping(value = "/queryClue") //Mapping query requests
     public PageResult queryClue(
-            @RequestParam(value = "pageCount", required = false) Integer pageCount,
-            @RequestParam(value = "currentPage", required = false) Integer currentPage) {
-        List<Clue> clues = se_clueService.queryClue(pageCount, currentPage);
+            @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
+            @RequestParam(value = "clueList", required = false) String clueList//Get parameters
+    ) {
         Integer count = se_clueService.queryCount();
-        return PageResult.success(clues, count, currentPage);
+        if(clueList.equals("全部线索")){
+            List<Clue> clues = se_clueService.queryClue(pageCount, currentPage, null);
+            //If the operation succeeds, the paging query result will be returned
+            return PageResult.success(clues, count, currentPage);
+        }else{
+            List<Clue> clues = se_clueService.queryClue(pageCount, currentPage, clueList);
+            //If the operation succeeds, the paging query result will be returned
+            return PageResult.success(clues, count, currentPage);
+        }
     }
 
-    @PostMapping(value = "/queryClueByKey")
+    @PostMapping(value = "/queryClueByKey") //Mapping keyword query requests
     public Result queryClueByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {
         List<Clue> clue = se_clueService.queryClueByKey(keySearch);
+
+        //If the operation succeeds, the query result will be returned
         return Result.success(clue);
     }
 
-    @PostMapping(value = "/addClue")
+    @PostMapping(value = "/addClue") //Mapping add requests
     public Result addClue(
-            @RequestBody  Clue se_clue
+            @RequestBody Clue se_clue
     ) {
         if (se_clue == null) {
+
+            //If the parameter is null, a param_miss exception will be returned
             return Result.error(CodeEum.PARAM_MISS);
         }
         try{
             se_clueService.addClue(se_clue);
             return Result.success();
         }catch(Exception e){
+
+            //If the operation fails, a fail exception will be returned
             return Result.error(CodeEum.FAIL);
         }
     }
 
-    @PostMapping(value = "/editClue")
+    @PostMapping(value = "/editClue") //Mapping edit requests
     public Result editClue(
             @RequestBody Clue se_clue
-    )
-    {
+    ) {
         if (se_clue == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
@@ -70,7 +89,7 @@ public class ClueController {
                 BusinessOpportunity businessOpportunity = new BusinessOpportunity();
                 businessOpportunity.setBoName(se_clue.getClueName());
                 businessOpportunity.setBoDate(new Date(System.currentTimeMillis()));
-                businessOpportunity.setBoStatus("新商机");
+                businessOpportunity.setBoStatus("New Business Opportunity");
                 businessOpportunity.setBoEditor(se_clue.getClueEditor());
                 businessOpportunity.setBoResponsible(se_clue.getClueResponsible());
                 return Result.success(businessOpportunity);
@@ -83,11 +102,10 @@ public class ClueController {
         }
     }
 
-    @PostMapping(value = "/deleteClue")
+    @PostMapping(value = "/deleteClue") //Mapping delete requests
     public Result deleteClue(
             @RequestParam(value = "id") Integer id
-    )
-    {
+    ) {
         try {
             se_clueService.deleteClue(id);
             return Result.success();
@@ -99,14 +117,13 @@ public class ClueController {
     @PostMapping(value = "/queryClueStatus")
     public Result queryClueStatus(
             @RequestParam(value = "clueId") Integer clueId
-    )
-    {
+    ) {
         Clue se_clue = se_clue_statusService.queryClue(clueId);
         List<ClueStatus> list = se_clue_statusService.queryClueStatus(clueId);
+
         List final_list = new ArrayList();
         final_list.add(se_clue);
-        for (ClueStatus clueStatus:list
-             ) {
+        for (ClueStatus clueStatus:list) {
             final_list.add(clueStatus);
         }
         return Result.success(final_list);
