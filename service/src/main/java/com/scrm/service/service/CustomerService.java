@@ -2,6 +2,7 @@ package com.scrm.service.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.CustomerCustomizedField;
 import com.scrm.service.entity.CustomerRelation;
 
 import java.util.HashSet;
@@ -18,9 +19,16 @@ public interface CustomerService {
     List<Customer> query(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper);
 
     /**
+     * 根据商机创建时间查询Customer ID
+     * @param start 开始日期（闭区间）
+     * @param end 结束日期（开区间）
+     * @return List<Long>
+     */
+    List<Long> queryIdByBusinessTime(String start, String end);
+
+    /**
      * 查询Customer总数量
      * @return Customer数量
-     * @param wrapper
      */
     Integer queryCount(QueryWrapper<Customer> wrapper);
 
@@ -63,6 +71,12 @@ public interface CustomerService {
      * @param idList Customer ID List
      */
     String deleteBatch(List<Long> idList);
+
+    /**
+     * 查询CustomerCustomizedField
+     * @return List<CustomerCustomizedField>
+     */
+    List<CustomerCustomizedField> queryCustomizedField();
 
     /**
      * 给用户打标签

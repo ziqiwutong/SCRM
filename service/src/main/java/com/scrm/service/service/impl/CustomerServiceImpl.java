@@ -1,10 +1,12 @@
 package com.scrm.service.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.scrm.service.dao.CustomerCustomizedFieldDao;
 import com.scrm.service.dao.CustomerDao;
 import com.scrm.service.dao.CustomerRelationDao;
 import com.scrm.service.dao.LabelDao;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.CustomerCustomizedField;
 import com.scrm.service.entity.CustomerRelation;
 import com.scrm.service.service.CustomerService;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,9 @@ public class CustomerServiceImpl implements CustomerService {
     private CustomerDao customerDao;
 
     @Resource
+    private CustomerCustomizedFieldDao customerCustomizedFieldDao;
+
+    @Resource
     private CustomerRelationDao customerRelationDao;
 
     @Resource
@@ -36,6 +41,11 @@ public class CustomerServiceImpl implements CustomerService {
             customer.setCustomerLabels(labelDao.queryByCustomerId(customer.getId()));
         }
         return customers;
+    }
+
+    @Override
+    public List<Long> queryIdByBusinessTime(String start, String end) {
+        return customerDao.queryIdByBusinessTime(start, end);
     }
 
     @Override
@@ -95,6 +105,11 @@ public class CustomerServiceImpl implements CustomerService {
             return "删除失败";
         }
         return null;
+    }
+
+    @Override
+    public List<CustomerCustomizedField> queryCustomizedField() {
+        return customerCustomizedFieldDao.selectList(null);
     }
 
     @Override
