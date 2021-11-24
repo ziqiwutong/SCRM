@@ -71,7 +71,7 @@ public class IuapController {
      *
      * @return result
      */
-    @GetMapping("/jsapi")
+    @GetMapping("/jsApi")
     public Result jsapi() {
         // 1.获取js_ticket
         String js_ticket = getJs_ticket();

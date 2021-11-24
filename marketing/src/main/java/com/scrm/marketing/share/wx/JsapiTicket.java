@@ -51,7 +51,7 @@ public class JsapiTicket {
     /**
      * 用于返回给前端的包装类：包装了前端调用JS-SDK所需要属性
      */
-    @SuppressWarnings("unused")
+    @Data
     public static class TicketSignatureWrapper {
         private String appId;
         private String signature;// sha1加密后的密文：根据ticket,timestamp,noncestr,url进行sha1加密
@@ -62,38 +62,6 @@ public class JsapiTicket {
             this.appId = appId;
             this.signature = signature;
             this.noncestr = noncestr;
-            this.timestamp = timestamp;
-        }
-
-        public String getAppId() {
-            return appId;
-        }
-
-        public void setAppId(String appId) {
-            this.appId = appId;
-        }
-
-        public String getSignature() {
-            return signature;
-        }
-
-        public void setSignature(String signature) {
-            this.signature = signature;
-        }
-
-        public String getNoncestr() {
-            return noncestr;
-        }
-
-        public void setNoncestr(String noncestr) {
-            this.noncestr = noncestr;
-        }
-
-        public long getTimestamp() {
-            return timestamp;
-        }
-
-        public void setTimestamp(long timestamp) {
             this.timestamp = timestamp;
         }
     }

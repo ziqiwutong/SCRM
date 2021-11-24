@@ -100,12 +100,12 @@ public class WxController {
         // 1.获取access_token
         GlobalAccessToken accessToken = getGlobalAccessToken();
         if (accessToken == null || accessToken.getAccess_token() == null)
-            return Result.error(CodeEum.ERROR);
+            return Result.FAIL();
 
         // 2.获取jsapi_ticket
         JsapiTicket jsapi_ticket = getJsapi_ticket(accessToken.getAccess_token());
         if (jsapi_ticket == null || jsapi_ticket.getTicket() == null)
-            return Result.error(CodeEum.ERROR);
+            return Result.FAIL();
 
         // 3.根据ticket 以及 其他参数 sha1加密生成signature
         String noncestr = MyRandomUtil.randomStr(16);

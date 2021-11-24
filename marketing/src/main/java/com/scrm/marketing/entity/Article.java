@@ -8,9 +8,10 @@ import org.springframework.lang.Nullable;
 
 
 /**
+ * 文章表
+ *
  * @author fzk
  * @date 2021-10-14 16:38
- * 文章表
  */
 @Data
 @TableName("mk_article")

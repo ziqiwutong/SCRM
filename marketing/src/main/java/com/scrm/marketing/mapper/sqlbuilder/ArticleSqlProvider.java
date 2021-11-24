@@ -1,10 +1,8 @@
 package com.scrm.marketing.mapper.sqlbuilder;
 
-import com.scrm.marketing.entity.Article;
 import org.apache.ibatis.builder.annotation.ProviderMethodResolver;
 import org.apache.ibatis.jdbc.SQL;
 
-import java.util.List;
 
 /**
  * @author fzk

@@ -7,11 +7,11 @@ spring:
         # 以下3个配置，如果上线服务器测试，则开启第一个group即可；
         # 如果是要进行内网穿透，让服务器的gateway服务指向本地的，则3个都开启
         group: "test_group"
-        ip: "vv8itx.natappfree.cc"  # 内网穿透给出的域名地址，不能写协议，而且每次都会变
+        ip: "79itfc.natappfree.cc"  # 内网穿透给出的域名地址，不能写协议，而且每次都会变
         port: 80
 
 
 # 配置日志  选择了默认的控制台输出   如果选择log4j或slf4j，需要导入包
-mybatis-plus:
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+#mybatis-plus:
+#  configuration:
+#    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

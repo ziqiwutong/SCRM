@@ -6,6 +6,7 @@ import com.scrm.marketing.mapper.sqlbuilder.ArtCusReadSqlProvider;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.Date;
 import java.util.List;
@@ -40,4 +41,14 @@ public interface ArtCusReadMapper extends BaseMapper<ArticleCustomerRead> {
     @SuppressWarnings("all")
     @Select("SELECT COUNT(DISTINCT customer_id) FROM mk_article_customer_read;")
     int queryCusCount();
+
+    @SuppressWarnings("all")
+    @Select("SELECT id FROM mk_article_customer_read WHERE article_id=#{articleId} " +
+            "   AND customer_id=#{customerId}" +
+            "   AND read_date=#{readDate}")
+    List<Long> queryTodayRead(long articleId, long customerId, String readDate);
+
+    @SuppressWarnings("all")
+    @Update("UPDATE mk_article_customer_read SET read_time=read_time+#{readTime} WHERE id=#{artCusReadId}")
+    void addReadTime(long artCusReadId, Integer readTime);
 }

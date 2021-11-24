@@ -6,7 +6,6 @@ import com.scrm.marketing.mapper.sqlbuilder.ArticleSqlProvider;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

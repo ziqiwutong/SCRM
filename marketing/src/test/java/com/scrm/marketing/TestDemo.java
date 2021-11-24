@@ -1,27 +1,18 @@
 package com.scrm.marketing;
 
 import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.util.EscapeUtil;
 import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.digest.DigestUtil;
 import cn.hutool.json.JSONUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.scrm.marketing.share.iuap.AccessToken;
 import com.scrm.marketing.share.iuap.UserInfoResult;
-import com.scrm.marketing.util.MyDigestUtil;
 import com.scrm.marketing.util.MyJsonUtil;
-import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.HtmlUtils;
 
-import java.io.UnsupportedEncodingException;
-import java.math.BigInteger;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 

@@ -8,10 +8,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 每篇文章每个客户的阅读记录表
+ *
  * @author fzk
  * @date 2021-10-14 17:42
- * <p>
- * 每篇文章每个客户的阅读记录表
  */
 @Data
 @NoArgsConstructor

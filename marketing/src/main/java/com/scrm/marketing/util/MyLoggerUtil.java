@@ -29,8 +29,8 @@ public class MyLoggerUtil {
         getLogger().warning(supplier);
     }
 
-    public static void info(Supplier<String> supplier) {
-        getLogger().info(supplier);
+    public static void info(String msg) {
+        getLogger().info(msg);
     }
 
     public static void config(Supplier<String> supplier) {
@@ -54,7 +54,6 @@ public class MyLoggerUtil {
     }
 
     /**
-     * 单例模式：
      * 登记式/静态内部类
      */
     private static class LoggerHolder {

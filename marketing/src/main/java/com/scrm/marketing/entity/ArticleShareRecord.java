@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
+ * 每篇文章下每个分享者
+ *
  * @author fzk
  * @date 2021-10-14 17:32
- * <p>
- * 每篇文章下每个分享者
  */
 @Data
 @NoArgsConstructor
@@ -25,8 +25,8 @@ public class ArticleShareRecord {
     /**
      * 阅读记录，存JSON串
      */
-    private String readRecord;
-    private String openids;// 不同的微信openid集合JSON串
+    private String readRecord;// 默认是"[]"
+    private String openids;// 不同的微信openid集合JSON串 , 默认是"[]"
     private Integer readTimes;// 阅读次数
     private Integer readPeople;// 阅读人数
 

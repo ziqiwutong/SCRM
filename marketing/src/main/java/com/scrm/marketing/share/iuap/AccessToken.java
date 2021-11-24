@@ -31,7 +31,7 @@ public class AccessToken {
 
 
         /*缓存*/
-        public static AccessTokenHolder accessTokenCache = null;
+        public static volatile AccessTokenHolder accessTokenCache = null;
 
         /*判断缓存里的access_token是否有效*/
         public static boolean isValid() {

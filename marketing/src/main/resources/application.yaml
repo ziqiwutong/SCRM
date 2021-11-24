@@ -64,11 +64,12 @@ my:
     timeout: 604800 # Token有效期，一周，单位：s
     loginIdKey: userID
   wx:
-    appId: "wx45421563894fc3f3"
-    appSecret: "fb33e5dca7e5d506da38936fd99414a7"
-    token: scrm
-  #    appId: "wx8cfd402efecab262"
-  #    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
+#    appId: "wx45421563894fc3f3"
+#    appSecret: "fb33e5dca7e5d506da38936fd99414a7"
+    token: mySecret
+    # 这个是学姐的
+    appId: "wx8cfd402efecab262"
+    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
   iuap:
     appid: "20b486cefc83889f"
     secret: "4b8f340cb3b127950bfb4c632d355c5ab5330bb1bd7b4e7307ccf68217e5"

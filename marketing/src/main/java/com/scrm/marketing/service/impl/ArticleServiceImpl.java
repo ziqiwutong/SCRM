@@ -70,8 +70,8 @@ public class ArticleServiceImpl implements ArticleService {
                 articleShareRecord.setArticleId(id);//文章id
                 articleShareRecord.setShareId(shareId);// 分享者id
                 //articleShareRecord.setShowShareFlag(true);//默认展示分享标记
-                articleShareRecord.setReadRecord(null);
-                articleShareRecord.setOpenids(null);
+                articleShareRecord.setReadRecord("[]");
+                articleShareRecord.setOpenids("[]");
                 articleShareRecord.setReadTimes(0);//默认0
                 articleShareRecord.setReadPeople(0);//默认0
                 if (1 != articleShareRecordMapper.insert(articleShareRecord))

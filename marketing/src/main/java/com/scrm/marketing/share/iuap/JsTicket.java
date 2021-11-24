@@ -29,7 +29,7 @@ public class JsTicket {
         private long validBefore; // 默认应该是得到js_ticket时间+(604800-200)s的时间戳
 
         /*缓存*/
-        public static JsTicketHolder jsTicketCache = null;
+        public static volatile JsTicketHolder jsTicketCache = null;
 
         /*判断缓存里的js_ticket是否有效*/
         public static boolean isValid() {
