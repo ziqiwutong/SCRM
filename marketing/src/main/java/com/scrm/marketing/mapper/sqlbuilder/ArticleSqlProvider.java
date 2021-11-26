@@ -13,7 +13,7 @@ public class ArticleSqlProvider implements ProviderMethodResolver {
 
         return new SQL() {{
             SELECT("id,author_id,author_name,article_title,article_image," +
-                    "product_id,article_view_times,article_read_time_sum," +
+                    "product_ids_json,article_view_times,article_read_time_sum," +
                     "examine_flag,examine_id,examine_name,examine_notes," +
                     "article_origin_author,article_account_name,article_power,article_type," +
                     "material_type," +

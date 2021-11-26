@@ -23,7 +23,7 @@ public class ArticleShareRecordController {
     @GetMapping(path = "/shareRecord")
     public Result queryShareRecord(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(name="shareId",required = false)List<Long> shareIds
+            @RequestParam(name = "shareId", required = false) List<Long> shareIds
     ) {
         // 参数检查
         if (articleId == null || articleId < 1L)
@@ -48,16 +48,37 @@ public class ArticleShareRecordController {
      * 2.如果是我们的客户，那么：
      * 2.1 文章客户阅读记录处理：表 mk_article_customer_read
      *
-     * @param wxUserInfo 微信用户信息、文章id，shareId
      * @return result
      */
     @PostMapping(path = "/addReadRecord")
-    public Result addReadRecord(@RequestBody WxUserInfoResult wxUserInfo) throws JsonProcessingException {
+    public Result addReadRecord(
+            @RequestParam("articleId") long articleId,
+            @RequestParam("shareId") long shareId,
+            @RequestParam("readTime") int readTime,
+            @RequestParam("openid") String openid,
+            @RequestParam("nickname") String nickname,
+            @RequestParam("sex") String sex,
+            @RequestParam("province") String province,
+            @RequestParam("city") String city,
+            @RequestParam("country") String country,
+            @RequestParam("headimgurl") String headimgurl,
+            @RequestParam("unionid") String unionid) {
         // 1.参数检查：微信openid,readTime,articleId,shareId
-        if (wxUserInfo == null || wxUserInfo.getOpenid() == null || wxUserInfo.getReadTime() == null)
-            return Result.PARAM_MISS();
-        if (wxUserInfo.getArticleId() == null || wxUserInfo.getShareId() == null)
-            return Result.PARAM_MISS();
+        if (openid == null || "".equals(openid))
+            return Result.error(CodeEum.PARAM_MISS, "openid");
+
+        WxUserInfoResult wxUserInfo = new WxUserInfoResult();
+        wxUserInfo.setArticleId(articleId);
+        wxUserInfo.setShareId(shareId);
+        wxUserInfo.setReadTime(readTime);
+        wxUserInfo.setOpenid(openid);
+        wxUserInfo.setNickname(nickname);
+        wxUserInfo.setSex(sex);
+        wxUserInfo.setProvince(province);
+        wxUserInfo.setCity(city);
+        wxUserInfo.setCountry(country);
+        wxUserInfo.setHeadimgurl(headimgurl);
+        wxUserInfo.setUnionid(unionid);
 
         // 2.调用service
         articleShareRecordService.addReadRecord(wxUserInfo);

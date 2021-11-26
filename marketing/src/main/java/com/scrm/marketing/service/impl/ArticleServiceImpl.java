@@ -12,19 +12,19 @@ import com.scrm.marketing.mapper.ArticleShareRecordMapper;
 import com.scrm.marketing.mapper.UserMapper;
 import com.scrm.marketing.service.ArticleService;
 import com.scrm.marketing.util.MyAssert;
+import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.lang.NonNull;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author fzk
@@ -34,21 +34,33 @@ import java.util.Map;
 public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleMapper articleMapper;
-    //    @Resource
-//    private UserClient userClient;
     @Resource
     private UserMapper userMapper;
     @Resource
     private ArticleShareRecordMapper articleShareRecordMapper;
     @Resource
     private ArtCusReadMapper articleCustomerReadMapper;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
     @Override
     @Transactional//开启事务
     public Result getArticleDetail(Long id, Long shareId) throws MyException {
-        Article article = articleMapper.selectById(id);
+        // 0. 查询文章所有
+        // 0.1 从缓存查
+        Article article;
+//        ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+//        String article_json = opsForValue.get("article:id:1");
+//        article = MyJsonUtil.toBean(article_json, Article.class);
+
+
+        article = articleMapper.selectById(id);
         if (article == null)
             return Result.error(CodeEum.NOT_EXIST);
+
+        // 0.1 将productIdsJson 转为 productIds属性
+        Article.productIdsHandle(article);
+
         // 1、shareId为空
         if (shareId == null) {
             return Result.success(article);
@@ -86,7 +98,7 @@ public class ArticleServiceImpl implements ArticleService {
             else
                 throw new MyException(CodeEum.ERROR.getCode(), "分享记录表存在多条相关记录");
 
-            Map<String, Object> map = new HashMap<>(2);
+            Map<String, Object> map = new HashMap<>(2, 1.0f);
             map.put("article", article);
             map.put("user", shareUser);
             //map.put("showShareFlag", articleShareRecord.getShowShareFlag());
@@ -100,6 +112,10 @@ public class ArticleServiceImpl implements ArticleService {
         int index = (pageNum - 1) * pageSize;
         int total = articleMapper.queryCount(index, pageSize, examineFlag, materialType);
         List<Article> articles = articleMapper.queryPage(index, pageSize, examineFlag, materialType);
+        // 对productIds处理
+        for (Article article : articles) {
+            Article.productIdsHandle(article);
+        }
         return PageResult.success(articles, total, pageNum);
     }
 
@@ -126,10 +142,16 @@ public class ArticleServiceImpl implements ArticleService {
         article.setArticleViewTimes(0);
         article.setArticleReadTimeSum(0L);
 
+        // productIds 转为 productIdsJson
+        if (article.getProductIds() == null)
+            article.setProductIdsJson("[]");
+        else article.setProductIdsJson(MyJsonUtil.toJsonStr(article.getProductIds()));
+
         /*
          * 目前暂时先全部审核通过
          */
         article.setExamineFlag(Article.EXAMINE_FLAG_ACCESS);//审核标记：待审核
+        System.out.println("========warning：目前对于文章的插入处理，全部选择审核通过=======");
 
         if (article.getMaterialType() == null)
             article.setMaterialType(Article.MATERIAL_TYPE_PERSONAL);//默认是个人素材
@@ -154,6 +176,10 @@ public class ArticleServiceImpl implements ArticleService {
          */
         article.setCreateTime(null);
         article.setUpdateTime(null);
+        // 将productIds 转为 productIdsJson属性
+        if (article.getProductIds() != null)
+            article.setProductIdsJson(MyJsonUtil.toJsonStr(article.getProductIds()));
+
         if (articleMapper.updateById(article) != 1)
             throw new MyException(CodeEum.NOT_EXIST.getCode(), "文章不存在");
     }
@@ -188,6 +214,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
+    /*感觉这里应该不需要对productIds属性进行处理*/
     public Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize) {
         // 情况2：有文章id，则查询特定文章的7天或者30天的阅读时长，从 mk_article_customer_read 表查
         if (articleId != null && sevenFlag != null) {
@@ -225,6 +252,11 @@ public class ArticleServiceImpl implements ArticleService {
     public List<Article> queryByTitle(String title) {
         MyAssert.notNull("title can not be null", title);
         // 查询通过审核的文章
-        return articleMapper.queryByTitle(title, Article.EXAMINE_FLAG_ACCESS);
+        List<Article> articles = articleMapper.queryByTitle(title, Article.EXAMINE_FLAG_ACCESS);
+        // productIds 处理
+        for (Article article : articles) {
+            Article.productIdsHandle(article);
+        }
+        return articles;
     }
 }

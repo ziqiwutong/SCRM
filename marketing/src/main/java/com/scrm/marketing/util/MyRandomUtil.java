@@ -53,7 +53,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++)
             builder.append(charCache[localRandom.nextInt(62)]);
@@ -65,7 +65,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++) {
             int index = localRandom.nextInt(62);
@@ -80,7 +80,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++) {
             builder.append(charCache[localRandom.nextInt(0, 36)]);
@@ -93,7 +93,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++)
             builder.append(charCache[localRandom.nextInt(10, 62)]);
@@ -105,7 +105,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++)
             builder.append(charCache[localRandom.nextInt(36, 62)]);
@@ -117,7 +117,7 @@ public class MyRandomUtil {
         assert length >= 0 : "length can not be 小于 0";// 相信在上线之后不会出现 length < 0
         if (length == 0) return "";
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder builder = new StringBuilder(length);
         ThreadLocalRandom localRandom = ThreadLocalRandom.current();//使用本线程的ThreadLocalRandom
         for (int i = 0; i < length; i++)
             builder.append(charCache[localRandom.nextInt(10, 36)]);

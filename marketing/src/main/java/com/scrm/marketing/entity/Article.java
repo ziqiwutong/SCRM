@@ -1,10 +1,18 @@
 package com.scrm.marketing.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.scrm.marketing.util.MyJsonUtil;
 import lombok.Data;
+import org.apache.ibatis.type.JdbcType;
 import org.springframework.lang.Nullable;
+
+import java.util.List;
 
 
 /**
@@ -40,10 +48,17 @@ public class Article {
     private String authorName;
 
     /**
+     * 文章关联的产品相关属性
+     */
+    private String productIdsJson; // 默认应该是"[]"  json格式
+    /* 处理策略是从数据库中查到json，转成List传给前端。
+     前端也是以list格式发给后端，用此字段接受，转为json存到productIdsJson字段，存数据库*/
+    @TableField(exist = false)
+    private List<Long> productIds;
+
+    /**
      * 文章相关属性
      */
-    @Nullable
-    private Long productId;
     private String articleTitle;
     private String articleContext;
     private String articleImage;
@@ -99,6 +114,20 @@ public class Article {
         if (article.getArticleType() == null) return false;
         int articleType = article.getArticleType();
         return articleType == ARTICLE_TYPE_ORIGIN || articleType == ARTICLE_TYPE_REPRINT;
+    }
+
+    /**
+     * 提供对于 数据库中 存储的product_ids_json 字段 转换为前端需要的 List productIds
+     *
+     * @param article 需要处理的的文章，不能为null
+     */
+    public static void productIdsHandle(Article article) {
+        assert article != null;
+
+        String productIdsJson = article.getProductIdsJson();
+        if (productIdsJson == null || "".equals(productIdsJson))
+            article.setProductIds(List.of());
+        else article.setProductIds(MyJsonUtil.toBeanList(productIdsJson, Long.class));
     }
 }
 

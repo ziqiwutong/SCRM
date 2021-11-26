@@ -17,5 +17,5 @@ public interface ArticleShareRecordService {
 
     Result querySharePerson(@NonNull Long articleId);
 
-    void addReadRecord(WxUserInfoResult wxUserInfo) throws JsonProcessingException;
+    void addReadRecord(WxUserInfoResult wxUserInfo);
 }

@@ -99,15 +99,17 @@ public class ArticleController {
         // 1、检查参数
         if (article == null || article.getId() == null)
             return Result.PARAM_MISS();
-        // 1.1 参数合法性检查：materialType,examineFlag
+        // 1.1 参数合法性检查：materialType,examineFlag,articleType
         if (article.getMaterialType() != null) {
-            int materialType = article.getMaterialType();
-            if (materialType != Article.MATERIAL_TYPE_PERSONAL && materialType != Article.MATERIAL_TYPE_ENTERPRISE)
+            if (!Article.checkMaterialType(article))
                 return Result.PARAM_ERROR();
         }
         if (article.getExamineFlag() != null) {
-            int examineFlag = article.getExamineFlag();
-            if (examineFlag != Article.EXAMINE_FLAG_WAIT && examineFlag != Article.EXAMINE_FLAG_ACCESS && examineFlag != Article.EXAMINE_FLAG_NOT_ACCESS)
+            if(!Article.checkExamineFlag(article))
+                return Result.PARAM_ERROR();
+        }
+        if(article.getArticleType()!=null){
+            if(!Article.checkArticleType(article))
                 return Result.PARAM_ERROR();
         }
 

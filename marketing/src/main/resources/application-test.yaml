@@ -3,3 +3,9 @@ spring:
     nacos:
       discovery:
         group: "test_group"
+
+my:
+  wx:
+    appId: "wx8cfd402efecab262"
+    appSecret: "af8bbde35c7ebd716d32b95ebb4eaa8c"
+    token: "mySecret"

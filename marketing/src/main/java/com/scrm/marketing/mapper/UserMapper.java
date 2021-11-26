@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.scrm.marketing.entity.User;
 import org.apache.ibatis.annotations.Select;
 import org.springframework.lang.NonNull;
-import org.springframework.stereotype.Repository;
 
 import java.util.List;
 

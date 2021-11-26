@@ -6,14 +6,16 @@ import com.scrm.marketing.entity.*;
 import com.scrm.marketing.feign.TestClient;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.satoken.SaTokenJwtUtil;
-import com.scrm.marketing.util.resp.Result;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 class MarketingApplicationTests {
@@ -70,6 +72,15 @@ class MarketingApplicationTests {
 //        System.out.println(result);
         result = result.replaceAll("\\s", "");
         System.out.println(result);
+    }
+
+    @Resource
+    private RedisTemplate<String,String> redisTemplate;
+    @Test
+    void testRedis(){
+        ValueOperations<String, String> ops = redisTemplate.opsForValue();
+        ops.set("fzk","123",1000L, TimeUnit.MILLISECONDS);
+        System.out.println(ops.get("fzk"));
     }
 
 }

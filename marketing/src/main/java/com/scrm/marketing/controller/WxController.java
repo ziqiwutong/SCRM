@@ -1,11 +1,11 @@
 package com.scrm.marketing.controller;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.scrm.marketing.share.wx.WxAccessToken;
 import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.share.wx.AccessTokenResult;
 import com.scrm.marketing.share.wx.GlobalAccessToken;
 import com.scrm.marketing.share.wx.JsapiTicket;
 import com.scrm.marketing.share.wx.WxUserInfoResult;
@@ -73,19 +73,24 @@ public class WxController {
      * @return result
      */
     @GetMapping("/getWxUserInfo")
-    public Result getCode(
+    public Result getWxUserInfo(
             @RequestParam("code") String code,
             @RequestParam("state") String state
     ) {
-        //System.out.println("获取到的code: " + code);
         // 1.根据code获取access_token
-        AccessTokenResult accessTokenResult = getAccessToken(code);
-        if (accessTokenResult == null) return Result.error(CodeEum.ERROR, "获取access_token失败");
-        //System.out.println("获取到的access_token: " + accessTokenResult);
+        WxAccessToken wxAccessToken = getWxAccessToken(code);
+        if (wxAccessToken.getAccess_token() == null)
+            return Result.error(CodeEum.ERROR, "获取access_token失败: " +
+                    "errcode:" + wxAccessToken.getErrcode() +
+                    "errmsg:" + wxAccessToken.getErrmsg());
+        //System.out.println("获取到的access_token: " + wxAccessToken);
 
         // 2.根据access_token获取userinfo
-        WxUserInfoResult wxUserInfo = getWxUserInfo(accessTokenResult.getAccess_token(), accessTokenResult.getOpenid());
-        if (wxUserInfo == null) return Result.error(CodeEum.ERROR, "获取微信用户信息失败");
+        WxUserInfoResult wxUserInfo = doGetWxUserInfo(wxAccessToken.getAccess_token(), wxAccessToken.getOpenid());
+        if (wxUserInfo.getOpenid() == null)
+            return Result.error(CodeEum.ERROR, "获取微信用户信息失败: " +
+                    "errcode:" + wxUserInfo.getErrcode() +
+                    "errmsg:" + wxUserInfo.getErrmsg());
         //System.out.println("获取到的微信用户信息: " + wxUserInfo);
 
         // 3.state处理
@@ -96,16 +101,19 @@ public class WxController {
 
     @GetMapping("/jsApi")
     public Result jsapi_ticket(@RequestParam("url") String url) {
-        System.out.println("传入的url: " + url);
         // 1.获取access_token
         GlobalAccessToken accessToken = getGlobalAccessToken();
-        if (accessToken == null || accessToken.getAccess_token() == null)
-            return Result.FAIL();
+        if (accessToken.getAccess_token() == null)
+            return Result.error(CodeEum.ERROR, "获取access_token失败: " +
+                    "errcode:" + accessToken.getErrcode() +
+                    "errmsg:" + accessToken.getErrmsg());
 
         // 2.获取jsapi_ticket
         JsapiTicket jsapi_ticket = getJsapi_ticket(accessToken.getAccess_token());
-        if (jsapi_ticket == null || jsapi_ticket.getTicket() == null)
-            return Result.FAIL();
+        if (jsapi_ticket.getTicket() == null)
+            return Result.error(CodeEum.ERROR, "获取access_token失败: " +
+                    "errcode:" + accessToken.getErrcode() +
+                    "errmsg:" + accessToken.getErrmsg());
 
         // 3.根据ticket 以及 其他参数 sha1加密生成signature
         String noncestr = MyRandomUtil.randomStr(16);
@@ -117,22 +125,32 @@ public class WxController {
         return Result.success(ticketSignatureWrapper);
     }
 
-    private AccessTokenResult getAccessToken(String code) {
+    /*确保返回的AccessTokenResult不为null*/
+    private WxAccessToken getWxAccessToken(String code) {
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appId + "&secret=" + appSecret + "&code=" + code + "&grant_type=authorization_code";
-        AccessTokenResult result = restTemplate.getForObject(url, AccessTokenResult.class);
+        WxAccessToken result = restTemplate.getForObject(url, WxAccessToken.class);
 
-        if (result == null || result.getAccess_token() == null) return null;
+//        if (result == null || result.getAccess_token() == null) return null;
+        if (result == null) {
+            result = new WxAccessToken();
+            result.setErrmsg("啥都没拿到，获取access_token的调用返回为null?");
+        }
         return result;
     }
 
-    private WxUserInfoResult getWxUserInfo(String access_token, String openid) {
+    /*确保返回的WxUserInfoResult不为null*/
+    private WxUserInfoResult doGetWxUserInfo(String access_token, String openid) {
         String url = "https://api.weixin.qq.com/sns/userinfo?access_token=" + access_token + "&openid=" + openid + "&lang=zh_CN";
         WxUserInfoResult userInfoResult = restTemplate.getForObject(url, WxUserInfoResult.class);
-        if (userInfoResult == null || userInfoResult.getErrcode() != null)
-            return null;
+//        if (userInfoResult == null || userInfoResult.getErrcode() != null) return null;
+        if (userInfoResult == null) {
+            userInfoResult = new WxUserInfoResult();
+            userInfoResult.setErrmsg("啥都没拿到，获取微信用户信息的调用返回为null");
+        }
         return userInfoResult;
     }
 
+    /*这里也确保返回的GlobalAccessToken不为null*/
     private GlobalAccessToken getGlobalAccessToken() {
         if (globalAccessToken.getAccess_token() != null && System.currentTimeMillis() < globalAccessToken.getValidBefore())
             return globalAccessToken;
@@ -144,8 +162,14 @@ public class WxController {
                 // "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=APPID&secret=APPSECRET";
                 String url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appId + "&secret=" + appSecret;
                 GlobalAccessToken accessToken = restTemplate.getForObject(url, GlobalAccessToken.class);
-                if (accessToken == null || accessToken.getAccess_token() == null)
-                    return null;
+
+                if (accessToken == null) {
+                    accessToken = new GlobalAccessToken();
+                    accessToken.setErrmsg("啥也没拿到，获取access_token的调用返回了null");
+                    return accessToken;
+                }
+                // 确保错误信息的传递
+                if (accessToken.getAccess_token() == null) return accessToken;
 
                 globalAccessToken.setAccess_token(accessToken.getAccess_token());
                 globalAccessToken.setExpires_in(accessToken.getExpires_in());
@@ -155,6 +179,7 @@ public class WxController {
         }
     }
 
+    /*确保返回的JsapiTicket不为null*/
     private JsapiTicket getJsapi_ticket(String accessToken) {
         if (global_jsapi_ticket.getTicket() != null && System.currentTimeMillis() < global_jsapi_ticket.getValidBefore())
             return global_jsapi_ticket;
@@ -166,7 +191,13 @@ public class WxController {
                 // "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi";
                 String url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + accessToken + "&type=jsapi";
                 JsapiTicket ticket = restTemplate.getForObject(url, JsapiTicket.class);
-                if (ticket == null || ticket.getTicket() == null) return null;
+
+                if (ticket == null) {
+                    ticket = new JsapiTicket();
+                    ticket.setErrmsg("jsapi ticket获取什么都没拿到，调用返回为null");
+                    return ticket;
+                }
+                if (ticket.getTicket() == null) return ticket;
 
                 global_jsapi_ticket.setTicket(ticket.getTicket());
                 global_jsapi_ticket.setExpires_in(ticket.getExpires_in());
