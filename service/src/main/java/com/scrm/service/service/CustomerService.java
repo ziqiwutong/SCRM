@@ -12,11 +12,17 @@ public interface CustomerService {
 
     /**
      * 查询Customer
+     * @return List<Customer>
+     */
+    List<Customer> query(QueryWrapper<Customer> wrapper);
+
+    /**
+     * 分页查询Customer
      * @param pageCount 每页数量
      * @param currentPage 当前页数
      * @return List<Customer>
      */
-    List<Customer> query(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper);
+    List<Customer> queryPage(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper);
 
     /**
      * 根据商机创建时间查询Customer ID

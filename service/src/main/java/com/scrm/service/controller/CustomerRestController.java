@@ -2,6 +2,7 @@ package com.scrm.service.controller;
 
 import com.scrm.service.service.CustomerRestService;
 import com.scrm.service.util.resp.Resp;
+import com.scrm.service.vo.BusinessCard;
 import com.scrm.service.vo.FirmRelation;
 import com.scrm.service.vo.PhoneAttribution;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +35,7 @@ public class CustomerRestController {
     public Resp scanBusinessCard(
             @RequestParam(value = "image") String url
     ) {
-        String info = customerRestService.scanBusinessCard(url);
+        BusinessCard info = customerRestService.scanBusinessCard(url);
         if (info != null) {
             return Resp.success().setData(info);
         } else {
@@ -42,9 +43,27 @@ public class CustomerRestController {
         }
     }
 
+    @GetMapping("/personal")
+    @ResponseBody
+    public Resp queryPersonal(
+            @RequestParam(value = "keyword") String keyword
+    ) {
+        Object[] personal = customerRestService.queryPersonal(keyword);
+        return Resp.success().setData(personal);
+    }
+
+    @GetMapping("/company")
+    @ResponseBody
+    public Resp queryCompany(
+            @RequestParam(value = "keyword") String keyword
+    ) {
+        Object[] company = customerRestService.queryCompany(keyword);
+        return Resp.success().setData(company);
+    }
+
     @GetMapping("/relation")
     @ResponseBody
-    public Resp queryRelationById(
+    public Resp queryRelation(
             @RequestParam(value = "firmA") String firmA,
             @RequestParam(value = "firmB") String firmB
     ) {

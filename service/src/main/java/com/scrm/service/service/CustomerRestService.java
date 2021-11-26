@@ -1,5 +1,6 @@
 package com.scrm.service.service;
 
+import com.scrm.service.vo.BusinessCard;
 import com.scrm.service.vo.FirmRelation;
 import com.scrm.service.vo.PhoneAttribution;
 
@@ -17,9 +18,23 @@ public interface CustomerRestService {
     /**
      * 扫描名片
      * @param url 图片地址
-     * @return String
+     * @return BusinessCard
      */
-    String scanBusinessCard(String url);
+    BusinessCard scanBusinessCard(String url);
+
+    /**
+     * 查个人
+     * @param keyword 关键字
+     * @return Object[]
+     */
+    Object[] queryPersonal(String keyword);
+
+    /**
+     * 查企业
+     * @param keyword 关键字
+     * @return Object[]
+     */
+    Object[] queryCompany(String keyword);
 
     /**
      * 查询企业间关系

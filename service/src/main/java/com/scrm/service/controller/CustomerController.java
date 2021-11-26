@@ -84,7 +84,7 @@ public class CustomerController {
         }
         int total = customerService.queryCount(wrapper);
         return PageResp.success().setData(
-                customerService.query(pageCount, currentPage, wrapper)
+                customerService.queryPage(pageCount, currentPage, wrapper)
         ).setPage(pageCount, currentPage, total).setMsg("成功");
     }
 

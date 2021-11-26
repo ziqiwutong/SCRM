@@ -7,26 +7,58 @@ import com.baidubce.http.AppSigner;
 import com.baidubce.http.HttpMethodName;
 import com.baidubce.model.ApiExplorerRequest;
 import com.baidubce.model.ApiExplorerResponse;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.scrm.service.entity.Customer;
 import com.scrm.service.service.CustomerRestService;
-import com.scrm.service.vo.FirmRelation;
-import com.scrm.service.vo.PhoneAttribution;
+import com.scrm.service.service.CustomerService;
+import com.scrm.service.util.FileUtil;
+import com.scrm.service.util.ImageCoding;
+import com.scrm.service.vo.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.LinkedList;
+import javax.annotation.Resource;
+import javax.net.ssl.HostnameVerifier;
+import javax.net.ssl.HttpsURLConnection;
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 @Service
 public class CustomerRestServiceImpl implements CustomerRestService {
 
+    @Resource
+    private CustomerService customerService;
+
+    @Value("${my.file.pic.picRootPath}")
+    private String picRootPath;
+    @Value("${my.file.pic.picAccessPath}")
+    private String picAccessPath;
+
+    // 客户类型
+    public static final int PERSONAL = 0;
+    public static final int COMPANY = 1;
+
+    // 启信宝key
+    private static final String QXB_APP_KEY = "86b6b347-4143-48ad-b8ff-51592d446a40";
+    private static final String QXB_SECRET_KEY = "1c90b493-48a3-473c-89a3-7f08e1989b28";
+
     @Override
     public PhoneAttribution queryPhoneAttribution(String phone) {
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+
         String path = "https://hcapi02.api.bdymkt.com/mobile";
         ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
         request.setCredentials(
@@ -35,8 +67,6 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         );
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
         request.addQueryParameter("mobile", phone);
-
-        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
         try {
             ApiExplorerResponse response = client.sendRequest(request);
             JSONObject body = JSONObject.parseObject(response.getResult());
@@ -61,50 +91,98 @@ public class CustomerRestServiceImpl implements CustomerRestService {
     }
 
     @Override
-    public String scanBusinessCard(String url) {
-        String path = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_card";
-        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.POST, path);
-        request.addHeaderParameter("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
-        String accessToken = "";
-        request.setJsonBody("url=" + url);
+    public BusinessCard scanBusinessCard(String url) {
+        String token;
 
         ApiExplorerClient client = new ApiExplorerClient();
+
+        String tokenPath = "https://aip.baidubce.com/oauth/2.0/token";
+        ApiExplorerRequest tokenRequest = new ApiExplorerRequest(HttpMethodName.GET, tokenPath);
+        tokenRequest.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        tokenRequest.addQueryParameter("grant_type", "client_credentials");
+        tokenRequest.addQueryParameter("client_id", "1wV3gUmUGLAUk22tYj4igSpB");
+        tokenRequest.addQueryParameter("client_secret", "KdoLsWHLuwKdfGuathQY6rakWgyXm8jW");
         try {
-            ApiExplorerResponse response = client.sendRequest(request);
-            // 返回结果格式为Json字符串
-            System.out.println(response.getResult());
+            ApiExplorerResponse response = client.sendRequest(tokenRequest);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            token = body.getString("access_token");
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+
+        String path = "https://aip.baidubce.com/rest/2.0/ocr/v1/business_card";
+        try {
+            url = picRootPath + url.substring(picAccessPath.length() + 1);
+            byte[] imgBytes = FileUtil.readFileByBytes(url, true);
+            String imgBase64 = ImageCoding.encode(imgBytes);
+
+            HttpHeaders headers = new HttpHeaders();
+            MultiValueMap<String, Object> paramMap = new LinkedMultiValueMap<>();
+            paramMap.add("image", imgBase64);
+            HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(paramMap, headers);
+            RestTemplate restTemplate = new RestTemplate();
+            List<HttpMessageConverter<?>> list = restTemplate.getMessageConverters();
+            for (HttpMessageConverter<?> httpMessageConverter : list) {
+                if (httpMessageConverter instanceof StringHttpMessageConverter) {
+                    ((StringHttpMessageConverter) httpMessageConverter).setDefaultCharset(StandardCharsets.UTF_8);
+                    break;
+                }
+            }
+            ResponseEntity<String> respEntity = restTemplate.postForEntity(
+                    path + "?access_token=" + token,
+                    httpEntity,
+                    String.class
+            );
+            JSONObject body = JSONObject.parseObject(respEntity.getBody());
+            JSONObject data = body.getJSONObject("words_result");
+            if (data != null) {
+                return new BusinessCard(
+                        data.getJSONArray("PC").toArray(),
+                        data.getJSONArray("TEL").toArray(),
+                        data.getJSONArray("TITLE").toArray(),
+                        data.getJSONArray("EMAIL").toArray(),
+                        data.getJSONArray("FAX").toArray(),
+                        data.getJSONArray("URL").toArray(),
+                        data.getJSONArray("ADDR").toArray(),
+                        data.getJSONArray("COMPANY").toArray(),
+                        data.getJSONArray("MOBILE").toArray(),
+                        data.getJSONArray("NAME").toArray()
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
         return null;
     }
 
     @Override
+    public Object[] queryPersonal(String keyword) {
+        return queryCustomer(keyword, PERSONAL);
+    }
+
+    @Override
+    public Object[] queryCompany(String keyword) {
+        return queryCustomer(keyword, COMPANY);
+    }
+
+    @Override
     public ArrayList<ArrayList<FirmRelation>> queryRelationBetweenFirm(String firmA, String firmB) {
-        RestTemplate rest = new RestTemplate();
-
-//        String appKey = "86b6b347-4143-48ad-b8ff-51592d446a40";
-//        String secretKey = "1c90b493-48a3-473c-89a3-7f08e1989b28";
-//        String enterprises = firmA + "," + firmB;
-//        String jobUrl = "https://api.qixin.com/APIService/relation/createFindRelationTask" +
-//                "?appkey=" + appKey +
-//                "&secret_key=" + secretKey +
-//                "&enterprises=" +
-//                enterprises;
-
-        String jobUrl = "https://www.fastmock.site/mock/e89826b10151d3ddafd81e87b0cf7110/api/createFindRelationTask";
-
         String key;
         JSONObject data;
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+
+        String path = "https://api.qixin.com/APIService/relation/createFindRelationTask";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("appkey", QXB_APP_KEY);
+        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("enterprises", firmA + "," + firmB);
         try {
-            HttpEntity<String> jobResponse = rest.exchange(jobUrl, HttpMethod.GET, null, String.class);
-            JSONObject body = JSONObject.parseObject(jobResponse.getBody());
-            String status = body.getString("status");
-            if (!(status != null && status.equals("200"))) {
-                return null;
-            }
-            String message = body.getString("message");
-            if (!(message != null && message.equals("操作成功"))) {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            if (responseFailQXB(body)) {
                 return null;
             }
             data = body.getJSONObject("data");
@@ -115,25 +193,16 @@ public class CustomerRestServiceImpl implements CustomerRestService {
             return null;
         }
 
-//        String infoUrl = "https://api.qixin.com/APIService/relation/getFindRelationResult" +
-//                "?appkey=" + appKey +
-//                "&secret_key=" + secretKey +
-//                "&key=" +
-//                key;
-
-        String infoUrl = "https://www.fastmock.site/mock/e89826b10151d3ddafd81e87b0cf7110/api/getFindRelationResult" +
-                "?key=" +
-                key;
-
+        path = "https://api.qixin.com/APIService/relation/getFindRelationResult";
+        request = new ApiExplorerRequest(HttpMethodName.GET, path);
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("appkey", QXB_APP_KEY);
+        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("key", key);
         try {
-            HttpEntity<String> infoResponse = rest.exchange(infoUrl, HttpMethod.GET, null, String.class);
-            JSONObject body = JSONObject.parseObject(infoResponse.getBody());
-            String status = body.getString("status");
-            if (!(status != null && status.equals("200"))) {
-                return null;
-            }
-            String message = body.getString("message");
-            if (!(message != null && message.equals("操作成功"))) {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            if (responseFailQXB(body)) {
                 return null;
             }
             data = body.getJSONObject("data");
@@ -143,6 +212,127 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         }
 
         return getRelation(data);
+    }
+
+    /**
+     * 查个人，查企业
+     */
+    private Object[] queryCustomer(String keyword, int customerType) {
+        Object[] customer = new Object[2];
+
+        // 查客户表
+        QueryWrapper<Customer> wrapper = new QueryWrapper<>();
+        wrapper.eq("customer_type", customerType);
+        wrapper.like("customer_name", keyword);
+        customer[0] = customerService.query(wrapper);
+
+        String path;
+        switch (customerType) {
+            // 查Microsoft必应
+            case PERSONAL:
+                ArrayList<Object> bing = new ArrayList<>();
+
+                path = "https://api.bing.microsoft.com/v7.0/custom/search";
+                String customConfigId = "15d23d8c-99da-46f2-acce-321d8d9e4845";
+                String subscriptionKey = "3f1e5b0907af46469ea7777af1fef604";
+                try {
+                    URL url = new URL(path +
+                            "?q=" + URLEncoder.encode(keyword, "UTF-8") +
+                            "&CustomConfig=" + customConfigId
+                    );
+                    HostnameVerifier hv = (urlHostName, session) -> {
+                        System.out.println("Warning: URL Host: " + urlHostName + " vs. " + session.getPeerHost());
+                        return true;
+                    };
+                    HttpsURLConnection.setDefaultHostnameVerifier(hv);
+                    HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
+                    connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+                    InputStream stream = connection.getInputStream();
+                    String response = new Scanner(stream).useDelimiter("\\A").next();
+                    stream.close();
+
+                    JSONObject body = JSONObject.parseObject(response);
+
+                    JSONObject data = body.getJSONObject("webPages");
+                    if (data != null) {
+                        JSONArray webPages = data.getJSONArray("value");
+                        if (webPages != null) {
+                            for (int i = 0; i < webPages.size(); i++) {
+                                JSONObject webPage = webPages.getJSONObject(i);
+                                bing.add(new BingSearch(
+                                        webPage.getString("name"),
+                                        webPage.getString("url"),
+                                        webPage.getString("snippet")
+                                ));
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    customer[1] = bing;
+                }
+
+                break;
+
+            // 查启信宝
+            case COMPANY:
+                ArrayList<Object> qxb = new ArrayList<>();
+
+                ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+
+                path = "https://api.qixin.com/APIService/v2/search/advSearch";
+                ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+                request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+                request.addQueryParameter("appkey", QXB_APP_KEY);
+                request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+                request.addQueryParameter("keyword", keyword);
+                request.addQueryParameter("matchType", "ename");
+                try {
+                    ApiExplorerResponse response = client.sendRequest(request);
+                    JSONObject body = JSONObject.parseObject(response.getResult());
+                    if (!responseFailQXB(body)) {
+                        JSONObject data = body.getJSONObject("data");
+                        JSONArray items = data.getJSONArray("items");
+                        for (int i = 0; i < items.size(); i++) {
+                            JSONObject item = items.getJSONObject(i);
+                            qxb.add(new Firm(
+                                    item.getString("id"),
+                                    item.getString("name"),
+                                    item.getString("reg_no"),
+                                    item.getString("start_date"),
+                                    item.getString("credit_no"),
+                                    item.getString("oper_name"),
+                                    item.getString("matchType"),
+                                    item.getString("matchItems"),
+                                    item.getInteger("type")
+                            ));
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                } finally {
+                    customer[1] = qxb;
+                }
+
+            default:
+                break;
+        }
+
+        return customer;
+    }
+
+    /**
+     * 检查启信宝API调用是否失败
+     */
+    private boolean responseFailQXB(JSONObject body) {
+        String status = body.getString("status");
+        if (!(status != null && status.equals("200"))) {
+            return true;
+        }
+        String message = body.getString("message");
+        return message == null || !message.equals("操作成功");
     }
 
     /**

@@ -33,7 +33,16 @@ public class CustomerServiceImpl implements CustomerService {
     private LabelDao labelDao;
 
     @Override
-    public List<Customer> query(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper) {
+    public List<Customer> query(QueryWrapper<Customer> wrapper) {
+        List<Customer> customers = customerDao.selectList(wrapper);
+        for (Customer customer: customers) {
+            customer.setCustomerLabels(labelDao.queryByCustomerId(customer.getId()));
+        }
+        return customers;
+    }
+
+    @Override
+    public List<Customer> queryPage(Integer pageCount, Integer currentPage, QueryWrapper<Customer> wrapper) {
         int offset = (currentPage - 1) * pageCount;
         wrapper.last(" limit " + offset + "," + pageCount);
         List<Customer> customers = customerDao.selectList(wrapper);
@@ -55,7 +64,9 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public Customer queryById(Long id) {
-        return customerDao.selectById(id);
+        Customer customer = customerDao.selectById(id);
+        customer.setCustomerLabels(labelDao.queryByCustomerId(customer.getId()));
+        return customer;
     }
 
     @Override

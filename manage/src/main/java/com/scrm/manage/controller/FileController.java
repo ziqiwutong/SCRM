@@ -58,7 +58,7 @@ public class FileController {
             return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type.toString());
 
         // 2.文件目录处理
-        String relativePath = picType + "/" + MyDateTimeUtil.getNowDate().replaceAll("-", "/");
+        String relativePath = picType + "/" + MyDateTimeUtil.getNowDateOrTime("yyyy-MM");
         String path = picRootPath + "/" + relativePath + "/";
         File dir_file = new File(path);
         if (!dir_file.exists()) dir_file.mkdirs();
