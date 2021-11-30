@@ -1,8 +1,9 @@
 package com.scrm.service.service;
 
+import com.scrm.service.entity.CompanyQXB;
 import com.scrm.service.vo.BusinessCard;
 import com.scrm.service.vo.FirmRelation;
-import com.scrm.service.vo.PhoneAttribution;
+import com.scrm.service.entity.PhoneAttribution;
 
 import java.util.ArrayList;
 
@@ -35,6 +36,13 @@ public interface CustomerRestService {
      * @return Object[]
      */
     Object[] queryCompany(String keyword);
+
+    /**
+     * 查企业详情
+     * @param registerNo 工商注册号
+     * @return Object[]
+     */
+    CompanyQXB queryCompanyDetail(String registerNo);
 
     /**
      * 查询企业间关系
