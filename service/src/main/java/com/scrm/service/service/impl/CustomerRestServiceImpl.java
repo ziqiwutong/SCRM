@@ -8,7 +8,11 @@ import com.baidubce.http.HttpMethodName;
 import com.baidubce.model.ApiExplorerRequest;
 import com.baidubce.model.ApiExplorerResponse;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.scrm.service.dao.CompanyQXBDao;
+import com.scrm.service.dao.PhoneAttributionDao;
+import com.scrm.service.entity.CompanyQXB;
 import com.scrm.service.entity.Customer;
+import com.scrm.service.entity.PhoneAttribution;
 import com.scrm.service.service.CustomerRestService;
 import com.scrm.service.service.CustomerService;
 import com.scrm.service.util.FileUtil;
@@ -42,6 +46,12 @@ public class CustomerRestServiceImpl implements CustomerRestService {
     @Resource
     private CustomerService customerService;
 
+    @Resource
+    private PhoneAttributionDao phoneAttributionDao;
+
+    @Resource
+    private CompanyQXBDao companyQXBDao;
+
     @Value("${my.file.pic.picRootPath}")
     private String picRootPath;
     @Value("${my.file.pic.picAccessPath}")
@@ -57,6 +67,16 @@ public class CustomerRestServiceImpl implements CustomerRestService {
 
     @Override
     public PhoneAttribution queryPhoneAttribution(String phone) {
+        QueryWrapper<PhoneAttribution> wrapper = new QueryWrapper<>();
+        wrapper.eq("phone", phone);
+        List<PhoneAttribution> phoneAttributionList = phoneAttributionDao.selectList(wrapper);
+        if (phoneAttributionList.size() == 1) {
+            return phoneAttributionList.get(0);
+        }
+        if (phoneAttributionList.size() > 1) {
+            phoneAttributionDao.delete(wrapper);
+        }
+
         ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
 
         String path = "https://hcapi02.api.bdymkt.com/mobile";
@@ -73,16 +93,20 @@ public class CustomerRestServiceImpl implements CustomerRestService {
             String code = body.getString("code");
             JSONObject data = body.getJSONObject("data");
             if (code != null && code.equals("200")) {
-                return new PhoneAttribution(
-                        data.getInteger("num"),
-                        data.getString("types"),
-                        data.getString("isp"),
-                        data.getString("prov"),
-                        data.getString("city"),
-                        data.getString("area_code"),
-                        data.getString("city_code"),
-                        data.getString("zip_code")
-                );
+                PhoneAttribution phoneAttribution = new PhoneAttribution();
+                phoneAttribution.setPhone(phone);
+                phoneAttribution.setSegment(data.getInteger("num"));
+                phoneAttribution.setType(data.getString("types"));
+                phoneAttribution.setOperator(data.getString("isp"));
+                phoneAttribution.setProvince(data.getString("prov"));
+                phoneAttribution.setCity(data.getString("city"));
+                phoneAttribution.setAreaCode(data.getString("area_code"));
+                phoneAttribution.setCityCode(data.getString("city_code"));
+                phoneAttribution.setZipCode(data.getString("zip_code"));
+
+                phoneAttributionDao.insert(phoneAttribution);
+
+                return phoneAttribution;
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -165,6 +189,191 @@ public class CustomerRestServiceImpl implements CustomerRestService {
     @Override
     public Object[] queryCompany(String keyword) {
         return queryCustomer(keyword, COMPANY);
+    }
+
+    @Override
+    public CompanyQXB queryCompanyDetail(String registerNo) {
+        QueryWrapper<CompanyQXB> wrapper = new QueryWrapper<>();
+        wrapper.eq("register_no", registerNo);
+        List<CompanyQXB> companyQXBList = companyQXBDao.selectList(wrapper);
+        if (companyQXBList.size() == 1) {
+            return companyQXBList.get(0);
+        }
+        if (companyQXBList.size() > 1) {
+            companyQXBDao.delete(wrapper);
+        }
+
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+
+        String path = "https://api.qixin.com/APIService/enterprise/getBasicInfo";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("appkey", QXB_APP_KEY);
+        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("keyword", registerNo);
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            if (responseFailQXB(body)) {
+                return null;
+            }
+            JSONObject data = body.getJSONObject("data");
+
+            CompanyQXB companyQXB = new CompanyQXB();
+            companyQXB.setRegisterNo(data.getString("regNo"));
+            companyQXB.setEid(data.getString("id"));
+            companyQXB.setCompanyName(data.getString("name"));
+            JSONArray historyNames = data.getJSONArray("historyNames");
+            if (historyNames != null) {
+                StringBuilder sb = new StringBuilder();
+                if (historyNames.size() > 0) sb.append(historyNames.getString(0));
+                for (int i = 1; i < historyNames.size(); i++) {
+                    sb.append(",");
+                    sb.append(historyNames.getString(i));
+                }
+                companyQXB.setHistoryNames(sb.toString());
+            } else {
+                companyQXB.setHistoryNames("");
+            }
+            companyQXB.setLegalPerson(data.getString("operName"));
+            companyQXB.setBelongOrg(data.getString("belongOrg"));
+            companyQXB.setOrgNo(data.getString("orgNo"));
+            companyQXB.setCreditNo(data.getString("creditNo"));
+            companyQXB.setDistrictCode(data.getString("districtCode"));
+            companyQXB.setAddress(data.getString("address"));
+            companyQXB.setCompanyKind(data.getString("econKind"));
+            switch (data.getString("type_new")) {
+                case "01":
+                    companyQXB.setTypeNew("大陆企业");
+                    break;
+                case "02":
+                    companyQXB.setTypeNew("社会组织");
+                    break;
+                case "03":
+                    companyQXB.setTypeNew("机关及事业单位");
+                    break;
+                case "04":
+                    companyQXB.setTypeNew("港澳台及国外企业");
+                    break;
+                case "05":
+                    companyQXB.setTypeNew("律所及其他组织机构");
+                    break;
+                default:
+                    companyQXB.setTypeNew("");
+                    break;
+            }
+            switch (data.getString("categoryNew")) {
+                case "0115601":
+                    companyQXB.setCategoryNew("企业");
+                    break;
+                case "0115602":
+                    companyQXB.setCategoryNew("个体");
+                    break;
+                case "0115603":
+                    companyQXB.setCategoryNew("农民专业合作社");
+                    break;
+                case "0115699":
+                    companyQXB.setCategoryNew("其他类型");
+                    break;
+                case "0215601":
+                    companyQXB.setCategoryNew("社会团体");
+                    break;
+                case "0215602":
+                    companyQXB.setCategoryNew("基金会");
+                    break;
+                case "0215603":
+                    companyQXB.setCategoryNew("民办非企业单位");
+                    break;
+                case "0215604":
+                    companyQXB.setCategoryNew("村民/居民委员会");
+                    break;
+                case "0215605":
+                    companyQXB.setCategoryNew("宗教，工会等其他社会组织");
+                    break;
+                case "0315601":
+                    companyQXB.setCategoryNew("事业单位");
+                    break;
+                case "0315602":
+                    companyQXB.setCategoryNew("机关");
+                    break;
+                case "0315603":
+                    companyQXB.setCategoryNew("其他机构编制");
+                    break;
+                case "0434401":
+                    companyQXB.setCategoryNew("香港企业");
+                    break;
+                case "0444602":
+                    companyQXB.setCategoryNew("澳门企业");
+                    break;
+                case "0415803":
+                    companyQXB.setCategoryNew("台湾企业");
+                    break;
+                case "0499904":
+                    companyQXB.setCategoryNew("国外企业");
+                    break;
+                case "0515601":
+                    companyQXB.setCategoryNew("律所");
+                    break;
+                case "0500099":
+                    companyQXB.setCategoryNew("其他组织机构");
+                    break;
+                default:
+                    companyQXB.setCategoryNew("");
+                    break;
+            }
+            companyQXB.setDomain(data.getString("domain"));
+            companyQXB.setScope(data.getString("scope"));
+            companyQXB.setRegisterCapital(data.getString("registCapi"));
+            companyQXB.setCurrencyUnit(data.getString("currency_unit"));
+            companyQXB.setActualCapital(data.getString("actualCapi"));
+            companyQXB.setStartDate(data.getString("startDate"));
+            companyQXB.setEndDate(data.getString("endDate"));
+            companyQXB.setCheckDate(data.getString("checkDate"));
+            companyQXB.setRevokeDate(data.getString("revoke_date"));
+            companyQXB.setRevokeReason(data.getString("revoke_reason"));
+            companyQXB.setEngageStatus(data.getString("status"));
+            companyQXB.setStatusNew(data.getString("new_status"));
+            companyQXB.setTermStart(data.getString("termStart"));
+            companyQXB.setTermEnd(data.getString("termEnd"));
+            JSONArray tags = data.getJSONArray("tags");
+            if (tags != null) {
+                StringBuilder sb = new StringBuilder();
+                tag:
+                for (int i = 0; i < tags.size(); i++) {
+                    switch (tags.getString(i)) {
+                        case "1":
+                            sb.append("新三板");
+                            break;
+                        case "6":
+                            sb.append("主板上市公司");
+                            break;
+                        case "40":
+                            sb.append("暂停上市");
+                            break;
+                        case "41":
+                            sb.append("终止上市");
+                            break;
+                        case "9":
+                            sb.append("香港上市");
+                            break;
+                        case "17":
+                            sb.append("高新企业");
+                            break;
+                        default:
+                            continue tag;
+                    }
+                    if (i != 0) sb.append(",");
+                }
+                companyQXB.setTags(sb.toString());
+            } else {
+                companyQXB.setTags("");
+            }
+            companyQXBDao.insert(companyQXB);
+            return companyQXB;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     @Override

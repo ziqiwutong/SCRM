@@ -1,10 +1,11 @@
 package com.scrm.service.controller;
 
+import com.scrm.service.entity.CompanyQXB;
 import com.scrm.service.service.CustomerRestService;
 import com.scrm.service.util.resp.Resp;
 import com.scrm.service.vo.BusinessCard;
 import com.scrm.service.vo.FirmRelation;
-import com.scrm.service.vo.PhoneAttribution;
+import com.scrm.service.entity.PhoneAttribution;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -59,6 +60,19 @@ public class CustomerRestController {
     ) {
         Object[] company = customerRestService.queryCompany(keyword);
         return Resp.success().setData(company);
+    }
+
+    @GetMapping("/companyDetail")
+    @ResponseBody
+    public Resp queryCompanyDetail(
+            @RequestParam(value = "registerNo") String registerNo
+    ) {
+        CompanyQXB company = customerRestService.queryCompanyDetail(registerNo);
+        if (company != null) {
+            return Resp.success().setData(company);
+        } else {
+            return Resp.error().setMsg("获取失败");
+        }
     }
 
     @GetMapping("/relation")
