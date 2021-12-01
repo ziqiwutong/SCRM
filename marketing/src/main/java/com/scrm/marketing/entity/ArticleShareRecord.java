@@ -15,6 +15,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @TableName("mk_article_share_record")
+@Deprecated(since = "2021-11-28",forRemoval = true)
 public class ArticleShareRecord {
     @TableId(type = IdType.AUTO)
     private Long id;

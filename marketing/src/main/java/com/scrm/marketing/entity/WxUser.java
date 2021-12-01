@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.util.List;
-
 /**
  * @author fzk
  * @date 2021-11-13 17:29
@@ -14,7 +12,6 @@ import java.util.List;
  */
 @Data
 @TableName("mk_wx_user")
-@Deprecated(since = "2021-11-24",forRemoval = true)
 public class WxUser {
     @TableId(type = IdType.AUTO)
     private Long id;
@@ -32,10 +29,27 @@ public class WxUser {
     //private List<String> privilege;
     private String unionid;
 
+    private String readerStatus;// 读者状态：如果是客户，则为客户状态，否则为null
 
     /**
      * 表修改记录属性
      */
     private String createTime;
     private String updateTime;
+
+    /*构造器*/
+    public WxUser() {
+    }
+
+    public WxUser(String openid, String nickname, String sex, String province, String city, String country, String headimgurl, String unionid,String readerStatus) {
+        this.openid = openid;
+        this.nickname = nickname;
+        this.sex = sex;
+        this.province = province;
+        this.city = city;
+        this.country = country;
+        this.headimgurl = headimgurl;
+        this.unionid = unionid;
+        this.readerStatus=readerStatus;
+    }
 }

@@ -23,7 +23,7 @@ public class ArticleCustomerRead {
 
     private Long articleId;
     private Long customerId;
-    private Long readTime;
+    private Integer readTime;//单位s
     private String readDate;
 
     /**

@@ -13,17 +13,17 @@ import java.util.List;
  * @date 2021-10-14 20:24
  */
 public interface ArticleService {
-    Result getArticleDetail(Long id, Long shareId) throws MyException;
+    Result getArticleDetail(Long id, Long shareId);
 
     PageResult queryPage(int pageNum, int pageSize, Integer examineFlag, Integer materialType);
 
-    void insert(Article article, @NonNull Long loginId) throws MyException;
+    void insert(Article article, Long loginId);
 
-    void update(Article article, Long loginId) throws MyException;
+    void update(Article article, Long loginId);
 
-    void delete(@NonNull Long id) throws MyException;
+    void delete(Long id);
 
-    void examine(@NonNull Long id, @NonNull Long loginId, @NonNull Integer examineFlag, String examineNotes) throws MyException;
+    void examine(Long id, Long loginId, Integer examineFlag, String examineNotes);
 
     Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
 

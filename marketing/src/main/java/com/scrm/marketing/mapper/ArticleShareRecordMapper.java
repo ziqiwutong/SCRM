@@ -12,6 +12,7 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-14 17:56
  */
+@Deprecated(since = "2021-11-28",forRemoval = true)
 public interface ArticleShareRecordMapper extends BaseMapper<ArticleShareRecord> {
     @SuppressWarnings("all")
     @Delete("DELETE FROM mk_article_share_record WHERE article_id=#{articleId}")
@@ -23,7 +24,7 @@ public interface ArticleShareRecordMapper extends BaseMapper<ArticleShareRecord>
 
     @SelectProvider(ArticleShareRecordSqlProvider.class)
         // 默认实现中，会将映射器方法的调用解析到实现的同名方法上
-    List<ArticleShareRecord> selectByAidAndSids(Long articleId, @Nullable List<Long> shareIds);
+    List<ArticleShareRecord> selectByAidAndSids(Long articleId, List<Long> shareIds);
 
     @UpdateProvider(ArticleShareRecordSqlProvider.class)
     int addReadRecord(Long id, String newReadRecord_json, boolean newOpenidFlag, String newOpenids_json);

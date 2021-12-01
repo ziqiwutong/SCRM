@@ -3,23 +3,15 @@ package com.scrm.marketing.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.scrm.marketing.entity.Article;
 import com.scrm.marketing.entity.ArticleCustomerRead;
-import com.scrm.marketing.entity.ArticleShareRecord;
 import com.scrm.marketing.entity.User;
 import com.scrm.marketing.exception.MyException;
-import com.scrm.marketing.mapper.ArtCusReadMapper;
-import com.scrm.marketing.mapper.ArticleMapper;
-import com.scrm.marketing.mapper.ArticleShareRecordMapper;
-import com.scrm.marketing.mapper.UserMapper;
+import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.service.ArticleService;
 import com.scrm.marketing.util.MyAssert;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
-import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.lang.NonNull;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,15 +29,12 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private UserMapper userMapper;
     @Resource
-    private ArticleShareRecordMapper articleShareRecordMapper;
-    @Resource
     private ArtCusReadMapper articleCustomerReadMapper;
     @Resource
-    private RedisTemplate<String, String> redisTemplate;
+    private WxReadRecordMapper wxReadRecordMapper;
 
     @Override
-    @Transactional//开启事务
-    public Result getArticleDetail(Long id, Long shareId) throws MyException {
+    public Result getArticleDetail(Long id, Long shareId) {
         // 0. 查询文章所有
         // 0.1 从缓存查
         Article article;
@@ -70,7 +59,8 @@ public class ArticleServiceImpl implements ArticleService {
             // 2.1 先查出user
             User shareUser = userMapper.selectById(shareId);
             if (shareUser == null)
-                return Result.error(CodeEum.PARAM_ERROR);
+                return Result.error(CodeEum.NOT_EXIST).addMsg("分享者id不存在");
+            /*
             // 2.2 再根据shareId和articleId查文章分享分享
             List<ArticleShareRecord> articleShareRecords =
                     articleShareRecordMapper.selectByAIdAndSid(id, shareId);
@@ -98,13 +88,13 @@ public class ArticleServiceImpl implements ArticleService {
             else
                 throw new MyException(CodeEum.ERROR.getCode(), "分享记录表存在多条相关记录");
 
+             */
+
             Map<String, Object> map = new HashMap<>(2, 1.0f);
             map.put("article", article);
             map.put("user", shareUser);
-            //map.put("showShareFlag", articleShareRecord.getShowShareFlag());
             return Result.success(map);
         }
-
     }
 
     @Override
@@ -120,7 +110,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void insert(Article article, @NonNull Long loginId) {
+    public void insert(Article article, Long loginId) {
         // 1、获取用户信息
         // 1.1 从Redis查
 
@@ -156,20 +146,16 @@ public class ArticleServiceImpl implements ArticleService {
         if (article.getMaterialType() == null)
             article.setMaterialType(Article.MATERIAL_TYPE_PERSONAL);//默认是个人素材
 
-        /*
-         * 对于createTime和updateTime设为null
-         */
+        // 对于createTime和updateTime设为null
         article.setCreateTime(null);
         article.setUpdateTime(null);
 
         // 3、插入
-        if (articleMapper.insert(article) != 1)
-            throw new MyException(CodeEum.ERROR.getCode(), "文章添加失败");
-
+        articleMapper.insert(article);
     }
 
     @Override
-    public void update(Article article, Long loginId) throws MyException {
+    public void update(Article article, Long loginId) {
         MyAssert.notNull("article can not be null and loginId", article, loginId);
         /*
          * 对于createTime和updateTime设为null
@@ -186,31 +172,34 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     @Transactional//开启事务
-    public void delete(@Nullable Long id) throws MyException {
+    public void delete(Long id) throws MyException {
         /*
          删除文章，应该需要级联删除
-         1.article_share_record
-         2.article_customer_read
-         再删除本身
+             // 1.article_share_record
+             // 2.article_customer_read
+             3.微信用户阅读记录：mk_wx_read_record
+         注意：此处保留了相关文章的客户阅读记录
          */
         // 1.删除文章分享记录
-        articleShareRecordMapper.deleteByArticleId(id);
-        // 2.删除文章客户阅读记录
-        articleCustomerReadMapper.deleteByArticleId(id);
-        // 3、删除文章
+        // articleShareRecordMapper.deleteByArticleId(id);
+        // 2.不删除文章客户阅读记录
+        //articleCustomerReadMapper.deleteByArticleId(id);
+
+        // 3.删除文章的微信阅读记录
+        wxReadRecordMapper.deleteByAid(id);
+
+        // 4、删除文章
         if (articleMapper.deleteById(id) != 1)
-            throw new MyException(CodeEum.CODE_ERROR, "删除失败，可能是文章不存在");
+            throw new MyException(CodeEum.CODE_ERROR, "删除失败,可能是文章已经被删除");
     }
 
     @Override
-    @Transactional//开启事务
-    public void examine(@NonNull Long id, @NonNull Long loginId, @NonNull Integer examineFlag, String examineNotes) throws MyException {
+    public void examine(Long id, Long loginId, Integer examineFlag, String examineNotes) {
         // 1、查出审核人
         String examineName = userMapper.selectById(loginId).getUsername();
 
         // 2.执行修改操作
-        if (articleMapper.examine(id, loginId, examineName, examineFlag, examineNotes) != 1)
-            throw new MyException(CodeEum.CODE_ERROR, "审核失败");
+        articleMapper.examine(id, loginId, examineName, examineFlag, examineNotes);
     }
 
     @Override

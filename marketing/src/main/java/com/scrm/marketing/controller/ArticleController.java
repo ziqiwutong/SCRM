@@ -24,12 +24,11 @@ public class ArticleController {
     private ArticleService articleService;
 
     @GetMapping(path = "/detail")
-    //@SaCheckLogin
     public Result getArticleDetail(
             @RequestParam("id") Long id,
             @RequestParam(value = "shareId", required = false) Long shareId) throws MyException {
         if (id == null)
-            return Result.error(CodeEum.PARAM_ERROR);
+            return Result.PARAM_ERROR();
         // 调用service
         return articleService.getArticleDetail(id, shareId);
     }
@@ -124,7 +123,7 @@ public class ArticleController {
 
     @DeleteMapping(path = "/delete")
     @SaCheckPermission("article-delete")
-    public Result delete(@RequestParam("id") Long id) throws MyException {
+    public Result delete(@RequestParam("id") Long id){
         // 1、检查参数
         if (id == null)
             return Result.PARAM_MISS();

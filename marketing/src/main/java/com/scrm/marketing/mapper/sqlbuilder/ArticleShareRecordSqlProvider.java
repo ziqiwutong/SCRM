@@ -10,8 +10,9 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-20 0:20
  */
+@Deprecated(since = "2021-11-28",forRemoval = true)
 public class ArticleShareRecordSqlProvider implements ProviderMethodResolver {
-    public static String selectByAidAndSids(final Long articleId, @Nullable final List<Long> shareIds) {
+    public static String selectByAidAndSids(final Long articleId, final List<Long> shareIds) {
         return new SQL() {{
             SELECT("*");
             FROM("mk_article_share_record");

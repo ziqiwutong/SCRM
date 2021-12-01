@@ -3,7 +3,6 @@ package com.scrm.marketing.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.scrm.marketing.entity.User;
 import org.apache.ibatis.annotations.Select;
-import org.springframework.lang.NonNull;
 
 import java.util.List;
 
@@ -13,8 +12,8 @@ import java.util.List;
  */
 public interface UserMapper extends BaseMapper<User> {
     @SuppressWarnings("all")
-    @Select("select u.* from cms_user u " +
-            "   INNER JOIN mk_article_share_record s ON u.id=s.share_id " +
-            "   WHERE s.article_id=#{articleId}")
-    List<User> querySharePerson(@NonNull Long articleId);
+    @Select("SELECT DISTINCT u.* FROM cms_user u " +
+            " INNER JOIN mk_wx_read_record m ON u.id=m.share_id " +
+            " WHERE m.article_id=#{articleId}")
+    List<User> querySharePerson(Long articleId);
 }
