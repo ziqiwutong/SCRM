@@ -2,13 +2,14 @@ package com.scrm.marketing.service.impl;
 
 import com.scrm.marketing.entity.*;
 import com.scrm.marketing.entity.wrapper.WxReadRecordWrapper;
+import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.service.ArticleShareRecordService;
 import com.scrm.marketing.util.MyAssert;
 import com.scrm.marketing.util.MyDateTimeUtil;
 import com.scrm.marketing.util.MyJsonUtil;
+import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -153,97 +154,79 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
         return Result.success(sharePersons);
     }
 
-    /**
-     * @param wxUserInfo 微信用户信息，可能是客户，里面必须有：微信openid,readTime,articleId,shareId
-     */
     @Override
     @Transactional// 开启事务
-    public void addReadRecord(WxUserInfoResult wxUserInfo) {
-        MyAssert.notNull("wxUserInfo can not be null", wxUserInfo);
+    public void addReadRecord(long articleId, long shareId, String openid, int readTime) {
+        MyAssert.notNull("openid can not be null", openid);
 
         /*
-        1.处理wxUserInfo,插入阅读日期,插入阅读者状态readerStatus
+        1.判断openid是否合法，取出对应的微信用户表的id
         2.如果是我们的客户，那么：文章客户阅读记录处理：表 mk_article_customer_read
             2.1 今天没读，即没有记录，则插入一条
             2.2 今天读了，有记录，将阅读时间相加
         3.文章阅读记录处理，表：mk_article
-        4.微信用户表处理：更新用户信息
+        4.微信用户表处理：如果是客户，则更新readerStatus信息
         5.微信阅读记录表处理：直接新增阅读记录
         6.删除缓存
          */
+        // 1.判断openid
+        List<WxUser> wxUsers = wxUserMapper.selectByOpenid(openid);
+        if (wxUsers.size() == 0)
+            throw new MyException(CodeEum.CODE_PARAM_ERROR, "openid 不存在");
+        WxUser wxUser = wxUsers.get(0);
 
-        // 1. 找一找这个openid是不是我们客户: 取出客户状态，不存在则为null
-        String customerStatus = customerMapper.queryCusStatusByOpenid(wxUserInfo.getOpenid());
-        wxUserInfo.setReaderStatus(customerStatus);
-        String nowDate = MyDateTimeUtil.getNowDate();
 
         // 2.文章客户阅读记录处理
+        // 找一找这个openid是不是我们客户: 取出客户状态，不存在则为null
+        String customerStatus = customerMapper.queryCusStatusByOpenid(openid);
+        String nowDate = MyDateTimeUtil.getNowDate();
         // 如果是我们的客户
         if (customerStatus != null) {
             // 拿到客户id：必然不会为null吧？这不能给我删了吧
-            Long cusId = customerMapper.queryIdByOpenid(wxUserInfo.getOpenid());
+            Long cusId = customerMapper.queryIdByOpenid(openid);
             if (cusId != null) {
                 // 先找找今天是否已经有读过了
                 List<Long> artCusReadIds = artCusReadMapper
-                        .queryTodayRead(wxUserInfo.getArticleId(), cusId, nowDate);
+                        .queryTodayRead(articleId, cusId, nowDate);
 
                 // 2.1 今天没读，即没有记录，则插入一条
                 if (artCusReadIds.size() == 0) {
                     ArticleCustomerRead articleCustomerRead = new ArticleCustomerRead();
-                    articleCustomerRead.setArticleId(wxUserInfo.getArticleId());
+                    articleCustomerRead.setArticleId(articleId);
                     articleCustomerRead.setCustomerId(cusId);
                     articleCustomerRead.setReadDate(nowDate);
-                    articleCustomerRead.setReadTime(wxUserInfo.getReadTime());
+                    articleCustomerRead.setReadTime(readTime);
 
                     artCusReadMapper.insert(articleCustomerRead);
                 }
                 // 2.2 今天读了，有记录，将阅读时间相加
                 else {
                     long artCusReadId = artCusReadIds.get(0);
-                    artCusReadMapper.addReadTime(artCusReadId, wxUserInfo.getReadTime());
+                    artCusReadMapper.addReadTime(artCusReadId, readTime);
                 }
             }
         }
 
         // 3.文章阅读记录处理
-        articleMapper.addArticleRead(wxUserInfo.getArticleId(), wxUserInfo.getReadTime());
+        articleMapper.addArticleRead(articleId, readTime);
 
-        // 4.微信用户表处理：更新用户信息
-        WxUser wxUser = new WxUser(
-                wxUserInfo.getOpenid(),
-                wxUserInfo.getNickname(),
-                wxUserInfo.getSex(),
-                wxUserInfo.getProvince(),
-                wxUserInfo.getCity(),
-                wxUserInfo.getCountry(),
-                wxUserInfo.getHeadimgurl(),
-                wxUserInfo.getUnionid(),
-                wxUserInfo.getReaderStatus());
-        // 4.1 查看此openid是否已经存在
-        List<WxUser> wxUsers = wxUserMapper.selectByOpenid(wxUser.getOpenid());
-        // 4.2 已经存在：更新信息
-        if (wxUsers.size() == 1) {
-            wxUser.setId(wxUsers.get(0).getId());
-            wxUserMapper.updateById(wxUser);
-        }
-        // 4.3 不存在：插入
-        else if (wxUsers.size() == 0) {
-            wxUserMapper.insert(wxUser);
-        }
+        // 4.微信用户表处理：更新readerStatus状态信息
+        if (customerStatus != null)
+            wxUserMapper.updateReaderStatus(wxUser.getId(), customerStatus);
 
         // 5.微信阅读记录表处理：直接新增阅读记录
         WxReadRecord wxReadRecord = new WxReadRecord(
-                wxUserInfo.getArticleId(),
-                wxUserInfo.getShareId(),
+                articleId,
+                shareId,
                 wxUser.getId(),
-                wxUser.getOpenid(),
+                openid,
                 nowDate,
-                wxUserInfo.getReadTime());
+                readTime);
         // 直接插入，不做相同读者当日阅读时间合并
         wxReadRecordMapper.insert(wxReadRecord);
 
         // 6.删除缓存
-        delCache(wxUserInfo.getArticleId(), wxUserInfo.getShareId());
+        delCache(articleId, shareId);
     }
 
 }

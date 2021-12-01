@@ -1,6 +1,7 @@
 package com.scrm.marketing.controller;
 
 import cn.hutool.crypto.digest.DigestUtil;
+import com.scrm.marketing.service.WxUserService;
 import com.scrm.marketing.share.wx.WxAccessToken;
 import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 
 /**
@@ -34,6 +36,9 @@ public class WxController {
     private String appSecret;
     @Value("${my.wx.token}")
     private String token;
+
+    @Resource
+    private WxUserService wxUserService;
 
     private static final GlobalAccessToken globalAccessToken = new GlobalAccessToken();
     private static final JsapiTicket global_jsapi_ticket = new JsapiTicket();
@@ -95,6 +100,9 @@ public class WxController {
 
         // 3.state处理
         /*暂时没有用到state*/
+
+        // 4.保存最新的用户信息到数据库
+        wxUserService.saveWxUser(wxUserInfo);
 
         return Result.success(wxUserInfo);
     }
