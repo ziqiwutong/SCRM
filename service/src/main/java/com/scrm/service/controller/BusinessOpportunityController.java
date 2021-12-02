@@ -9,28 +9,44 @@ import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(value = "/businessOpportunity")
+@RequestMapping(value = "/se/businessOpportunity")
 @RestController
 public class BusinessOpportunityController {
     @Resource
     private BusinessOpportunityService se_business_opportunityService;
 
-    @GetMapping(value = "/queryBizOpportunity")
+    @PostMapping(value = "/queryBizOpportunity")
     public PageResult queryBizOpportunity(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
-            @RequestParam(value = "currentPage", required = false) Integer currentPage) {
+            @RequestParam(value = "currentPage", required = false) Integer currentPage,
+            @RequestParam(value = "boStatus", required = false) String boStatus) {
 
-        // 查询数据
-        List<BusinessOpportunity> businessOpportunities =
-                se_business_opportunityService.queryBizOpportunity(pageCount, currentPage);
         // 查询总的条数
         Integer count = se_business_opportunityService.queryCount();
+        List<BusinessOpportunity> businessOpportunities = new ArrayList<>();
+
+        // 查询数据
+        if(boStatus.equals("new")){
+            businessOpportunities =
+                se_business_opportunityService.queryBizOpportunity(pageCount, currentPage,"新商机");
+        }else if(boStatus.equals("follow")){
+            businessOpportunities =
+                    se_business_opportunityService.queryBizOpportunity(pageCount, currentPage,"跟进中");
+        }else if(boStatus.equals("end")){
+            businessOpportunities =
+                    se_business_opportunityService.queryBizOpportunity(pageCount, currentPage,"已结束");
+        }else if(boStatus.equals("all")){
+            businessOpportunities =
+                    se_business_opportunityService.queryBizOpportunity(pageCount, currentPage,null);
+        }
+
         return PageResult.success(businessOpportunities, count, currentPage);
     }
 
-    @GetMapping(value = "/queryBizOppByKey")
+    @PostMapping(value = "/queryBizOppByKey")
     public Result queryBizOppByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {
@@ -40,7 +56,7 @@ public class BusinessOpportunityController {
 
     @PostMapping(value = "/addBizOpp")
     public Result addBizOpp(
-            @RequestBody BusinessOpportunity businessOpportunity
+            BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
            return Result.error(CodeEum.PARAM_MISS);
@@ -55,7 +71,7 @@ public class BusinessOpportunityController {
 
     @PostMapping(value = "/editBizOpp")
     public Result editBizOpp(
-            @RequestBody BusinessOpportunity businessOpportunity
+            BusinessOpportunity businessOpportunity
     ) {
         if (businessOpportunity == null) {
             return Result.error(CodeEum.PARAM_MISS);

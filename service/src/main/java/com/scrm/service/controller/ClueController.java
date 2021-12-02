@@ -88,7 +88,6 @@ public class ClueController {
             if(se_clue.getBusinessOpporitunityFlag() == true){
                 BusinessOpportunity businessOpportunity = new BusinessOpportunity();
                 businessOpportunity.setBoName(se_clue.getClueName());
-                businessOpportunity.setBoDate(new Date(System.currentTimeMillis()));
                 businessOpportunity.setBoStatus("New Business Opportunity");
                 businessOpportunity.setBoEditor(se_clue.getClueEditor());
                 businessOpportunity.setBoResponsible(se_clue.getClueResponsible());

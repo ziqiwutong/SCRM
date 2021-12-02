@@ -5,7 +5,7 @@ import com.scrm.service.entity.BusinessOpportunity;
 import java.util.List;
 
 public interface BusinessOpportunityService {
-    List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage);
+    List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage, String boStatus);
 
     List<BusinessOpportunity> queryBizOppByKey(String key);
 

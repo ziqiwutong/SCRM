@@ -7,7 +7,7 @@ import java.util.List;
 
 @Mapper
 public interface BusinessOpportunityDao {
-    List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage);
+    List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage, String boStatus);
 
     List<BusinessOpportunity> queryBizOppByKey(String key);
 

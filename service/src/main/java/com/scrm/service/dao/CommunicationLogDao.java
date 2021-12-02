@@ -9,19 +9,19 @@ import java.util.List;
 
 @Mapper
 public interface CommunicationLogDao {
-    UserAndCommunication queryCommunicationUser(Integer id);
+    List<UserAndCommunication> queryCommunicationUser(Integer customerId);
 
-    Communication queryCommunication(Integer id);
+    Communication queryCommunication(Integer customerId);
 
-    List<CommunicationLog> queryCommunicationLog(Integer id);
+    List<CommunicationLog> queryCommunicationLog(Integer id, Integer customerId, Integer communicationWay);
 
     Integer addCommunicationLog(CommunicationLog communicationLog);
 
-    Integer PlusCommunication(Long communicationId, Integer communicationWay);
+    Integer PlusCommunication(Integer customerId, Integer communicationWay);
 
     Integer editCommunicationLog(CommunicationLog communicationLog);
 
     Integer deleteCommunicationLog(Integer id);
 
-    Integer MinusCommunication(Integer communicationId, Integer communicationWay);
+    Integer MinusCommunication(Integer customerId, Integer communicationWay);
 }
