@@ -52,18 +52,39 @@ public class CustomerRestServiceImpl implements CustomerRestService {
     @Resource
     private CompanyQXBDao companyQXBDao;
 
-    @Value("${my.file.pic.picRootPath}")
-    private String picRootPath;
-    @Value("${my.file.pic.picAccessPath}")
-    private String picAccessPath;
+    @Value("${docking.baidu.client.id}")
+    private String baiduClientId;
 
+    @Value("${docking.baidu.client.secret}")
+    private String baiduClientSecret;
+
+    @Value("${docking.baidu.phone-attribution.access-key}")
+    private String phoneAttributionAccess;
+
+    @Value("${docking.baidu.phone-attribution.secret-key}")
+    private String phoneAttributionSecret;
+
+    @Value("${docking.bing.custom-config}")
+    private String bingCustomId;
+
+    @Value("${docking.bing.subscription-key}")
+    private String bingSubscriptionKey;
+
+    @Value("${docking.qxb.app-key}")
+    private String qxbAppKey;
+
+    @Value("${docking.qxb.secret-key}")
+    private String qxbSecretKey;
+
+    @Value("${nginx.file.pic.root-path}")
+    private String picRootPath;
+    
+    @Value("${nginx.file.pic.access-path}")
+    private String picAccessPath;
+    
     // 客户类型
     public static final int PERSONAL = 0;
     public static final int COMPANY = 1;
-
-    // 启信宝key
-    private static final String QXB_APP_KEY = "86b6b347-4143-48ad-b8ff-51592d446a40";
-    private static final String QXB_SECRET_KEY = "1c90b493-48a3-473c-89a3-7f08e1989b28";
 
     @Override
     public PhoneAttribution queryPhoneAttribution(String phone) {
@@ -81,10 +102,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
 
         String path = "https://hcapi02.api.bdymkt.com/mobile";
         ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
-        request.setCredentials(
-                "5defc1ad0447491a834e77815c1372f4",
-                "8bcb9ec79eda49c29ced1a60c5fe7c2d"
-        );
+        request.setCredentials(phoneAttributionAccess, phoneAttributionSecret);
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
         request.addQueryParameter("mobile", phone);
         try {
@@ -124,8 +142,8 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         ApiExplorerRequest tokenRequest = new ApiExplorerRequest(HttpMethodName.GET, tokenPath);
         tokenRequest.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
         tokenRequest.addQueryParameter("grant_type", "client_credentials");
-        tokenRequest.addQueryParameter("client_id", "1wV3gUmUGLAUk22tYj4igSpB");
-        tokenRequest.addQueryParameter("client_secret", "KdoLsWHLuwKdfGuathQY6rakWgyXm8jW");
+        tokenRequest.addQueryParameter("client_id", baiduClientId);
+        tokenRequest.addQueryParameter("client_secret", baiduClientSecret);
         try {
             ApiExplorerResponse response = client.sendRequest(tokenRequest);
             JSONObject body = JSONObject.parseObject(response.getResult());
@@ -208,8 +226,8 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         String path = "https://api.qixin.com/APIService/enterprise/getBasicInfo";
         ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
-        request.addQueryParameter("appkey", QXB_APP_KEY);
-        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("appkey", qxbAppKey);
+        request.addQueryParameter("secret_key", qxbSecretKey);
         request.addQueryParameter("keyword", registerNo);
         try {
             ApiExplorerResponse response = client.sendRequest(request);
@@ -385,8 +403,8 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         String path = "https://api.qixin.com/APIService/relation/createFindRelationTask";
         ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
-        request.addQueryParameter("appkey", QXB_APP_KEY);
-        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("appkey", qxbAppKey);
+        request.addQueryParameter("secret_key", qxbSecretKey);
         request.addQueryParameter("enterprises", firmA + "," + firmB);
         try {
             ApiExplorerResponse response = client.sendRequest(request);
@@ -405,8 +423,8 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         path = "https://api.qixin.com/APIService/relation/getFindRelationResult";
         request = new ApiExplorerRequest(HttpMethodName.GET, path);
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
-        request.addQueryParameter("appkey", QXB_APP_KEY);
-        request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+        request.addQueryParameter("appkey", qxbAppKey);
+        request.addQueryParameter("secret_key", qxbSecretKey);
         request.addQueryParameter("key", key);
         try {
             ApiExplorerResponse response = client.sendRequest(request);
@@ -442,12 +460,10 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                 ArrayList<Object> bing = new ArrayList<>();
 
                 path = "https://api.bing.microsoft.com/v7.0/custom/search";
-                String customConfigId = "15d23d8c-99da-46f2-acce-321d8d9e4845";
-                String subscriptionKey = "3f1e5b0907af46469ea7777af1fef604";
                 try {
                     URL url = new URL(path +
                             "?q=" + URLEncoder.encode(keyword, "UTF-8") +
-                            "&CustomConfig=" + customConfigId
+                            "&CustomConfig=" + bingCustomId
                     );
                     HostnameVerifier hv = (urlHostName, session) -> {
                         System.out.println("Warning: URL Host: " + urlHostName + " vs. " + session.getPeerHost());
@@ -455,7 +471,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                     };
                     HttpsURLConnection.setDefaultHostnameVerifier(hv);
                     HttpsURLConnection connection = (HttpsURLConnection)url.openConnection();
-                    connection.setRequestProperty("Ocp-Apim-Subscription-Key", subscriptionKey);
+                    connection.setRequestProperty("Ocp-Apim-Subscription-Key", bingSubscriptionKey);
 
                     InputStream stream = connection.getInputStream();
                     String response = new Scanner(stream).useDelimiter("\\A").next();
@@ -494,8 +510,8 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                 path = "https://api.qixin.com/APIService/v2/search/advSearch";
                 ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.GET, path);
                 request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
-                request.addQueryParameter("appkey", QXB_APP_KEY);
-                request.addQueryParameter("secret_key", QXB_SECRET_KEY);
+                request.addQueryParameter("appkey", qxbAppKey);
+                request.addQueryParameter("secret_key", qxbSecretKey);
                 request.addQueryParameter("keyword", keyword);
                 request.addQueryParameter("matchType", "ename");
                 try {
