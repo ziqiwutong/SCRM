@@ -1,0 +1,19 @@
+spring:
+  cloud:
+    nacos:
+      discovery: # 配置nacos注册中心服务发现
+        server-addr: http://localhost:8848 # 配置的Nacos地址
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
+  datasource:
+    url: "jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
+    username: root
+    password: "!MySQL123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+  # redis配置
+  redis:
+    # Redis服务器地址
+    host: 127.0.0.1
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: '!MyRedis1233211234567'
