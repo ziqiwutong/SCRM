@@ -58,7 +58,6 @@ public class MyWebSocketConfig implements WebSocketConfigurer {
                 .setAllowedOrigins("*");// 允许跨域
     }
 
-
     public static class MyHandler extends TextWebSocketHandler {
         private final RedisTemplate<String, String> redisTemplate;
         private final RestTemplate restTemplate;
@@ -99,8 +98,8 @@ public class MyWebSocketConfig implements WebSocketConfigurer {
         @Override
         public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
             super.handleTransportError(session, exception);
-            // 添加阅读记录
-            addReadRecord(session.getId());
+            // 添加阅读记录 不需要去调用这个，在连接出异常后，关闭时依旧回去调用关闭回调方法
+            //addReadRecord(session.getId());
             // 关闭session
             if (session.isOpen())
                 session.close();

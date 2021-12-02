@@ -20,7 +20,7 @@
             let articleId=$("#articleId").val();
             let shareId=$("#shareId").val();
             let openid=$("#openid").val();
-            let socketUrl = "http://localhost:30003/mk/article/ws?openid="+openid+"&articleId="
+            let socketUrl = "https://www.fzk-tx.top/mk/article/ws?openid="+openid+"&articleId="
                 +articleId+"&shareId="+shareId;
             socketUrl = socketUrl.replace("https", "ws").replace("http", "ws");
             console.log(socketUrl);
