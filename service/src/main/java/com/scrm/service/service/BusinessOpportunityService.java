@@ -9,6 +9,8 @@ public interface BusinessOpportunityService {
 
     List<BusinessOpportunity> queryBizOppByKey(String key);
 
+    BusinessOpportunity queryBizOpportunityDetail(Integer id);
+
     Integer queryCount();
 
     String addBizOpp(BusinessOpportunity se_business_opportunity) throws Exception;

@@ -11,6 +11,8 @@ public interface BusinessOpportunityDao {
 
     List<BusinessOpportunity> queryBizOppByKey(String key);
 
+    BusinessOpportunity queryBizOpportunityDetail(Integer id);
+
     Integer queryCount();
 
     Integer addBizOpp(BusinessOpportunity se_business_opportunity);

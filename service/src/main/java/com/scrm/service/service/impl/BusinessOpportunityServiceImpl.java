@@ -26,6 +26,11 @@ public class BusinessOpportunityServiceImpl implements BusinessOpportunityServic
     }
 
     @Override
+    public BusinessOpportunity queryBizOpportunityDetail(Integer id) {
+        return se_business_opportunityDao.queryBizOpportunityDetail(id);
+    }
+
+    @Override
     public Integer queryCount() {
         return se_business_opportunityDao.queryCount();
     }

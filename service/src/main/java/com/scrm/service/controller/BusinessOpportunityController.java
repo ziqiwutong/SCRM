@@ -46,6 +46,14 @@ public class BusinessOpportunityController {
         return PageResult.success(businessOpportunities, count, currentPage);
     }
 
+    @PostMapping(value = "/queryBizOpportunityDetail")
+    public Result queryBizOpportunityDetail(
+            @RequestParam(value = "id") Integer id
+    ) {
+        BusinessOpportunity business_opportunity = se_business_opportunityService.queryBizOpportunityDetail(id);
+        return Result.success(business_opportunity);
+    }
+
     @PostMapping(value = "/queryBizOppByKey")
     public Result queryBizOppByKey(
             @RequestParam(value = "keySearch") String keySearch

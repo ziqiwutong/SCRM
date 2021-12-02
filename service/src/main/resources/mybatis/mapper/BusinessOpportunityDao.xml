@@ -19,6 +19,10 @@
         select * from se_business_opportunity where bo_name like "%"#{boName}"%"
     </select>
 
+    <select id="queryBizOpportunityDetail" resultType="com.scrm.service.entity.BusinessOpportunity">
+        select * from se_business_opportunity where id = #{id}
+    </select>
+
     <select id="queryCount" resultType="Integer">
         select count(*) from se_business_opportunity
     </select>
