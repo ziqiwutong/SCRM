@@ -15,6 +15,11 @@ spring:
     username: root
     password: "!MySQL123456"
     driver-class-name: com.mysql.cj.jdbc.Driver
+  # redis配置
+  redis:
+    host: 106.15.235.113
+    port: 6379
+    password: "!MyRedis1233211234567"
 
 #mybatis:
 #  config-location: classpath:mybatis/mybatis-config.xml
@@ -27,8 +32,27 @@ mybatis-plus:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
     call-setters-on-nulls: true
 
-my:
+##################### 以下为自定义参数 #######################
+docking:
+  baidu:
+    client:
+      id: "1wV3gUmUGLAUk22tYj4igSpB"
+      secret: "KdoLsWHLuwKdfGuathQY6rakWgyXm8jW"
+    phone-attribution:
+      access-key: "5defc1ad0447491a834e77815c1372f4"
+      secret-key: "8bcb9ec79eda49c29ced1a60c5fe7c2d"
+  bing:
+    custom-config: "15d23d8c-99da-46f2-acce-321d8d9e4845"
+    subscription-key: "3f1e5b0907af46469ea7777af1fef604"
+  qxb:
+    app-key: "86b6b347-4143-48ad-b8ff-51592d446a40"
+    secret-key: "1c90b493-48a3-473c-89a3-7f08e1989b28"
+  weimob:
+    client:
+      id: "F4D116273B5460EB17B0DB87FB8DEE01"
+      secret: "ADC5704B979D56FC539B8254631F39E0"
+nginx:
   file:
     pic:
-      picRootPath: "D:/mynginx/"
-      picAccessPath: "https://www.fzk-tx.top/images"
+      root-path: "E:/Nginx/nginx-1.20.2/data/"
+      access-path: "http://localhost"
