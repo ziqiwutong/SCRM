@@ -5,7 +5,11 @@
 <mapper namespace="com.scrm.service.dao.BusinessOpportunityDao">
     <select id="queryBizOpportunity" resultType="com.scrm.service.entity.BusinessOpportunity">
         <bind name="key_offset" value="(currentPage-1)*pageCount"/>
-        select * from se_business_opportunity order by id asc
+        select * from se_business_opportunity
+        <if test="boStatus != null">
+            where bo_status = replace(#{boStatus}, '''', '')
+        </if>
+        order by update_time desc
         <if test="pageCount != null and currentPage != null">
             limit #{key_offset},#{pageCount}
         </if>
@@ -15,18 +19,22 @@
         select * from se_business_opportunity where bo_name like "%"#{boName}"%"
     </select>
 
+    <select id="queryBizOpportunityDetail" resultType="com.scrm.service.entity.BusinessOpportunity">
+        select * from se_business_opportunity where id = #{id}
+    </select>
+
     <select id="queryCount" resultType="Integer">
         select count(*) from se_business_opportunity
     </select>
 
     <insert id="addBizOpp" parameterType="com.scrm.service.entity.BusinessOpportunity"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_business_opportunity (id, customer_id, bo_name, bo_date, bo_status, bo_full_stage, bo_follow_stage, bo_editor, bo_responsible, bo_responsible_id, bo_amount, bo_expect_date, bo_notes)
-        values(#{id}, #{customerId}, #{boName}, #{boDate}, #{boStatus}, #{boFullStage}, #{boFollowStage}, #{boEditor}, #{boResponsible}, #{boResponsibleId}, #{boAmount}, #{boExpectDate}, #{boNotes})
+        insert into se_business_opportunity (id, customer_id, customer_name, bo_name, bo_status, bo_full_stage, bo_follow_stage, bo_editor_id, bo_editor, bo_responsible_id, bo_responsible, bo_amount, bo_expect_date, bo_notes)
+        values(#{id}, #{customerId}, #{customerName}, #{boName}, #{boStatus}, #{boFullStage}, #{boFollowStage}, #{boEditorId}, #{boEditor}, #{boResponsibleId}, #{boResponsible}, #{boAmount}, #{boExpectDate}, #{boNotes})
     </insert>
 
     <update id="editBizOpp" parameterType="com.scrm.service.entity.BusinessOpportunity">
-        update se_business_opportunity set customer_id = #{customerId}, bo_name = #{boName}, bo_date = #{boDate}, bo_status = #{boStatus}, bo_full_stage = #{boFullStage}, bo_follow_stage = #{boFollowStage}, bo_editor = #{boEditor}, bo_responsible = #{boResponsible}, bo_responsible_id = #{boResponsibleId}, bo_amount = #{boAmount}, bo_expect_date = #{boExpectDate}, bo_notes = #{boNotes}
+        update se_business_opportunity set customer_id = #{customerId}, customer_name = #{customerName}, bo_name = #{boName}, bo_status = #{boStatus}, bo_full_stage = #{boFullStage}, bo_follow_stage = #{boFollowStage}, bo_editor_id = #{boEditorId}, bo_editor = #{boEditor}, bo_responsible = #{boResponsible}, bo_responsible_id = #{boResponsibleId}, bo_amount = #{boAmount}, bo_expect_date = #{boExpectDate}, bo_notes = #{boNotes}
         where id = #{id}
     </update>
 

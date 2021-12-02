@@ -4,55 +4,64 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.scrm.service.dao.CommunicationLogDao">
     <select id="queryCommunicationUser" resultType="com.scrm.service.entity.UserAndCommunication">
-        select se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_label.label_name, se_customer.enter_pool_date
+        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_customer.customer_icon, se_customer.enter_pool_date
         from se_communication
         left join se_customer on se_communication.customer_id = se_customer.id
-        left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
-        left join se_label on se_customer_label_relation.label_id = se_label.id
-        where se_communication.id = #{id}
+        where se_communication.customer_id = #{customerId}
     </select>
 
     <select id="queryCommunication" resultType="com.scrm.service.entity.Communication">
         select *
-        from se_communication where se_communication.id = #{id}
+        from se_communication where se_communication.customer_id = #{customerId}
     </select>
 
     <select id="queryCommunicationLog" resultType="com.scrm.service.entity.CommunicationLog">
-        select * from se_communication_log
-        where communication_id = #{id}
-        order by communication_way
+        <choose>
+            <when test="id != null">
+                select * from se_communication_log
+                where id = #{id}
+            </when>
+            <when test="communicationWay != null and communicationWay == 4">
+                select * from se_communication_log
+                where customer_id = #{customerId}
+                order by communication_way
+            </when>
+            <when test="communicationWay != null and communicationWay != 4">
+                select * from se_communication_log
+                where customer_id = #{customerId} and communication_way = #{communicationWay}
+            </when>
+        </choose>
     </select>
 
     <insert id="addCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_communication_log (communication_id, communication_way, communication_content, communication_time)
-        values(#{communicationId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
+        insert into se_communication_log (customer_id, communication_way, communication_content, communication_time)
+        values(#{customerId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
     </insert>
 
-    <update id="PlusCommunication" parameterType="com.scrm.service.entity.Communication">
-        <bind name="id" value="communicationId"/>
+    <update id="PlusCommunication">
         <choose>
             <when test="communicationWay != null and communicationWay == 0">
                 update se_communication set visit_times = visit_times + 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 1">
                 update se_communication set call_times = call_times + 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 2">
                 update se_communication set msg_times = msg_times + 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 3">
                 update se_communication set wx_times = wx_times + 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
         </choose>
     </update>
 
     <update id="editCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog">
-        update se_communication_log set communication_id = #{communicationId}, communication_way = #{communicationWay}, communication_content = #{communicationContent}, communication_time = #{communicationTime}
+        update se_communication_log set customer_id = #{customerId}, communication_way = #{communicationWay}, communication_content = #{communicationContent}, communication_time = #{communicationTime}
         where id = #{id}
     </update>
 
@@ -60,24 +69,23 @@
     delete from se_communication_log where id = #{id}
     </delete>
 
-    <update id="MinusCommunication" parameterType="com.scrm.service.entity.Communication">
-        <bind name="id" value="communicationId"/>
+    <update id="MinusCommunication">
         <choose>
             <when test="communicationWay != null and communicationWay == 0">
                 update se_communication set visit_times = visit_times - 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 1">
                 update se_communication set call_times = call_times - 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 2">
                 update se_communication set msg_times = msg_times - 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
             <when test="communicationWay != null and communicationWay == 3">
                 update se_communication set wx_times = wx_times - 1
-                where id = #{id}
+                where customer_id = #{customerId}
             </when>
         </choose>
     </update>

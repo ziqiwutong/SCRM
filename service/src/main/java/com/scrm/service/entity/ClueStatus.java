@@ -1,10 +1,13 @@
 package com.scrm.service.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.sql.Timestamp;
 
 public class ClueStatus {
+    @TableId(type = IdType.AUTO)
     private Long id;
     private Long clueId;
     private String clueEditor;

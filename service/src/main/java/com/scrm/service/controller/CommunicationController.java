@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(value="/communication")
+@RequestMapping(value="/se/communication")
 @RestController
 public class CommunicationController {
     @Resource
@@ -34,7 +34,7 @@ public class CommunicationController {
         return PageResult.success(userAndCommunications, count, currentPage);
     }
 
-    @GetMapping(value="/queryCommunicationByKey")
+    @PostMapping(value="/queryCommunicationByKey")
     public Result queryCommunicationByKey(
             @RequestParam(value = "keySearch") String keySearch
     )
@@ -49,12 +49,9 @@ public class CommunicationController {
 
     @PostMapping(value="/addCommunication")
     public Result addCommunication(
-            @RequestBody Communication communication
+             Communication communication
     )
     {
-        if (communication == null) {
-            return Result.error(CodeEum.PARAM_MISS);
-        }
         try{
             communicationService.addCommunication(communication);
             return Result.success();
@@ -65,7 +62,7 @@ public class CommunicationController {
 
     @PostMapping(value="/editCommunication")
     public Result editCommunication(
-            @RequestBody Communication communication
+             Communication communication
     )
     {
         if (communication == null) {
@@ -81,28 +78,34 @@ public class CommunicationController {
 
     @PostMapping(value="/deleteCommunication")
     public Result deleteCommunication(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "customerId") Integer customerId
     )
     {
         try{
-            communicationService.deleteCommunication(id);
-            communicationService.deleteCommunicationLog(id);
+            communicationService.deleteCommunication(customerId);
+            communicationService.deleteCommunicationLog(customerId);
             return Result.success();
         }catch(Exception e) {
                 return Result.error(CodeEum.FAIL);
         }
     }
 
-    @GetMapping(value="/queryCommunicationLog")
+    @PostMapping(value="/queryCommunicationLog")
     public Result queryCommunicationLog(
-            @RequestParam(value = "id") Integer id
+            @RequestParam(value = "id", required = false) Integer id,
+            @RequestParam(value = "customerId") Integer customerId,
+            @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
-        UserAndCommunication userAndCommunication = communicationLogService.queryCommunicationUser(id);
-        Communication communication = communicationLogService.queryCommunication(id);
-        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(id);
+        List<UserAndCommunication> userAndCommunications = communicationLogService.queryCommunicationUser(customerId);
+        Communication communication = communicationLogService.queryCommunication(customerId);
+        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(id, customerId, communicationWay);
         List final_list = new ArrayList();
-        final_list.add(userAndCommunication);
+
+        for (UserAndCommunication userAndCommunication:userAndCommunications
+        ) {
+            final_list.add(userAndCommunication);
+        }
         final_list.add(communication);
         for (CommunicationLog communicationLog:communicationLogs
              ) {
@@ -116,12 +119,23 @@ public class CommunicationController {
             @RequestBody CommunicationLog communicationLog
     )
     {
+        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(
+                null,communicationLog.getCustomerId().intValue(),4);
+        if(communicationLogs.size() == 0){
+            Communication communication = new Communication();
+            communication.setCustomerId(communicationLog.getCustomerId());
+            try{
+                communicationService.addCommunication(communication);
+            }catch(Exception e) {
+                return Result.error(CodeEum.FAIL);
+            }
+        }
         if (communicationLog == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try{
             communicationLogService.addCommunicationLog(communicationLog);
-            communicationLogService.PlusCommunication(communicationLog.getCommunicationId(),communicationLog.getCommunicationWay());
+            communicationLogService.PlusCommunication(communicationLog.getCustomerId().intValue(),communicationLog.getCommunicationWay());
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -148,13 +162,13 @@ public class CommunicationController {
     @ResponseBody
     public Result deleteCommunicationLog(
             @RequestParam(value = "id") Integer id,
-            @RequestParam(value = "communicationId") Integer communicationId,
+            @RequestParam(value = "customerId") Integer customerId,
             @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
         try{
             communicationLogService.deleteCommunicationLog(id);
-            communicationLogService.MinusCommunication(communicationId,communicationWay);
+            communicationLogService.MinusCommunication(customerId,communicationWay);
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);

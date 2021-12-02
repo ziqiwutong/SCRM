@@ -50,8 +50,8 @@ public class CommunicationServiceImpl implements CommunicationService {
 
     @Override
     @Transactional//开启事务
-    public String deleteCommunication(Integer id) throws Exception{
-        int result = communicationDao.deleteCommunication(id);
+    public String deleteCommunication(Integer customerId) throws Exception{
+        int result = communicationDao.deleteCommunication(customerId);
         if (result < 1) {
             throw new Exception("删除失败");
         }
@@ -61,9 +61,6 @@ public class CommunicationServiceImpl implements CommunicationService {
     @Override
     public Integer deleteCommunicationLog(Integer id) throws Exception {
         int result = communicationDao.deleteCommunicationLog(id);
-        if (result < 1) {
-            throw new Exception("删除失败");
-        }
         return null;
     }
 }

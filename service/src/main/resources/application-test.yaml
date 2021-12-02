@@ -1,5 +1,0 @@
-spring:
-  cloud:
-    nacos:
-      discovery: # 配置nacos注册中心服务发现
-        group: "test_group"

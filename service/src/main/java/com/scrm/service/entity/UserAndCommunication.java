@@ -12,6 +12,7 @@ public class UserAndCommunication {
     private String labelName;
     private String telephone;
     private String belongCompany;
+    private String customerIcon;
     private Date enterPoolDate;
 
     public Long getId() {
@@ -61,6 +62,10 @@ public class UserAndCommunication {
     public void setBelongCompany(String belongCompany) {
         this.belongCompany = belongCompany;
     }
+
+    public String getCustomerIcon() { return customerIcon; }
+
+    public void setCustomerIcon(String customerIcon) { this.customerIcon = customerIcon; }
 
     public Date getEnterPoolDate() {
         return enterPoolDate;

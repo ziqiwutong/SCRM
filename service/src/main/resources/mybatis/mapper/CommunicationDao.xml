@@ -5,7 +5,7 @@
 <mapper namespace="com.scrm.service.dao.CommunicationDao">
     <select id="queryCommunication" resultType="com.scrm.service.entity.UserAndCommunication">
         <bind name="key_offset" value="(currentPage-1)*pageCount"/>
-        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_label.label_name, se_customer.enter_pool_date
+        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_customer.customer_icon, se_label.label_name, se_customer.enter_pool_date
         from se_customer
         left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
         left join se_label on se_customer_label_relation.label_id = se_label.id
@@ -15,7 +15,7 @@
     </select>
 
     <select id="queryCommunicationByKey" resultType="com.scrm.service.entity.UserAndCommunication">
-        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_label.label_name, se_customer.enter_pool_date
+        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_customer.customer_icon, se_label.label_name, se_customer.enter_pool_date
         from se_customer
         left join se_customer_label_relation on se_customer.id = se_customer_label_relation.customer_id
         left join se_label on se_customer_label_relation.label_id = se_label.id
@@ -28,8 +28,8 @@
 
     <insert id="addCommunication" parameterType="com.scrm.service.entity.Communication"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_communication (id, customer_id, visit_times, call_times, msg_times, wx_times)
-        values(#{id}, #{customerId}, #{visitTimes}, #{callTimes}, #{msgTimes}, #{wxTimes})
+        insert into se_communication (customer_id)
+        values(#{customerId})
     </insert>
 
     <update id="editCommunication" parameterType="com.scrm.service.entity.Communication">
@@ -38,10 +38,10 @@
     </update>
 
     <delete id="deleteCommunication">
-        delete from se_communication where id = #{id}
+        delete from se_communication where customer_id = #{customerId}
     </delete>
 
     <delete id="deleteCommunicationLog">
-        delete from se_communication_log where communication_id = #{communicationId}
+        delete from se_communication_log where customer_id = #{customerId}
     </delete>
 </mapper>

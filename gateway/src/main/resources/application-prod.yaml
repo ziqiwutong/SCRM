@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    nacos:
+      discovery: # 配置nacos注册中心服务发现
+        server-addr: http://localhost:8848 # 配置的Nacos地址
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看

@@ -1,0 +1,17 @@
+spring:
+  cloud:
+    nacos:
+      discovery: # 配置nacos注册中心服务发现
+        server-addr: http://localhost:8848 # 配置的Nacos地址
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
+  datasource:
+    url: "jdbc:mysql://localhost:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
+    username: root
+    password: "!MySQL123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+my:
+  file:
+    pic:
+      picRootPath: "/usr/local/nginx/data/"   # 指向的必须是nginx配置的存放静态资源的根目录
+      picAccessPath: "http://10.135.8.145"   # 需要以协议开头，在NGINX配置中，此访问路径指向的必须是在nginx的配置的静态资源存放目录

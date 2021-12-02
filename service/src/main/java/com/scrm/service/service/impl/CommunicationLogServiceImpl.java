@@ -17,18 +17,18 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     private CommunicationLogDao communicationLogDao;
 
     @Override
-    public UserAndCommunication queryCommunicationUser(Integer id) {
-        return communicationLogDao.queryCommunicationUser(id);
+    public List<UserAndCommunication> queryCommunicationUser(Integer customerId) {
+        return communicationLogDao.queryCommunicationUser(customerId);
     }
 
     @Override
-    public Communication queryCommunication(Integer id) {
-        return communicationLogDao.queryCommunication(id);
+    public Communication queryCommunication(Integer customerId) {
+        return communicationLogDao.queryCommunication(customerId);
     }
 
     @Override
-    public List<CommunicationLog> queryCommunicationLog(Integer id) {
-        return communicationLogDao.queryCommunicationLog(id);
+    public List<CommunicationLog> queryCommunicationLog(Integer id, Integer customerId, Integer communicationWay) {
+        return communicationLogDao.queryCommunicationLog(id, customerId, communicationWay);
     }
 
     @Override
@@ -41,8 +41,8 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer PlusCommunication(Long communicationId, Integer communicationWay) throws Exception {
-        int result = communicationLogDao.PlusCommunication(communicationId, communicationWay);
+    public Integer PlusCommunication(Integer customerId, Integer communicationWay) throws Exception {
+        int result = communicationLogDao.PlusCommunication(customerId, communicationWay);
         if (result < 1) {
             throw new Exception("更新沟通次数失败");
         }
@@ -68,8 +68,8 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer MinusCommunication(Integer communicationId, Integer communicationWay) throws Exception {
-        int result = communicationLogDao.MinusCommunication(communicationId, communicationWay);
+    public Integer MinusCommunication(Integer customerId, Integer communicationWay) throws Exception {
+        int result = communicationLogDao.MinusCommunication(customerId, communicationWay);
         if (result < 1) {
             throw new Exception("更新沟通次数失败");
         }
