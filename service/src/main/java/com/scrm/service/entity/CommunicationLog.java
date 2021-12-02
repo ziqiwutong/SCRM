@@ -2,11 +2,12 @@ package com.scrm.service.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import java.sql.Date;
 import java.sql.Timestamp;
 
 public class CommunicationLog {
     private Long id;
-    private Long communicationId;
+    private Long customerId;
     private Integer communicationWay;
     private String communicationContent;
     private Timestamp communicationTime;
@@ -21,12 +22,12 @@ public class CommunicationLog {
         this.id = id;
     }
 
-    public Long getCommunicationId() {
-        return communicationId;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setCommunicationId(Long communicationId) {
-        this.communicationId = communicationId;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     public Integer getCommunicationWay() {
@@ -46,13 +47,9 @@ public class CommunicationLog {
     }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    public Timestamp getCommunicationTime() {
-        return communicationTime;
-    }
+    public Timestamp getCommunicationTime() { return communicationTime; }
 
-    public void setCommunicationTime(Timestamp communicationTime) {
-        this.communicationTime = communicationTime;
-    }
+    public void setCommunicationTime(Timestamp communicationTime) { this.communicationTime = communicationTime; }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     public Timestamp getCreateTime() {

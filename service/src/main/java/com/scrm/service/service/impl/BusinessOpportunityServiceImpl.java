@@ -16,13 +16,18 @@ public class BusinessOpportunityServiceImpl implements BusinessOpportunityServic
     private BusinessOpportunityDao se_business_opportunityDao;
 
     @Override
-    public List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage) {
-        return se_business_opportunityDao.queryBizOpportunity(pageCount, currentPage);
+    public List<BusinessOpportunity> queryBizOpportunity(Integer pageCount, Integer currentPage, String boStatus) {
+        return se_business_opportunityDao.queryBizOpportunity(pageCount, currentPage, boStatus);
     }
 
     @Override
     public List<BusinessOpportunity> queryBizOppByKey(String key) {
         return se_business_opportunityDao.queryBizOppByKey(key);
+    }
+
+    @Override
+    public BusinessOpportunity queryBizOpportunityDetail(Integer id) {
+        return se_business_opportunityDao.queryBizOpportunityDetail(id);
     }
 
     @Override

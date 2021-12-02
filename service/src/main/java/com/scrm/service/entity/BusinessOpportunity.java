@@ -1,6 +1,8 @@
 package com.scrm.service.entity;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import java.math.BigDecimal;
@@ -8,17 +10,19 @@ import java.sql.Date;
 import java.sql.Timestamp;
 
 public class BusinessOpportunity {
+    @TableId(type = IdType.AUTO)
     private Long id;
     private Long customerId;
+    private String customerName;
     private String boName;
-    private Date boDate;
     private String boStatus;
     private String boFullStage;
-    private Integer boFollowStage;
+    private String boFollowStage;
+    private Long boEditorId;
     private String boEditor;
-    private String boResponsible;
     private Long boResponsibleId;
-    private BigDecimal boAmount;
+    private String boResponsible;
+    private String boAmount;
     private Date boExpectDate;
     private String boNotes;
     private Timestamp createTime;
@@ -40,20 +44,20 @@ public class BusinessOpportunity {
         this.customerId = customerId;
     }
 
+    public String getCustomerName() {
+        return customerName;
+    }
+
+    public void setCustomerName(String customerName) {
+        this.customerName = customerName;
+    }
+
     public String getBoName() {
         return boName;
     }
 
     public void setBoName(String boName) {
         this.boName = boName;
-    }
-
-    public Date getBoDate() {
-        return boDate;
-    }
-
-    public void setBoDate(Date boDate) {
-        this.boDate = boDate;
     }
 
     public String getBoStatus() {
@@ -72,12 +76,20 @@ public class BusinessOpportunity {
         this.boFullStage = boFullStage;
     }
 
-    public Integer getBoFollowStage() {
+    public String getBoFollowStage() {
         return boFollowStage;
     }
 
-    public void setBoFollowStage(Integer boFollowStage) {
+    public void setBoFollowStage(String boFollowStage) {
         this.boFollowStage = boFollowStage;
+    }
+
+    public Long getBoEditorId() {
+        return boEditorId;
+    }
+
+    public void setBoEditorId(Long boEditorId) {
+        this.boEditorId = boEditorId;
     }
 
     public String getBoEditor() {
@@ -88,14 +100,6 @@ public class BusinessOpportunity {
         this.boEditor = boEditor;
     }
 
-    public String getBoResponsible() {
-        return boResponsible;
-    }
-
-    public void setBoResponsible(String boResponsible) {
-        this.boResponsible = boResponsible;
-    }
-
     public Long getBoResponsibleId() {
         return boResponsibleId;
     }
@@ -104,11 +108,19 @@ public class BusinessOpportunity {
         this.boResponsibleId = boResponsibleId;
     }
 
-    public BigDecimal getBoAmount() {
+    public String getBoResponsible() {
+        return boResponsible;
+    }
+
+    public void setBoResponsible(String boResponsible) {
+        this.boResponsible = boResponsible;
+    }
+
+    public String getBoAmount() {
         return boAmount;
     }
 
-    public void setBoAmount(BigDecimal boAmount) {
+    public void setBoAmount(String boAmount) {
         this.boAmount = boAmount;
     }
 
