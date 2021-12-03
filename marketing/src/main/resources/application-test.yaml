@@ -1,8 +1,36 @@
 spring:
   cloud:
     nacos:
-      discovery:
+      discovery: # 配置nacos注册中心服务发现
+        server-addr: "http://101.34.5.36:8848"  #配置的Nacos地址
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
         group: "test_group"
+
+  datasource:
+    url: "jdbc:mysql://106.15.235.113:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
+    username: root
+    password: "!MySQL123456"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  # redis配置
+  redis:
+    # Redis数据库索引（默认为0）
+    database: 0
+    # Redis服务器地址
+    host: 101.34.5.36
+    # Redis服务器连接端口
+    port: 6379
+    # Redis服务器连接密码（默认为空）
+    password: '!MyRedis1233211234567'
+    # 连接超时时间（毫秒）
+    timeout: 1000ms
+    lettuce:
+      pool:
+        max-active: 20 # 连接池最大连接数
+        max-wait: -1ms  # 连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-idle: 10 # 连接池中的最大空闲连接
+        min-idle: 0 # 连接池中的最小空闲连接
+    client-type: lettuce # 使用lettuce连接
 
 my:
   wx:

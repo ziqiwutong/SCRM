@@ -9,14 +9,6 @@ spring:
   profiles:
     active: dev
 
-###########   OpenFeign超时配置  ################
-feign:
-  client:
-    config:
-      default:
-        connectTimeout: 1000 # 防止由于服务器处理时间长而阻塞调用者，单位ms
-        readTimeout: 1000 # 从连接建立时开始应用，在返回响应时间过长时触发，单位ms
-        loggerLevel: basic
 
 # 配置日志  选择了默认的控制台输出   如果选择log4j或slf4j，需要导入包
 mybatis-plus:

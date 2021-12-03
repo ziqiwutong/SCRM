@@ -131,11 +131,11 @@ public class MyWebSocketConfig implements WebSocketConfigurer {
                 map.add("shareId", readInfo.getShareId());
                 map.add("openid", readInfo.getOpenid());
                 map.add("readTime", readInfo.getReadTime());
-                System.out.println(map);
                 HttpEntity<MultiValueMap<String, Object>> httpEntity = new HttpEntity<>(map, headers);
 
                 try {
-                    restTemplate.postForObject(addReadRecordUrl, httpEntity, Result.class);
+                    System.out.println("添加阅读记录rest调用，传递参数：\n"+map);
+                    restTemplate.postForObject(addReadRecordUrl, httpEntity, Void.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
