@@ -1,6 +1,6 @@
-package com.scrm.marketing.share.iuap;
+package com.scrm.manage.share.iuap;
 
-import com.scrm.marketing.util.MyDigestUtil;
+import com.scrm.manage.util.MyDigestUtil;
 import lombok.Data;
 
 import java.net.URLEncoder;

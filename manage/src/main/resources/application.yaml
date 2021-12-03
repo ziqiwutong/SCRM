@@ -29,3 +29,7 @@ my:
     secret: "scrm"
     timeout: 604800 # Token有效期，一周，单位：s
     loginIdKey: userID
+  # 用友
+  iuap:
+    appid: "20b486cefc83889f"
+    secret: "4b8f340cb3b127950bfb4c632d355c5ab5330bb1bd7b4e7307ccf68217e5"
