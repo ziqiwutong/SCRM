@@ -38,7 +38,7 @@ public class Result {
         return new Result(code, msg, data);
     }
 
-    /*getter and setter methods*/
+    /*getter和setter方法*/
     public int getCode() {
         return code;
     }
@@ -55,17 +55,17 @@ public class Result {
         this.msg = msg;
     }
 
-    public Result addMsg(String msg) {
-        this.msg = this.msg + ": " + msg;
-        return this;
-    }
-
     public Object getData() {
         return data;
     }
 
     public void setData(Object data) {
         this.data = data;
+    }
+
+    public Result addMsg(String addMsg) {
+        this.msg = this.msg + ": " + addMsg;
+        return this;
     }
 
     @Override
@@ -77,11 +77,28 @@ public class Result {
                 '}';
     }
 
+    /* 获取常量的方法 */
+    public static Result PARAM_MISS() {
+        return ResultCache.PARAM_MISS;
+    }
+
+    public static Result PARAM_ERROR() {
+        return ResultCache.PARAM_ERROR;
+    }
+
+    public static Result FAIL() {
+        return ResultCache.FAIL;
+    }
+
+
     /* 缓存 */
     private static class ResultCache extends Result {
         public static final Result SUCCESS = new ResultCache(200, "ok", null);
+        public static final Result PARAM_MISS = new ResultCache(CodeEum.PARAM_MISS.getCode(), CodeEum.PARAM_MISS.getMsg(), null);
+        public static final Result PARAM_ERROR = new ResultCache(CodeEum.PARAM_ERROR.getCode(), CodeEum.PARAM_ERROR.getMsg(), null);
+        public static final Result FAIL = new ResultCache(CodeEum.FAIL.getCode(), CodeEum.FAIL.getMsg(), null);
 
-        public ResultCache(int code, String msg, Object data) {
+        private ResultCache(int code, String msg, Object data) {
             super(code, msg, data);
         }
 

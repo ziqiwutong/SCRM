@@ -1,7 +1,8 @@
 package com.scrm.marketing.controller;
 
 import cn.hutool.crypto.digest.DigestUtil;
-import com.scrm.marketing.share.wx.WxAccessToken;
+import com.scrm.marketing.service.WxUserService;
+import com.scrm.marketing.share.wx.UserInfoAccessToken;
 import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.util.resp.CodeEum;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import javax.annotation.Resource;
 import java.util.Arrays;
 
 /**
@@ -34,6 +36,9 @@ public class WxController {
     private String appSecret;
     @Value("${my.wx.token}")
     private String token;
+
+    @Resource
+    private WxUserService wxUserService;
 
     private static final GlobalAccessToken globalAccessToken = new GlobalAccessToken();
     private static final JsapiTicket global_jsapi_ticket = new JsapiTicket();
@@ -78,15 +83,15 @@ public class WxController {
             @RequestParam("state") String state
     ) {
         // 1.根据code获取access_token
-        WxAccessToken wxAccessToken = getWxAccessToken(code);
-        if (wxAccessToken.getAccess_token() == null)
+        UserInfoAccessToken userInfoAccessToken = getWxAccessToken(code);
+        if (userInfoAccessToken.getAccess_token() == null)
             return Result.error(CodeEum.ERROR, "获取access_token失败: " +
-                    "errcode:" + wxAccessToken.getErrcode() +
-                    "errmsg:" + wxAccessToken.getErrmsg());
-        //System.out.println("获取到的access_token: " + wxAccessToken);
+                    "errcode:" + userInfoAccessToken.getErrcode() +
+                    "errmsg:" + userInfoAccessToken.getErrmsg());
+        //System.out.println("获取到的access_token: " + userInfoAccessToken);
 
         // 2.根据access_token获取userinfo
-        WxUserInfoResult wxUserInfo = doGetWxUserInfo(wxAccessToken.getAccess_token(), wxAccessToken.getOpenid());
+        WxUserInfoResult wxUserInfo = doGetWxUserInfo(userInfoAccessToken.getAccess_token(), userInfoAccessToken.getOpenid());
         if (wxUserInfo.getOpenid() == null)
             return Result.error(CodeEum.ERROR, "获取微信用户信息失败: " +
                     "errcode:" + wxUserInfo.getErrcode() +
@@ -95,6 +100,9 @@ public class WxController {
 
         // 3.state处理
         /*暂时没有用到state*/
+
+        // 4.保存最新的用户信息到数据库
+        wxUserService.saveWxUser(wxUserInfo);
 
         return Result.success(wxUserInfo);
     }
@@ -126,13 +134,13 @@ public class WxController {
     }
 
     /*确保返回的AccessTokenResult不为null*/
-    private WxAccessToken getWxAccessToken(String code) {
+    private UserInfoAccessToken getWxAccessToken(String code) {
         String url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid=" + appId + "&secret=" + appSecret + "&code=" + code + "&grant_type=authorization_code";
-        WxAccessToken result = restTemplate.getForObject(url, WxAccessToken.class);
+        UserInfoAccessToken result = restTemplate.getForObject(url, UserInfoAccessToken.class);
 
 //        if (result == null || result.getAccess_token() == null) return null;
         if (result == null) {
-            result = new WxAccessToken();
+            result = new UserInfoAccessToken();
             result.setErrmsg("啥都没拿到，获取access_token的调用返回为null?");
         }
         return result;

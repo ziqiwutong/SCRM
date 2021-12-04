@@ -1,11 +1,11 @@
-package com.scrm.marketing.controller;
+package com.scrm.manage.controller;
 
-import com.scrm.marketing.share.iuap.AccessToken;
-import com.scrm.marketing.share.iuap.JsTicket;
-import com.scrm.marketing.share.iuap.UserInfoResult;
-import com.scrm.marketing.util.MyLoggerUtil;
-import com.scrm.marketing.util.resp.CodeEum;
-import com.scrm.marketing.util.resp.Result;
+import com.scrm.manage.exception.MyException;
+import com.scrm.manage.share.iuap.AccessToken;
+import com.scrm.manage.share.iuap.JsTicket;
+import com.scrm.manage.share.iuap.UserInfoResult;
+import com.scrm.manage.util.resp.CodeEum;
+import com.scrm.manage.util.resp.Result;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -25,7 +25,7 @@ import java.util.Arrays;
  * @date 2021-11-18 20:12
  */
 @RestController
-@RequestMapping("/mk/iuap")
+@RequestMapping("/cms/iuap")
 public class IuapController {
 
     @Value("${my.iuap.appid}")
@@ -59,11 +59,12 @@ public class IuapController {
         String url = "https://openapi.yonyoucloud.com/certified/userInfo/" + code + "?access_token=" + access_token;
         UserInfoResult infoResult = restTemplate.getForObject(url, UserInfoResult.class);
 
-        if (infoResult != null && "0".equals(infoResult.getCode())) {
+        if (infoResult != null && "0".equals(infoResult.getCode()))
             return Result.success(infoResult.getData());
-        }
 
-        return Result.error(CodeEum.FAIL, infoResult == null ? "没拿到任何信息" : infoResult.getMsg());
+        return Result.error(CodeEum.FAIL,
+                infoResult == null ? "没拿到任何信息" :
+                        infoResult.getCode() + ":" + infoResult.getMsg());
     }
 
     /**
@@ -73,10 +74,8 @@ public class IuapController {
      */
     @GetMapping("/jsApi")
     public Result jsapi() {
-        // 1.获取js_ticket
+        // 1.获取js_ticket,确保返回不会为null
         String js_ticket = getJs_ticket();
-
-        if (js_ticket == null) return Result.FAIL();
 
         // 2.获取时间戳
         long timestamp = System.currentTimeMillis();
@@ -93,12 +92,13 @@ public class IuapController {
      * 令牌是后续访问友空间所有API接口的凭证
      * 请求地址：https://openapi.yonyoucloud.com/token?appid=xxx&secret=xxx
      *
-     * @return access_token 或者 null
+     * @return access_token,不会为null
      */
     public String getAccessToken() {
         // 1.先从缓存拿
         if (AccessToken.AccessTokenHolder.isValid())
             return AccessToken.AccessTokenHolder.accessTokenCache.getAccess_token();
+        AccessToken accessToken;
 
         // 2.可能是过期了，可能是还没有初始化拿过：双重校验锁DCL
         synchronized (AccessToken.AccessTokenHolder.class) {
@@ -108,7 +108,7 @@ public class IuapController {
 
             // 2.2 确实没有，发get请求去拿access_token
             String url = "https://openapi.yonyoucloud.com/token?appid=" + appid + "&secret=" + secret;
-            AccessToken accessToken = restTemplate.getForObject(url, AccessToken.class);
+            accessToken = restTemplate.getForObject(url, AccessToken.class);
 
             // 2.3 把新的access_token放入缓存
             AccessToken.AccessTokenHolder accessTokenHolder;
@@ -120,20 +120,22 @@ public class IuapController {
                 return accessTokenHolder.getAccess_token();
             }
         }
-        // 打个日志
-        MyLoggerUtil.warning("竟然没拿到用友iuap的access_token?");
-        return null;
+        // 3. 获取失败，抛异常
+        throw new MyException(CodeEum.CODE_ERROR,
+                accessToken == null ? "accessToken获取失败且未返回任何信息" :
+                        accessToken.getCode() + ":" + accessToken.getMsg());
     }
 
     /**
      * 请求地址：https://openapi.yonyoucloud.com/app-sdk/rest/js/ticket?access_token=xxx
      *
-     * @return js_ticket 或 null
+     * @return js_ticket,不会为null
      */
     private String getJs_ticket() {
         // 1.先去缓存拿
         if (JsTicket.JsTicketHolder.isValid())
             return JsTicket.JsTicketHolder.jsTicketCache.getJs_ticket();
+        JsTicket jsTicket;
 
         // 2.可能是过期了，可能是还没有初始化拿过：双重校验锁DCL
         synchronized (JsTicket.JsTicketHolder.class) {
@@ -142,11 +144,10 @@ public class IuapController {
                 return JsTicket.JsTicketHolder.jsTicketCache.getJs_ticket();
 
             // 2.2 确实没有，发get请求去拿js_ticket
-            String access_token = getAccessToken();
-            if (access_token == null) return null;
+            String access_token = getAccessToken();//先获取access_token，这里要确保返回不会为null
 
             String url = "https://openapi.yonyoucloud.com/app-sdk/rest/js/ticket?access_token=" + access_token;
-            JsTicket jsTicket = restTemplate.getForObject(url, JsTicket.class);
+            jsTicket = restTemplate.getForObject(url, JsTicket.class);
 
             // 2.3 把新的js_ticket放入缓存
             JsTicket.JsTicketHolder jsTicketHolder;
@@ -155,10 +156,11 @@ public class IuapController {
                 JsTicket.JsTicketHolder.jsTicketCache = jsTicketHolder;
                 return jsTicketHolder.getJs_ticket();
             }
-            // 打个日志
-            MyLoggerUtil.warning(() -> "竟然没拿到用友iuap的js_ticket?");
-            return null;
         }
+        // 3.没拿到，抛异常
+        throw new MyException(CodeEum.CODE_ERROR,
+                jsTicket == null ? "啥都没拿到" :
+                        jsTicket.getError_code() + ":" + jsTicket.getError_description());
     }
 
     /**
@@ -169,10 +171,11 @@ public class IuapController {
         private String appid;
         private long timestamp;
         private String signature;
-        public JsTicketWrapper(String appid,long timestamp,String signature){
-            this.appid=appid;
-            this.timestamp=timestamp;
-            this.signature=signature;
+
+        public JsTicketWrapper(String appid, long timestamp, String signature) {
+            this.appid = appid;
+            this.timestamp = timestamp;
+            this.signature = signature;
         }
     }
 }

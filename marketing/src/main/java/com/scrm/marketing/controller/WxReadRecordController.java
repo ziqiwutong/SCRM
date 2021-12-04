@@ -1,11 +1,8 @@
 package com.scrm.marketing.controller;
 
-import com.scrm.marketing.entity.wrapper.WxReadRecordWrapper;
 import com.scrm.marketing.service.ArticleShareRecordService;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
-import com.scrm.marketing.share.wx.WxUserInfoResult;
-import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -49,38 +46,18 @@ public class WxReadRecordController {
         return articleShareRecordService.querySharePerson(articleId);
     }
 
-//    @PostMapping(path = "/addReadRecord")
+    @PostMapping(path = "/addReadRecord")
     public Result addReadRecord(
             @RequestParam("articleId") long articleId,
             @RequestParam("shareId") long shareId,
             @RequestParam("readTime") int readTime,
-            @RequestParam("openid") String openid,
-            @RequestParam("nickname") String nickname,
-            @RequestParam("sex") String sex,
-            @RequestParam("province") String province,
-            @RequestParam("city") String city,
-            @RequestParam("country") String country,
-            @RequestParam("headimgurl") String headimgurl,
-            @RequestParam("unionid") String unionid) {
+            @RequestParam("openid") String openid) {
         // 1.参数检查：微信openid,readTime,articleId,shareId
         if (openid == null || "".equals(openid))
             return Result.error(CodeEum.PARAM_MISS, "openid");
 
-        WxUserInfoResult wxUserInfo = new WxUserInfoResult();
-        wxUserInfo.setArticleId(articleId);
-        wxUserInfo.setShareId(shareId);
-        wxUserInfo.setReadTime(readTime);
-        wxUserInfo.setOpenid(openid);
-        wxUserInfo.setNickname(nickname);
-        wxUserInfo.setSex(sex);
-        wxUserInfo.setProvince(province);
-        wxUserInfo.setCity(city);
-        wxUserInfo.setCountry(country);
-        wxUserInfo.setHeadimgurl(headimgurl);
-        wxUserInfo.setUnionid(unionid);
-
         // 2.调用service
-        articleShareRecordService.addReadRecord(wxUserInfo);
+        articleShareRecordService.addReadRecord(articleId,shareId,openid,readTime);
         return Result.success();
     }
 }

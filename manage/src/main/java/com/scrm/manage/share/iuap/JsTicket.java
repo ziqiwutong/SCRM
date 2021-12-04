@@ -1,11 +1,7 @@
-package com.scrm.marketing.share.iuap;
+package com.scrm.manage.share.iuap;
 
-import cn.hutool.crypto.digest.DigestUtil;
-import cn.hutool.crypto.digest.MD5;
-import com.scrm.marketing.util.MyDigestUtil;
+import com.scrm.manage.util.MyDigestUtil;
 import lombok.Data;
-
-import java.nio.charset.StandardCharsets;
 
 /**
  * GET请求地址：https://api.diwork.com/yonbip/uspace/jsbridge/jsticket?access_token=xxx

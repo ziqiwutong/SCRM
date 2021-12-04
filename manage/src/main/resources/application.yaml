@@ -4,22 +4,11 @@ server:
 spring:
   application:
     name: manage
-  cloud:
-    nacos:
-      discovery: # 配置nacos注册中心服务发现
-        server-addr: http://101.34.5.36:8848  #配置的Nacos地址
-        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38" # 这是scrm的名称空间，可以去nacos地址看看
-  #        group: "test_group"
-
+  profiles:
+    active: dev
   servlet:
     multipart:
       max-file-size: 5MB  # 上传文件最大限制
-
-  datasource:
-    url: "jdbc:mysql://106.15.235.113:3306/scrm?useUnicode=true&characterEncoding=utf8&&useSSL=false&serverTimezone=GMT%2B8"
-    username: root
-    password: "!MySQL123456"
-    driver-class-name: com.mysql.cj.jdbc.Driver
 
 mybatis-plus:
   mapper-locations: classpath:mybatis/mapper/*.xml
@@ -32,9 +21,6 @@ mybatis-plus:
 my:
   file:
     pic:
-      #    picRootPath: "/opt/mynginx/images/"          # 指向的必须是nginx配置的存放静态资源的根目录
-      picRootPath: "D:/mynginx/"                        # 保存图片的根目录
-      picAccessPath: "https://www.fzk-tx.top/images"    # 需要以协议开头，在NGINX配置中，此访问路径指向的必须是在nginx的配置的静态资源存放目录
       toCompressSize: 1024000                            # 图片大小达到此值，将进行0.5压缩，单位byte
       format: ".jpeg,.jpg,.png,.gif,.svg,.bmp,.ico,.tiff"            # 图片格式
       type: "articleImage,userIcon,productImage,customerIcon"        # 图片类型
@@ -43,3 +29,7 @@ my:
     secret: "scrm"
     timeout: 604800 # Token有效期，一周，单位：s
     loginIdKey: userID
+  # 用友
+  iuap:
+    appid: "20b486cefc83889f"
+    secret: "4b8f340cb3b127950bfb4c632d355c5ab5330bb1bd7b4e7307ccf68217e5"

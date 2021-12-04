@@ -1,0 +1,6 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: http://101.34.5.36:8848
+        namespace: "e41ecd75-7155-4e7b-a78e-904c3739fb38"

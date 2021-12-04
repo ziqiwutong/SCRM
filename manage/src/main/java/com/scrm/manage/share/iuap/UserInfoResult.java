@@ -1,4 +1,4 @@
-package com.scrm.marketing.share.iuap;
+package com.scrm.manage.share.iuap;
 
 import lombok.Data;
 

@@ -15,5 +15,5 @@ public interface ArticleShareRecordService {
 
     Result querySharePerson(Long articleId);
 
-    void addReadRecord(WxUserInfoResult wxUserInfo);
+    void addReadRecord(long articleId,long shareId,String openid,int readTime);
 }

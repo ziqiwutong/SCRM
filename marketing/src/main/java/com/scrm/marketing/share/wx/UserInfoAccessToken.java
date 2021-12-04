@@ -7,7 +7,7 @@ import lombok.Data;
  * @date 2021-11-09 17:05
  */
 @Data
-public class WxAccessToken {
+public class UserInfoAccessToken {
     /**
      * 请求成功的属性
      */
