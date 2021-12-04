@@ -13,7 +13,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(value="/se/communication")
+@RequestMapping(value="/communication")
 @RestController
 public class CommunicationController {
     @Resource

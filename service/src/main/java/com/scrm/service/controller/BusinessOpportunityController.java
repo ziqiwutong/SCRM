@@ -12,7 +12,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-@RequestMapping(value = "/se/businessOpportunity")
+@RequestMapping(value = "/businessOpportunity")
 @RestController
 public class BusinessOpportunityController {
     @Resource
