@@ -34,8 +34,3 @@ docking:
     client:
       id: "F4D116273B5460EB17B0DB87FB8DEE01"
       secret: "ADC5704B979D56FC539B8254631F39E0"
-nginx:
-  file:
-    pic:
-      root-path: "E:/Nginx/nginx-1.20.2/data/"
-      access-path: "http://localhost"

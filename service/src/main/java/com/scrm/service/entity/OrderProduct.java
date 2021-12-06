@@ -16,7 +16,7 @@ import java.sql.Timestamp;
  */
 @Data
 @TableName("se_order_product")
-public class OrderPruduct {
+public class OrderProduct {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long orderId;

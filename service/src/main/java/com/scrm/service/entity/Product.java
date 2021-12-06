@@ -19,6 +19,7 @@ public class Product {
     @TableId(type = IdType.AUTO)
     private Long id;
     private Long typeId;
+    private String sourceId;
     private String productName;
     @JsonAlias({"productType"})
     private String typeName;

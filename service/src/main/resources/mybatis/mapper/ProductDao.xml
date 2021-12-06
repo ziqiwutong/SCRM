@@ -89,10 +89,10 @@
     </select>
 
     <insert id="addProduct" parameterType="com.scrm.service.entity.Product">
-            insert into se_product(type_id,type_name,product_name,product_price,
+            insert into se_product(source_id,type_id,type_name,product_name,product_price,
             product_inventory,product_image,product_intro,retail_price,
             brand,certificate,wholesale_price,price_describe)
-            values(4,#{typeName},#{productName},#{productPrice},
+            values(#{sourceId},#{typeId},#{typeName},#{productName},#{productPrice},
             #{productInventory},#{productImage},#{productIntro},
             #{retailPrice},#{brand},#{certificate},#{wholesalePrice},
             #{priceDescribe})

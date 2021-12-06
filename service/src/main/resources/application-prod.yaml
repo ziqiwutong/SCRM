@@ -13,3 +13,9 @@ spring:
     host: 127.0.0.1
     port: 6379
     password: "!MyRedis1233211234567"
+
+nginx:
+  file:
+    pic:
+      root-path: "/usr/local/nginx/data/"
+      access-path: "http://118.122.48.47:33333/data"

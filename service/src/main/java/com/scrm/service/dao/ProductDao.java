@@ -2,6 +2,8 @@ package com.scrm.service.dao;
 
 import com.scrm.service.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.lang.NonNull;
 
 import java.util.List;
 import java.util.Map;
@@ -24,4 +26,6 @@ public interface ProductDao {
 
     List<Map<Object, Object>> queryProductByKey(String keySearch);
 
+    @Select("select * from se_product where source_id = #{sourceId}")
+    List<Product> queryBySourceId(@NonNull String sourceId);
 }

@@ -18,7 +18,18 @@ public class WeimobController {
     public Resp product() {
         String result = weimobService.queryProduct();
         if (result == null) {
-            return Resp.success().setData(1);
+            return Resp.success().setMsg("同步成功");
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
+    @GetMapping("/order")
+    @ResponseBody
+    public Resp order() {
+        String result = weimobService.queryOrder();
+        if (result == null) {
+            return Resp.success().setMsg("同步成功");
         } else {
             return Resp.error().setMsg(result);
         }

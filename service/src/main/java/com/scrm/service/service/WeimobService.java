@@ -6,8 +6,14 @@ package com.scrm.service.service;
 public interface WeimobService {
 
     /**
-     * 查询产品
+     * 同步产品
      * @return String
      */
     String queryProduct();
+
+    /**
+     * 同步昨天的订单
+     * @return String
+     */
+    String queryOrder();
 }

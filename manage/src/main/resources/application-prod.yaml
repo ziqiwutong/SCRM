@@ -14,4 +14,4 @@ my:
   file:
     pic:
       picRootPath: "/usr/local/nginx/data/"   # 指向的必须是nginx配置的存放静态资源的根目录
-      picAccessPath: "http://10.135.8.145"   # 需要以协议开头，在NGINX配置中，此访问路径指向的必须是在nginx的配置的静态资源存放目录
+      picAccessPath: "http://118.122.48.47:33333/data"   # 需要以协议开头，在NGINX配置中，此访问路径指向的必须是在nginx的配置的静态资源存放目录
