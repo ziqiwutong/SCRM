@@ -48,8 +48,18 @@ public class WeimobServiceImpl implements WeimobService {
     private String clientSecret;
 
     @Override
+    public List<Product> queryProduct(Integer pageCount, Integer currentPage) {
+        return productDao.queryWeimobProduct((currentPage - 1) * pageCount, pageCount);
+    }
+
+    @Override
+    public Integer queryProductCount() {
+        return productDao.queryWeimobCount();
+    }
+
+    @Override
     @Transactional
-    public String queryProduct() {
+    public String syncProduct() {
         String token = getToken();
         if (token == null) {
             return "Access Token 获取失败";
@@ -105,7 +115,7 @@ public class WeimobServiceImpl implements WeimobService {
 
     @Override
     @Transactional
-    public String queryOrder() {
+    public String syncOrder() {
         String token = getToken();
         if (token == null) {
             return "Access Token 获取失败";
@@ -190,6 +200,32 @@ public class WeimobServiceImpl implements WeimobService {
                 e.printStackTrace();
                 return "订单同步失败";
             }
+        }
+        return null;
+    }
+
+    @Override
+    public String distributeUrl(Long userId) {
+        String token = getToken();
+        if (token == null) return null;
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+        String path = "https://dopen.weimob.com/api/1_0/newsdp/weike/getWeikeUrl";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.POST, path);
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("accesstoken", token);
+        JSONObject json = new JSONObject();
+        json.put("wid", userId);
+        request.setJsonBody(json.toString());
+
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            if (responseFail(body)) return null;
+            JSONObject data = body.getJSONObject("data");
+            JSONObject shopUrl = data.getJSONObject("shopUrl");
+            return shopUrl.getString("h5Url");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return null;
     }

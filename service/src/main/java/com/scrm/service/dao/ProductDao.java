@@ -28,4 +28,10 @@ public interface ProductDao {
 
     @Select("select * from se_product where source_id = #{sourceId}")
     List<Product> queryBySourceId(@NonNull String sourceId);
+
+    @Select("select * from se_product where source_id like '02_%' limit #{start},#{size}")
+    List<Product> queryWeimobProduct(Integer start, Integer size);
+
+    @Select("select count(id) from se_product where source_id like '02_%'")
+    Integer queryWeimobCount();
 }
