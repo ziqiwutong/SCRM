@@ -39,23 +39,25 @@ public class FileController {
      */
     @PostMapping("/pic/upload")
     public Result upload(MultipartFile picFile,
-                         @RequestParam("picType") String picType) {
+                         @RequestParam("picType") String picType,
+                         @RequestParam(name = "isCompress", required = false, defaultValue = "true") boolean isCompress) {
         // 1.参数检查
         if (picFile == null || picFile.isEmpty())        // 判断是否上传了文件
             return Result.error(CodeEum.PARAM_MISS);
         // 判断是否图片
-        //获取上传的⽂件名
-        String name = picFile.getOriginalFilename();
-        if (name == null)
+        String filename = picFile.getOriginalFilename();//获取上传的⽂件名
+        if (filename == null)
             return Result.error(CodeEum.PARAM_ERROR, "没有文件名");
-        int lastIndex = name.lastIndexOf('.');
+
+        int lastIndex = filename.lastIndexOf('.');
         if (lastIndex < 0)
-            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format.toString());
-        String suffixName = name.substring(lastIndex).toLowerCase();
+            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format);
+        String suffixName = filename.substring(lastIndex + 1).toLowerCase();
         if (!format.contains(suffixName))
-            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format.toString());
+            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format);
+
         if (!type.contains(picType))
-            return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type.toString());
+            return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type);
 
         // 2.文件目录处理
         String relativePath = picType + "/" + MyDateTimeUtil.getNowDateOrTime("yyyy-MM");
@@ -64,18 +66,23 @@ public class FileController {
         if (!dir_file.exists()) dir_file.mkdirs();
 
         // 3.文件名称处理
-        name = picType + UUID.randomUUID().toString() + name;
-        File img_file = new File(path, name);
+        filename = picType + UUID.randomUUID() + "." + suffixName;
+        File img_file = new File(path, filename);
         img_file.deleteOnExit();//删除旧文件
 
         // 4、将文件写入到磁盘
-        try {
-            // 这里也可以直接处理流就行啦
-            myTransferTo(picFile.getInputStream(), new FileOutputStream(img_file), picFile.getSize());
-            return Result.success(picAccessPath + "/" + relativePath + "/" + name);
+        try (
+                InputStream in = picFile.getInputStream();
+                OutputStream out = new FileOutputStream(img_file)
+        ) {
+            if (isCompress)
+                isCompress = picFile.getSize() > toCompressSize; // 大于1MB进行压缩
+
+            myTransferTo(in, out, isCompress);
+            return Result.success(picAccessPath + "/" + relativePath + "/" + filename);
         } catch (IOException e) {
             Result result = Result.error(CodeEum.ERROR);
-            result.setMsg(e.getMessage());
+            result.addMsg(e.getMessage());
             return result;
         }
     }
@@ -92,25 +99,36 @@ public class FileController {
     @PostMapping(path = "/pic/base64StrToPic")
     public Result base64StrToPic(
             @RequestParam("picBase64Str") String picBase64Str,
-            @RequestParam("picFormat") String picFormat,
-            @RequestParam("picType") String picType)  {
+            @RequestParam(name = "picFormat", required = false, defaultValue = "png") String picFormat,
+            @RequestParam("picType") String picType,
+            @RequestParam(name = "isCompress", required = false, defaultValue = "true") boolean isCompress) {
 
         // 1.参数检查
         if (!type.contains(picType))
-            return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type.toString());
-        if (!picFormat.startsWith(".")) picFormat = "." + picFormat;
-        if (!format.contains(picFormat))
-            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format.toString());
+            return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type);
         if (picBase64Str.length() > 4194304)
-            return Result.error(CodeEum.PARAM_ERROR, "图片base64字符串不能大于4MB");
+            return Result.error(CodeEum.PARAM_ERROR, "图片base64字符串不能大于4MB, 这将要求图片不能大于3MB");
+
+        // 1.1 js处理的base64图片有前置信息，需要处理一下
+        if (picBase64Str.startsWith("data:")) {
+            // 1.1.1 文件后缀类型获取
+            picFormat = picBase64Str.substring(picBase64Str.indexOf("/") + 1, picBase64Str.indexOf(";"));
+            // 1.1.2 删除js处理的base64字符前置信息
+            picBase64Str = picBase64Str.substring(picBase64Str.indexOf("base64,") + 7);
+        }
+        if (picFormat.startsWith(".")) picFormat = picFormat.substring(1);
+        if (!format.contains(picFormat))
+            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format);
+
 
         // 1.2 base64处理
         byte[] buffer = Base64.getDecoder().decode(picBase64Str);
         picBase64Str = null;
+        System.gc();
 
 
         // 2.文件目录处理
-        String relativePath = picType;
+        String relativePath = picType + "/" + MyDateTimeUtil.getNowDateOrTime("yyyy-MM");
         String path = picRootPath + "/" + relativePath + "/";
         File dir_file = new File(path);
         if (!dir_file.exists()) dir_file.mkdirs();
@@ -120,16 +138,20 @@ public class FileController {
          * articleImage：
          * userIcon：userIcon+userId
          * productImage：productImage+productId */
-        String fileName = picType + UUID.randomUUID().toString() + picFormat;// 目前暂时先用UUID
-        File img_file = new File(path, fileName);
+        String filename = picType + UUID.randomUUID() + "." + picFormat;// 目前暂时先用UUID
+        File img_file = new File(path, filename);
         img_file.deleteOnExit();//删除旧文件
 
         // 4、将文件写入到磁盘
         Result result;
-        try (FileOutputStream out = new FileOutputStream(img_file)) {
-            out.write(buffer);
-            out.flush();
-            result = Result.success(picAccessPath + "/" + relativePath + "/" + fileName);
+        try (
+                ByteArrayInputStream in = new ByteArrayInputStream(buffer);
+                FileOutputStream out = new FileOutputStream(img_file)
+        ) {
+            if (isCompress) isCompress = buffer.length > toCompressSize;// 大于1MB需要压缩
+
+            myTransferTo(in, out, isCompress);
+            result = Result.success(picAccessPath + "/" + relativePath + "/" + filename);
         } catch (Exception e) {
             result = Result.error(CodeEum.ERROR, e.getMessage());
         }
@@ -137,79 +159,25 @@ public class FileController {
     }
 
 
-    /**
-     * 将字符串转为图片
-     *
-     * @param picStr    字符串
-     * @param picFormat 图片格式
-     * @param picType   图片类型
-     * @return result
-     */
-    @PostMapping(path = "/pic/strToPic")
-    public Result stringToPic(
-            @RequestParam("picStr") String picStr,
-            @RequestParam("picFormat") String picFormat,
-            @RequestParam("picType") String picType) {
-        // 1.参数检查
-        if (!type.contains(picType))
-            return Result.error(CodeEum.PARAM_ERROR, "图片类型仅能选择：" + type.toString());
-        if (!picFormat.startsWith(".")) picFormat = "." + picFormat;
-        if (!format.contains(picFormat))
-            return Result.error(CodeEum.PARAM_ERROR, "只能上传图片，如这些格式：" + format.toString());
-        if (picStr.length() > 3145728)
-            return Result.error(CodeEum.PARAM_ERROR, "图片不能大于3MB");
-
-        // 2.文件目录处理
-        String relativePath = picType;
-        String path = picRootPath + "/" + relativePath + "/";
-        File dir_file = new File(path);
-        if (!dir_file.exists()) dir_file.mkdirs();
-
-        // 3.文件名处理
-        /* 根据不同文件类型，文件名生成策略应该不同
-         * articleImage：
-         * userIcon：userIcon+userId
-         * productImage：productImage+productId */
-        String fileName = picType + UUID.randomUUID().toString() + picFormat;// 目前暂时先用UUID
-        File img_file = new File(path, fileName);
-        img_file.deleteOnExit();//删除旧文件
-
-        // 4、将文件写入到磁盘
-        Result result;
-        try (FileOutputStream out = new FileOutputStream(img_file)) {
-            out.write(picStr.getBytes());
-            out.flush();
-            result = Result.success(picAccessPath + "/" + relativePath + "/" + fileName);
-        } catch (Exception e) {
-            result = Result.error(CodeEum.ERROR, e.getMessage());
-        }
-        return result;
-    }
-
-    private int myTransferTo(InputStream in, OutputStream out, long size) throws IOException {
+    /*注意：此方法自动关闭流*/
+    private int myTransferTo(InputStream in, OutputStream out, boolean isCompress) throws IOException {
+        if (in == null || out == null)
+            throw new IllegalArgumentException("流不能为空");
         int total = 0;
-        try {
-            // 大于500KB将进行压缩处理
-            if (size > toCompressSize) {
+
+        try (in; out) {
+            // 大于1MB将进行压缩处理
+            if (isCompress) {
                 ImgUtil.scale(in, out, 0.5f);
             }
             // 否则不会压缩
             else {
-                if (in == null || out == null)
-                    throw new IllegalArgumentException("流不能为空");
-
                 byte[] buffer = new byte[4096];
                 for (int len; (len = in.read(buffer)) != -1; total += len) {
                     out.write(buffer);
                 }
                 out.flush();
             }
-
-        } finally {
-            if (in != null)
-                in.close();
-            if (out != null)
-                out.close();
         }
         return total;
     }

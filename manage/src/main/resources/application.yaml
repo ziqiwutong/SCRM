@@ -22,7 +22,7 @@ my:
   file:
     pic:
       toCompressSize: 1024000                            # 图片大小达到此值，将进行0.5压缩，单位byte
-      format: ".jpeg,.jpg,.png,.gif,.svg,.bmp,.ico,.tiff"            # 图片格式
+      format: "jpeg,jpg,png,gif,svg,bmp,ico,tiff"            # 图片格式
       type: "articleImage,userIcon,productImage,customerIcon"        # 图片类型
 
   jwt:
