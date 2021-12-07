@@ -92,14 +92,13 @@ public class CommunicationController {
 
     @PostMapping(value="/queryCommunicationLog")
     public Result queryCommunicationLog(
-            @RequestParam(value = "id", required = false) Integer id,
             @RequestParam(value = "customerId") Integer customerId,
             @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
         List<UserAndCommunication> userAndCommunications = communicationLogService.queryCommunicationUser(customerId);
         Communication communication = communicationLogService.queryCommunication(customerId);
-        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(id, customerId, communicationWay);
+        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(customerId, communicationWay);
         List final_list = new ArrayList();
 
         for (UserAndCommunication userAndCommunication:userAndCommunications
@@ -114,13 +113,30 @@ public class CommunicationController {
         return Result.success(final_list);
     }
 
+    @PostMapping(value="/queryCommunicationLogDetail")
+    public Result queryCommunicationLogDetail(
+            @RequestParam(value = "id") Integer id,
+            @RequestParam(value = "customerId") Integer customerId
+    )
+    {
+        List<UserAndCommunication> userAndCommunications = communicationLogService.queryCommunicationUser(customerId);
+        CommunicationLog communicationLog = communicationLogService.queryCommunicationLogDetail(id);
+        List final_list = new ArrayList();
+        for (UserAndCommunication userAndCommunication:userAndCommunications
+        ) {
+            final_list.add(userAndCommunication);
+        }
+        final_list.add(communicationLog);
+        return Result.success(final_list);
+    }
+
     @PostMapping(value="/addCommunicationLog")
     public Result addCommunicationLog(
             @RequestBody CommunicationLog communicationLog
     )
     {
         List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(
-                null,communicationLog.getCustomerId().intValue(),4);
+                communicationLog.getCustomerId().intValue(),4);
         if(communicationLogs.size() == 0){
             Communication communication = new Communication();
             communication.setCustomerId(communicationLog.getCustomerId());

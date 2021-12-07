@@ -27,8 +27,13 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public List<CommunicationLog> queryCommunicationLog(Integer id, Integer customerId, Integer communicationWay) {
-        return communicationLogDao.queryCommunicationLog(id, customerId, communicationWay);
+    public List<CommunicationLog> queryCommunicationLog(Integer customerId, Integer communicationWay) {
+        return communicationLogDao.queryCommunicationLog(customerId, communicationWay);
+    }
+
+    @Override
+    public CommunicationLog queryCommunicationLogDetail(Integer id) {
+        return communicationLogDao.queryCommunicationLogDetail(id);
     }
 
     @Override

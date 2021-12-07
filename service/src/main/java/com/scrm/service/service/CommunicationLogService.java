@@ -11,7 +11,9 @@ public interface CommunicationLogService {
 
     Communication queryCommunication(Integer customerId);
 
-    List<CommunicationLog> queryCommunicationLog(Integer id, Integer customerId, Integer communicationWay);
+    List<CommunicationLog> queryCommunicationLog(Integer customerId, Integer communicationWay);
+
+    CommunicationLog queryCommunicationLogDetail(Integer id);
 
     String addCommunicationLog(CommunicationLog communicationLog) throws Exception;
 

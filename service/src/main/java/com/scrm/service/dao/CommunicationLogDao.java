@@ -13,7 +13,9 @@ public interface CommunicationLogDao {
 
     Communication queryCommunication(Integer customerId);
 
-    List<CommunicationLog> queryCommunicationLog(Integer id, Integer customerId, Integer communicationWay);
+    List<CommunicationLog> queryCommunicationLog(Integer customerId, Integer communicationWay);
+
+    CommunicationLog queryCommunicationLogDetail(Integer id);
 
     Integer addCommunicationLog(CommunicationLog communicationLog);
 
