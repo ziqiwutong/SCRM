@@ -32,12 +32,12 @@ public class CustomerController {
             @RequestParam HashMap<String, String> map
     ) {
         QueryWrapper<Customer> wrapper = new QueryWrapper<>();
-        for (String key: map.keySet()) {
+        for (String key : map.keySet()) {
             if (key.startsWith("eq_")) {
                 wrapper.eq(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
             } else if (key.startsWith("in_")) {
                 String order = map.get(key);
-                wrapper.in(VariableName.camelToUnderscore(key.substring(3)), (Object[])order.split("▓"));
+                wrapper.in(VariableName.camelToUnderscore(key.substring(3)), (Object[]) order.split("▓"));
             } else if (key.startsWith("like_")) {
                 if (key.startsWith("like_json_")) {
                     wrapper.like("customize_field->'$.\"" + key.substring(10) + "\"'", map.get(key));
@@ -146,6 +146,18 @@ public class CustomerController {
         }
     }
 
+    @PostMapping("bindWxUser")
+    public Resp bindWxUser(
+            @RequestParam("customerId") long customerId,
+            @RequestParam("wx_name") String wx_name,
+            @RequestParam("wx_openid") String wx_openid
+    ) {
+        String result = customerService.bindWxUser(customerId, wx_name, wx_openid);
+        if (result == null) return Resp.success();
+        else
+            return Resp.error().setMsg(result);
+    }
+
     @GetMapping("/delete")
     @ResponseBody
     public Resp delete(
@@ -194,7 +206,7 @@ public class CustomerController {
         }
         String[] ids = id.split(",");
         HashSet<Long> customerIds = new HashSet<>();
-        for (String item: ids) {
+        for (String item : ids) {
             customerIds.add(Long.valueOf(item));
         }
         String result = customerService.label(customerIds, labelIds);

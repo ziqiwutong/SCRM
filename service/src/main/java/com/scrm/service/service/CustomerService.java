@@ -104,4 +104,6 @@ public interface CustomerService {
      * @return List<CustomerRelation>
      */
     List<CustomerRelation> queryRelationById(Long id);
+
+    String bindWxUser(long customerId, String wx_name, String wx_openid);
 }

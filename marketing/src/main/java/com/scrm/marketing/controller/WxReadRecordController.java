@@ -57,7 +57,7 @@ public class WxReadRecordController {
             return Result.error(CodeEum.PARAM_MISS, "openid");
 
         // 2.调用service
-        articleShareRecordService.addReadRecord(articleId,shareId,openid,readTime);
+        articleShareRecordService.addReadRecord(articleId, shareId, openid, readTime);
         return Result.success();
     }
 }
