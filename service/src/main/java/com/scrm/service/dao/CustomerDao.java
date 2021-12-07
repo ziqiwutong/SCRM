@@ -5,6 +5,7 @@ import com.scrm.service.dao.sqlprovider.CustomerSqlProvider;
 import com.scrm.service.entity.Customer;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.Update;
 
 import java.util.List;
 
@@ -13,4 +14,8 @@ public interface CustomerDao extends BaseMapper<Customer> {
 
     @SelectProvider(CustomerSqlProvider.class)
     List<Long> queryIdByBusinessTime(String start, String end);
+
+    @SuppressWarnings("all")
+    @Update("UPDATE se_customer SET wx_name=#{wx_name},wx_openid=#{wx_openid} WHERE id=#{customer_id}")
+    int bindWxUser(long customerId, String wx_name, String wx_openid);
 }

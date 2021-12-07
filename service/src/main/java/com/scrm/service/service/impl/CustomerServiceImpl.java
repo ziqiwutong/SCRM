@@ -35,7 +35,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public List<Customer> query(QueryWrapper<Customer> wrapper) {
         List<Customer> customers = customerDao.selectList(wrapper);
-        for (Customer customer: customers) {
+        for (Customer customer : customers) {
             customer.setCustomerLabels(labelDao.queryByCustomerId(customer.getId()));
         }
         return customers;
@@ -46,7 +46,7 @@ public class CustomerServiceImpl implements CustomerService {
         int offset = (currentPage - 1) * pageCount;
         wrapper.last(" limit " + offset + "," + pageCount);
         List<Customer> customers = customerDao.selectList(wrapper);
-        for (Customer customer: customers) {
+        for (Customer customer : customers) {
             customer.setCustomerLabels(labelDao.queryByCustomerId(customer.getId()));
         }
         return customers;
@@ -82,7 +82,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Transactional
     public String insertBatch(List<Customer> customers) {
         int result = 0;
-        for (Customer customer: customers) {
+        for (Customer customer : customers) {
             result += customerDao.insert(customer);
         }
         if (result < customers.size()) {
@@ -126,7 +126,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public String label(HashSet<Long> customerIds, List<Long> labelIds) {
-        for (Long id: customerIds) {
+        for (Long id : customerIds) {
             List<Long> old = labelDao.queryLabelIdByCustomerId(id);
             ArrayList<Long> delete = new ArrayList<>();
             ArrayList<Long> add = new ArrayList<>(labelIds);
@@ -158,5 +158,12 @@ public class CustomerServiceImpl implements CustomerService {
         wrapper.eq("customer_id", id);
         wrapper.orderByAsc("create_time");
         return customerRelationDao.selectList(wrapper);
+    }
+
+    @Override
+    public String bindWxUser(long customerId, String wx_name, String wx_openid) {
+        if (1 != customerDao.bindWxUser(customerId, wx_name, wx_openid))
+            return "客户id不存在：" + customerId;
+        return null;
     }
 }

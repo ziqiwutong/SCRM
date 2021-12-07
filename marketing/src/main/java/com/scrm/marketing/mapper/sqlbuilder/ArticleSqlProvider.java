@@ -25,6 +25,7 @@ public class ArticleSqlProvider implements ProviderMethodResolver {
             if(materialType!=null){
                 WHERE("material_type="+materialType);
             }
+            ORDER_BY("create_time DESC");
             LIMIT(pageSize);
             OFFSET(offset);
         }}.toString();
