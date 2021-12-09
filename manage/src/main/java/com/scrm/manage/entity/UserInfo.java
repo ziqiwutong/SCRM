@@ -4,18 +4,11 @@ import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 @Data
-@TableName("cms_user")
-public class User {
-    @TableId(type = IdType.AUTO)
-    private Long id;
+@TableName("cms_user_info")
+public class UserInfo {
+    private String id;
 
-    private String username;
-
-    private String userIcon;
-
-    private Long departmentId;
-
-    private String telephone;
+    private Long weimobId;
 
     @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;

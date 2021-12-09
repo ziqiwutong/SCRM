@@ -14,6 +14,9 @@
     <packaging>jar</packaging>
     <name>manage</name>
     <description>manage</description>
+    <properties>
+        <java.version>11</java.version>
+    </properties>
 
     <dependencies>
         <!--Hutool工具-->
