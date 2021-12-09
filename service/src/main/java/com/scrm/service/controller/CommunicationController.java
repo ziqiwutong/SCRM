@@ -34,7 +34,7 @@ public class CommunicationController {
         return PageResult.success(userAndCommunications, count, currentPage);
     }
 
-    @PostMapping(value="/queryCommunicationByKey")
+    @GetMapping(value="/queryCommunicationByKey")
     public Result queryCommunicationByKey(
             @RequestParam(value = "keySearch") String keySearch
     )
@@ -78,7 +78,7 @@ public class CommunicationController {
 
     @PostMapping(value="/deleteCommunication")
     public Result deleteCommunication(
-            @RequestParam(value = "customerId") Integer customerId
+            @RequestParam(value = "customerId") Long customerId
     )
     {
         try{
@@ -90,9 +90,9 @@ public class CommunicationController {
         }
     }
 
-    @PostMapping(value="/queryCommunicationLog")
+    @GetMapping(value="/queryCommunicationLog")
     public Result queryCommunicationLog(
-            @RequestParam(value = "customerId") Integer customerId,
+            @RequestParam(value = "customerId") Long customerId,
             @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
@@ -113,10 +113,10 @@ public class CommunicationController {
         return Result.success(final_list);
     }
 
-    @PostMapping(value="/queryCommunicationLogDetail")
+    @GetMapping(value="/queryCommunicationLogDetail")
     public Result queryCommunicationLogDetail(
-            @RequestParam(value = "id") Integer id,
-            @RequestParam(value = "customerId") Integer customerId
+            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "customerId") Long customerId
     )
     {
         List<UserAndCommunication> userAndCommunications = communicationLogService.queryCommunicationUser(customerId);
@@ -136,7 +136,7 @@ public class CommunicationController {
     )
     {
         List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(
-                communicationLog.getCustomerId().intValue(),4);
+                communicationLog.getCustomerId(),4);
         if(communicationLogs.size() == 0){
             Communication communication = new Communication();
             communication.setCustomerId(communicationLog.getCustomerId());
@@ -151,7 +151,8 @@ public class CommunicationController {
         }
         try{
             communicationLogService.addCommunicationLog(communicationLog);
-            communicationLogService.PlusCommunication(communicationLog.getCustomerId().intValue(),communicationLog.getCommunicationWay());
+            communicationLogService.PlusCommunication(
+                    communicationLog.getCustomerId(),communicationLog.getCommunicationWay());
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -167,7 +168,14 @@ public class CommunicationController {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try{
+            CommunicationLog communicationLogEdit = communicationLogService.queryCommunicationLogDetail(
+                    communicationLog.getId());
+            communicationLogService.MinusCommunication(
+                    communicationLogEdit.getCustomerId(),communicationLogEdit.getCommunicationWay());
+
             communicationLogService.editCommunicationLog(communicationLog);
+            communicationLogService.PlusCommunication(
+                    communicationLog.getCustomerId(),communicationLog.getCommunicationWay());
             return Result.success();
         }catch(Exception e) {
             return Result.error(CodeEum.FAIL);
@@ -177,11 +185,23 @@ public class CommunicationController {
     @PostMapping(value="/deleteCommunicationLog")
     @ResponseBody
     public Result deleteCommunicationLog(
-            @RequestParam(value = "id") Integer id,
-            @RequestParam(value = "customerId") Integer customerId,
+            @RequestParam(value = "id") Long id,
+            @RequestParam(value = "customerId") Long customerId,
             @RequestParam(value = "communicationWay") Integer communicationWay
     )
     {
+        List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(
+                customerId, 4);
+        if(communicationLogs.size() == 1){
+            try{
+                communicationLogService.deleteCommunicationLog(id);
+                communicationService.deleteCommunication(customerId);
+                return Result.success();
+            }catch(Exception e) {
+                return Result.error(CodeEum.FAIL);
+            }
+        }
+
         try{
             communicationLogService.deleteCommunicationLog(id);
             communicationLogService.MinusCommunication(customerId,communicationWay);

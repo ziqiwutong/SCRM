@@ -18,7 +18,7 @@ public interface CommunicationDao {
 
     Integer editCommunication(Communication communication);
 
-    Integer deleteCommunication(Integer id);
+    Integer deleteCommunication(Long id);
 
-    Integer deleteCommunicationLog(Integer id);
+    Integer deleteCommunicationLog(Long id);
 }

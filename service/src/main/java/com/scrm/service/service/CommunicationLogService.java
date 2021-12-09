@@ -7,21 +7,21 @@ import com.scrm.service.entity.UserAndCommunication;
 import java.util.List;
 
 public interface CommunicationLogService {
-    List<UserAndCommunication> queryCommunicationUser(Integer customerId);
+    List<UserAndCommunication> queryCommunicationUser(Long customerId);
 
-    Communication queryCommunication(Integer customerId);
+    Communication queryCommunication(Long customerId);
 
-    List<CommunicationLog> queryCommunicationLog(Integer customerId, Integer communicationWay);
+    List<CommunicationLog> queryCommunicationLog(Long customerId, Integer communicationWay);
 
-    CommunicationLog queryCommunicationLogDetail(Integer id);
+    CommunicationLog queryCommunicationLogDetail(Long id);
 
     String addCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
-    Integer PlusCommunication(Integer customerId, Integer communicationWay) throws Exception;
+    Integer PlusCommunication(Long customerId, Integer communicationWay) throws Exception;
 
     String editCommunicationLog(CommunicationLog communicationLog) throws Exception;
 
-    String deleteCommunicationLog(Integer id) throws Exception;
+    String deleteCommunicationLog(Long id) throws Exception;
 
-    Integer MinusCommunication(Integer customerId, Integer communicationWay) throws Exception;
+    Integer MinusCommunication(Long customerId, Integer communicationWay) throws Exception;
 }

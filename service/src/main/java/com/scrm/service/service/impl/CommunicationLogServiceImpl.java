@@ -17,22 +17,22 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     private CommunicationLogDao communicationLogDao;
 
     @Override
-    public List<UserAndCommunication> queryCommunicationUser(Integer customerId) {
+    public List<UserAndCommunication> queryCommunicationUser(Long customerId) {
         return communicationLogDao.queryCommunicationUser(customerId);
     }
 
     @Override
-    public Communication queryCommunication(Integer customerId) {
+    public Communication queryCommunication(Long customerId) {
         return communicationLogDao.queryCommunication(customerId);
     }
 
     @Override
-    public List<CommunicationLog> queryCommunicationLog(Integer customerId, Integer communicationWay) {
+    public List<CommunicationLog> queryCommunicationLog(Long customerId, Integer communicationWay) {
         return communicationLogDao.queryCommunicationLog(customerId, communicationWay);
     }
 
     @Override
-    public CommunicationLog queryCommunicationLogDetail(Integer id) {
+    public CommunicationLog queryCommunicationLogDetail(Long id) {
         return communicationLogDao.queryCommunicationLogDetail(id);
     }
 
@@ -46,7 +46,7 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer PlusCommunication(Integer customerId, Integer communicationWay) throws Exception {
+    public Integer PlusCommunication(Long customerId, Integer communicationWay) throws Exception {
         int result = communicationLogDao.PlusCommunication(customerId, communicationWay);
         if (result < 1) {
             throw new Exception("更新沟通次数失败");
@@ -64,7 +64,7 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public String deleteCommunicationLog(Integer id) throws Exception{
+    public String deleteCommunicationLog(Long id) throws Exception{
         int result = communicationLogDao.deleteCommunicationLog(id);
         if (result < 1) {
             throw new Exception("删除失败");
@@ -73,7 +73,7 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer MinusCommunication(Integer customerId, Integer communicationWay) throws Exception {
+    public Integer MinusCommunication(Long customerId, Integer communicationWay) throws Exception {
         int result = communicationLogDao.MinusCommunication(customerId, communicationWay);
         if (result < 1) {
             throw new Exception("更新沟通次数失败");
