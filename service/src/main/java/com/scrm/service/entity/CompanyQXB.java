@@ -7,6 +7,7 @@ import lombok.Data;
 @TableName("se_company_qxb")
 public class CompanyQXB {
 
+    @TableId
     private String registerNo;
 
     private String eid;

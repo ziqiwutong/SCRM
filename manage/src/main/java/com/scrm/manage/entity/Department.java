@@ -1,4 +1,4 @@
-package com.scrm.service.entity;
+package com.scrm.manage.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldStrategy;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -6,28 +6,33 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
+import java.util.List;
+
 @Data
-@TableName("se_phone_attribution")
-public class PhoneAttribution {
+@TableName("cms_department")
+public class Department {
 
     @TableId
-    private String phone;
+    private Integer id;
 
-    private int segment;
+    private Integer parentId;
+
+    private Integer leaderMemberId;
+
+    private String departmentName;
+
+    private String subName;
 
     private String type;
 
-    private String operator;
+    private Integer memberCount;
 
-    private String province;
+    private Integer haveSub;
 
-    private String city;
+    @TableField(exist = false)
+    private List<Department> children;
 
-    private String areaCode;
-
-    private String cityCode;
-
-    private String zipCode;
+    private String message;
 
     @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;

@@ -6,6 +6,8 @@ import lombok.Data;
 @Data
 @TableName("cms_user_info")
 public class UserInfo {
+
+    @TableId
     private String id;
 
     private Long weimobId;
