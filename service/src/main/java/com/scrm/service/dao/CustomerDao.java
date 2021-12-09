@@ -15,7 +15,6 @@ public interface CustomerDao extends BaseMapper<Customer> {
     @SelectProvider(CustomerSqlProvider.class)
     List<Long> queryIdByBusinessTime(String start, String end);
 
-    @SuppressWarnings("all")
     @Update("UPDATE se_customer SET wx_name=#{wx_name},wx_openid=#{wx_openid} WHERE id=#{customer_id}")
     int bindWxUser(long customerId, String wx_name, String wx_openid);
 }

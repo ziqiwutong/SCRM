@@ -139,14 +139,14 @@
     <select id="productDetail" resultMap="cor2">
         select `type_name`,`product_name`,`product_price`,
         `product_intro`,`product_image`,brand,certificate,wholesale_price,price_describe,
-        username,user_icon,telephone
-        from se_product,cms_user
+        username,user_icon,weimob_id
+        from se_product,cms_user_info
         where se_product.id=#{id}
         <if test="shareID!=null">
-            and cms_user.id=#{shareID}
+            and cms_user_info.id=#{shareID}
         </if>
         <if test="shareID==null">
-            and cms_user.id=1
+            and cms_user_info.id=1
         </if>
     </select>
 

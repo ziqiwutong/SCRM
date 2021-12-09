@@ -45,7 +45,7 @@ public class Resp {
     public Resp put(String key, Object value) {
         if (key != null && key.length() != 0) {
             if (this.data == null) {
-                this.data = new HashMap();
+                this.data = new HashMap<String, Object>();
                 ((Map)this.data).put(key, value);
             } else if (this.data instanceof Map) {
                 ((Map)this.data).put(key, value);

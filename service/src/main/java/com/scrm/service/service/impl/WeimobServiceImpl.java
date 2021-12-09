@@ -91,6 +91,7 @@ public class WeimobServiceImpl implements WeimobService {
                     product.setProductImage(item.getString("defaultImageUrl"));
                     product.setProductSales(item.getInteger("salesNum"));
                     product.setProductInventory(item.getInteger("avaliableStockNum"));
+                    product.setProductPrice(item.getBigDecimal("minPrice"));
                     product.setRetailPrice(item.getBigDecimal("minPrice"));
                     product.setWholesalePrice(item.getBigDecimal("minPrice"));
                     String priceDescribe = item.getBigDecimal("minPrice") +
