@@ -41,12 +41,12 @@ public class WxUserServiceImpl implements WxUserService {
 
         // 2.没有则插入
         if (wxUsers.size() == 0)
-            wxUserMapper.insert(wxUser);
+            return 1 == wxUserMapper.insert(wxUser);
 
-        // 3.有则更新: 这里不会更新readerStatus, 仅更新拿到的微信用户信息
-        wxUser.setId(wxUsers.get(0).getId());
-        wxUserMapper.updateById(wxUser);
-
-        return true;
+            // 3.有则更新: 这里不会更新readerStatus, 仅更新拿到的微信用户信息
+        else {
+            wxUser.setId(wxUsers.get(0).getId());
+            return 1 == wxUserMapper.updateById(wxUser);
+        }
     }
 }

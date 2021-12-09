@@ -105,5 +105,13 @@ public interface CustomerService {
      */
     List<CustomerRelation> queryRelationById(Long id);
 
+    /**
+     * 绑定微信用户openid和微信昵称到客户表
+     * 同时会将客户状态更新到微信用户表
+     * @param customerId 客户id
+     * @param wx_name 微信昵称
+     * @param wx_openid openid
+     * @return null表示绑定成功
+     */
     String bindWxUser(long customerId, String wx_name, String wx_openid);
 }

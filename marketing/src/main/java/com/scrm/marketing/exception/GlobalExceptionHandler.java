@@ -30,6 +30,16 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 运行时异常处理
+     *
+     * @return 返回Result
+     */
+    @ExceptionHandler({RuntimeException.class})
+    public Result handle(RuntimeException e) {
+        return Result.error(CodeEum.ERROR, e.getMessage());
+    }
+
+    /**
      * 拦截来自Sa-token抛出的异常
      *
      * @param e        SaTokenException

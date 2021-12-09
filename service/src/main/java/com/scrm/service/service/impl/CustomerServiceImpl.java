@@ -162,8 +162,11 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public String bindWxUser(long customerId, String wx_name, String wx_openid) {
+        // 1.绑定微信openid到客户表
         if (1 != customerDao.bindWxUser(customerId, wx_name, wx_openid))
             return "客户id不存在：" + customerId;
+        // 2.将客户状态customer_status字段赋值到微信用户表reader_status字段
+        customerDao.copyCusStatusToWxUser(customerId,wx_openid);
         return null;
     }
 }

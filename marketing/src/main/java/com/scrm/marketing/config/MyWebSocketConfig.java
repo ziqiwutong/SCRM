@@ -3,7 +3,6 @@ package com.scrm.marketing.config;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
-import com.scrm.marketing.util.resp.Result;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -98,7 +97,7 @@ public class MyWebSocketConfig implements WebSocketConfigurer {
         @Override
         public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
             super.handleTransportError(session, exception);
-            // 添加阅读记录 不需要去调用这个，在连接出异常后，关闭时依旧回去调用关闭回调方法
+            // 添加阅读记录 不需要刻意去调用这个，在连接出异常后，关闭时依旧回去调用关闭回调方法
             //addReadRecord(session.getId());
             // 关闭session
             if (session.isOpen())
