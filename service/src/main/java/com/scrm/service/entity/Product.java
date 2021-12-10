@@ -1,9 +1,6 @@
 package com.scrm.service.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.fasterxml.jackson.annotation.JsonAlias;
+import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -15,29 +12,43 @@ import java.math.BigDecimal;
 @Data
 @TableName("se_product")
 public class Product {
-    @JsonAlias({"productID"})
+
     @TableId(type = IdType.AUTO)
     private Long id;
-    private Long typeId;
-    private String sourceId;
-    private String productName;
-    @JsonAlias({"productType"})
-    private String typeName;
-    @JsonAlias({"productPic"})
-    private String productImage;
-    private BigDecimal productPrice;
-    private Integer productViewTimes;
-    private Integer productSales;
-    private Integer productInventory;
-    private String productIntro;
-    @JsonAlias({"brandIntro"})
-    private String brand;
-    @JsonAlias({"productCertificate"})
-    private String certificate;
-    private BigDecimal retailPrice;
-    private BigDecimal wholesalePrice;
-    private String priceDescribe;
-    private String createTime;
-    private String updateTime;
 
+    private Long typeId;
+
+    private String sourceId;
+
+    private String productName;
+
+    private String typeName;
+
+    private String productImage;
+
+    private BigDecimal productPrice;
+
+    private Integer productViewTimes;
+
+    private Integer productSales;
+
+    private Integer productInventory;
+
+    private String productIntro;
+
+    private String brand;
+
+    private String certificate;
+
+    private BigDecimal retailPrice;
+
+    private BigDecimal wholesalePrice;
+
+    private String priceDescribe;
+
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
+    private String createTime;
+
+    @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
+    private String updateTime;
 }

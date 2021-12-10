@@ -463,7 +463,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                 try {
                     URL url = new URL(path +
                             "?q=" + URLEncoder.encode(keyword, "UTF-8") +
-                            "&CustomConfig=" + bingCustomId
+                            "&count=50&CustomConfig=" + bingCustomId
                     );
                     HostnameVerifier hv = (urlHostName, session) -> {
                         System.out.println("Warning: URL Host: " + urlHostName + " vs. " + session.getPeerHost());
@@ -485,9 +485,11 @@ public class CustomerRestServiceImpl implements CustomerRestService {
                         if (webPages != null) {
                             for (int i = 0; i < webPages.size(); i++) {
                                 JSONObject webPage = webPages.getJSONObject(i);
+                                String link = webPage.getString("url");
+                                if (link == null || !link.startsWith("https://baike.baidu.com/")) continue;
                                 bing.add(new BingSearch(
                                         webPage.getString("name"),
-                                        webPage.getString("url"),
+                                        link,
                                         webPage.getString("snippet")
                                 ));
                             }

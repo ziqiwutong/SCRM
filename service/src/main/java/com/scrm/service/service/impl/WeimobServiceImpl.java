@@ -98,9 +98,9 @@ public class WeimobServiceImpl implements WeimobService {
                             " ~ " + item.getBigDecimal("maxPrice");
                     product.setPriceDescribe(priceDescribe);
                     if (list.size() > 0) {
-                        productDao.editProduct(product);
+                        productDao.updateById(product);
                     } else {
-                        productDao.addProduct(product);
+                        productDao.insert(product);
                     }
                 }
                 int totalCount = data.getInteger("totalCount");
@@ -154,16 +154,16 @@ public class WeimobServiceImpl implements WeimobService {
                     order.setOriginPrice(item.getBigDecimal("goodsAmount"));
                     order.setLastPrice(item.getBigDecimal("paymentAmount"));
                     order.setReceivedAmount(item.getBigDecimal("paymentAmount"));
-                    order.setPayTime(item.getTimestamp("paymentTime"));
+                    order.setPayTime(item.getString("paymentTime"));
                     order.setSaleChannel(item.getString("channelTypeName"));
                     order.setOrderSource("微盟");
                     int[] orderStatusShift = new int[]{0, 1, 1, 2, -1, 2, 2};
                     int orderStatus = item.getInteger("orderStatus");
                     order.setOrderStatus(orderStatus > 6 ? 2 : orderStatusShift[orderStatus]);
                     if (list.size() > 0) {
-                        orderDao.editOrder(order);
+                        orderDao.updateById(order);
                     } else {
-                        orderDao.addOrder(order);
+                        orderDao.insert(order);
                     }
 
                     list = orderDao.queryByOrderNum(id);
