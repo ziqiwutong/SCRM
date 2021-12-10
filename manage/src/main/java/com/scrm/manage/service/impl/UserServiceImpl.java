@@ -2,7 +2,10 @@ package com.scrm.manage.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.scrm.manage.dao.DepartmentDao;
 import com.scrm.manage.dao.UserInfoDao;
+import com.scrm.manage.entity.Department;
 import com.scrm.manage.entity.UserInfo;
 import com.scrm.manage.service.IuapService;
 import com.scrm.manage.service.UserService;
@@ -12,12 +15,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.StringHttpMessageConverter;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 @Service
@@ -28,6 +33,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserInfoDao userInfoDao;
+
+    @Resource
+    private DepartmentDao departmentDao;
 
     private final RestTemplate restTemplate;
 
@@ -101,6 +109,108 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    @Transactional
+    public String syncDepartment() {
+        QueryWrapper<Department> queryWrapper = new QueryWrapper<>();
+        queryWrapper.last(" where 1 = 1");
+        departmentDao.delete(queryWrapper);
+
+        int count = departmentDao.selectCount(queryWrapper);
+        if (count != 0) return "数据库错误";
+
+        String token = iuapService.getAccessToken();
+
+        String url = "https://openapi.yonyoucloud.com/dept/get?access_token=" + token;
+
+        LinkedList<Department> departments = new LinkedList<>();
+
+        do {
+            if (!departments.isEmpty()) {
+                Department department = departments.poll();
+                url = url + "&parent_id=" + department.getId();
+            }
+            ResponseEntity<String> respEntity = restTemplate.getForEntity(url, String.class);
+
+            JSONObject body = JSONObject.parseObject(respEntity.getBody());
+            if (responseFail(body)) return "用友接口错误";
+
+            JSONArray data = body.getJSONArray("data");
+            for (int i = 0; i < data.size(); i++) {
+                JSONObject info = data.getJSONObject(i);
+                Department department = generateDepartment(info);
+
+                departmentDao.insert(department);
+                if (department.getHaveSub() == 1) {
+                    departments.offer(department);
+                }
+            }
+        } while (!departments.isEmpty());
+
+        return null;
+    }
+
+    @Override
+    @Transactional
+    public List<Department> queryDepartment() {
+        QueryWrapper<Department> queryWrapper = new QueryWrapper<>();
+
+        LinkedList<Department> departments = new LinkedList<>();
+
+        List<Department> result = new ArrayList<>();
+        do {
+            queryWrapper.clear();
+
+            Department parent = null;
+            if (!departments.isEmpty()) {
+                parent = departments.poll();
+                queryWrapper.eq("parent_id", parent.getId());
+            } else {
+                queryWrapper.eq("parent_id", 0);
+            }
+
+            List<Department> list = departmentDao.selectList(queryWrapper);
+            if (list.size() == 0) continue;
+
+            if (parent == null) {
+                result = list;
+            } else {
+                parent.setChildren(new ArrayList<>(list));
+            }
+            for (Department department : list) {
+                if (department.getHaveSub() == 1) {
+                    departments.offer(department);
+                }
+            }
+        } while (!departments.isEmpty());
+
+        return result;
+    }
+
+    @Override
+    public List<Department> queryDepartmentLazy(String id) {
+        String token = iuapService.getAccessToken();
+
+        ArrayList<Department> departments = new ArrayList<>();
+
+        String url = "https://openapi.yonyoucloud.com/dept/get?access_token=" + token;
+        if (!id.equals("")) {
+            url = url + "&parent_id=" + id;
+        }
+        ResponseEntity<String> respEntity = restTemplate.getForEntity(url, String.class);
+
+        JSONObject body = JSONObject.parseObject(respEntity.getBody());
+        if (responseFail(body)) return null;
+
+        JSONArray data = body.getJSONArray("data");
+        for (int i = 0; i < data.size(); i++) {
+            JSONObject info = data.getJSONObject(i);
+            departments.add(generateDepartment(info));
+        }
+
+        return departments;
+    }
+
     /**
      * 检查API调用是否失败
      */
@@ -142,5 +252,23 @@ public class UserServiceImpl implements UserService {
         }
 
         return user;
+    }
+
+    /**
+     * 将用友返回信息转为部门信息
+     */
+    private Department generateDepartment(JSONObject info) {
+        Department department = new Department();
+        department.setId(Integer.valueOf(info.getString("id")));
+        department.setParentId(info.getInteger("parent_id"));
+        department.setLeaderMemberId(info.getInteger("leader_member_id"));
+        department.setDepartmentName(info.getString("name"));
+        department.setSubName(info.getString("sub_name"));
+        department.setType(info.getString("type"));
+        department.setMemberCount(info.getInteger("count"));
+        department.setHaveSub(info.getInteger("havesub"));
+        department.setMessage(info.getString("message"));
+
+        return department;
     }
 }

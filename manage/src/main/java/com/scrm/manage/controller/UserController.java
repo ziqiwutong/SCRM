@@ -58,4 +58,29 @@ public class UserController {
             return Resp.error().setMsg(result);
         }
     }
+
+    @GetMapping("/syncDepartment")
+    @ResponseBody
+    public Resp syncDepartment() {
+        String result = userService.syncDepartment();
+        if (result == null) {
+            return Resp.success();
+        } else {
+            return Resp.error().setMsg(result);
+        }
+    }
+
+    @GetMapping("/department")
+    @ResponseBody
+    public Resp queryDepartment() {
+        return Resp.success().setData(userService.queryDepartment());
+    }
+
+    @GetMapping("/departmentLazy")
+    @ResponseBody
+    public Resp queryDepartmentLazy(
+            @RequestParam(value = "id", required = false, defaultValue = "") String id
+    ) {
+        return Resp.success().setData(userService.queryDepartmentLazy(id));
+    }
 }
