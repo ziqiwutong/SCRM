@@ -142,7 +142,7 @@ public class ClueController {
             @RequestBody ClueStatus se_clue_status
     )
     {
-        if (se_clue_status == null) {
+        if (se_clue_status == null || se_clue_status.getClueId() == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try {

@@ -146,7 +146,7 @@ public class CommunicationController {
                 return Result.error(CodeEum.FAIL);
             }
         }
-        if (communicationLog == null) {
+        if (communicationLog == null || communicationLog.getCustomerId() == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try{
