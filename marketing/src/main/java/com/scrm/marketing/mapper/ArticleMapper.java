@@ -33,9 +33,9 @@ public interface ArticleMapper extends BaseMapper<Article> {
 
     @SuppressWarnings("all")
     @Update("UPDATE mk_article SET examine_id=#{loginId},examine_name=#{examineName}, " +
-            " examine_flag=#{examineFlag},examine_notes=#{examineNotes} " +
+            " examine_flag=#{examineFlag},examine_notes=#{examineNotes}" +
             " WHERE id=#{id} ")
-    int examine(Long id, Long loginId, String examineName, Integer examineFlag, String examineNotes);
+    int examine(Long id, String loginId, String examineName, Integer examineFlag, String examineNotes);
 
     @SuppressWarnings("all")
     @Select("SELECT id,author_id,author_name,article_title,article_image," +

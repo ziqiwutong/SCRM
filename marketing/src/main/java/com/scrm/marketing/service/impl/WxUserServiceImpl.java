@@ -49,4 +49,19 @@ public class WxUserServiceImpl implements WxUserService {
             return 1 == wxUserMapper.updateById(wxUser);
         }
     }
+
+    @Override
+    @Transactional// 开启事务
+    public String bindWxUser(long customerId, String nickname, String openid) {
+        // 1.将此微信openid绑定的其他客户都改为未绑定
+        wxUserMapper.unBindByOpenid(openid);
+
+        // 2.绑定微信openid到客户表
+        if (1 != wxUserMapper.bindWxUser(customerId, nickname, openid))
+            return "客户id不存在：" + customerId;
+
+        // 3.将客户状态customer_status字段赋值到微信用户表reader_status字段
+        wxUserMapper.copyCusStatusToWxUser(customerId, openid);
+        return null;
+    }
 }

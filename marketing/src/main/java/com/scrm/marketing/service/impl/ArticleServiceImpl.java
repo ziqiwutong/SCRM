@@ -3,10 +3,11 @@ package com.scrm.marketing.service.impl;
 import cn.hutool.core.date.DateUtil;
 import com.scrm.marketing.entity.Article;
 import com.scrm.marketing.entity.ArticleCustomerRead;
-import com.scrm.marketing.entity.User;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.service.ArticleService;
+import com.scrm.marketing.share.iuap.IuapClient;
+import com.scrm.marketing.share.iuap.IuapUser;
 import com.scrm.marketing.util.MyAssert;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
@@ -27,14 +28,14 @@ public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleMapper articleMapper;
     @Resource
-    private UserMapper userMapper;
-    @Resource
     private ArtCusReadMapper articleCustomerReadMapper;
     @Resource
     private WxReadRecordMapper wxReadRecordMapper;
+    @Resource
+    private IuapClient iuapClient;
 
     @Override
-    public Result getArticleDetail(Long id, Long shareId) {
+    public Result getArticleDetail(Long id, String shareId) {
         // 0. 查询文章所有
         // 0.1 从缓存查
         Article article;
@@ -57,38 +58,10 @@ public class ArticleServiceImpl implements ArticleService {
         // 2、shareId不为空
         else {
             // 2.1 先查出user
-            User shareUser = userMapper.selectById(shareId);
+            IuapUser shareUser = iuapClient.getUserById(shareId);
+
             if (shareUser == null)
                 return Result.error(CodeEum.NOT_EXIST).addMsg("分享者id不存在");
-            /*
-            // 2.2 再根据shareId和articleId查文章分享分享
-            List<ArticleShareRecord> articleShareRecords =
-                    articleShareRecordMapper.selectByAIdAndSid(id, shareId);
-
-            ArticleShareRecord articleShareRecord;
-            // 2.3 没有记录，则新增
-            if (articleShareRecords.isEmpty()) {
-                articleShareRecord = new ArticleShareRecord();
-                articleShareRecord.setArticleId(id);//文章id
-                articleShareRecord.setShareId(shareId);// 分享者id
-                //articleShareRecord.setShowShareFlag(true);//默认展示分享标记
-                articleShareRecord.setReadRecord("[]");
-                articleShareRecord.setOpenids("[]");
-                articleShareRecord.setReadTimes(0);//默认0
-                articleShareRecord.setReadPeople(0);//默认0
-                if (1 != articleShareRecordMapper.insert(articleShareRecord))
-                    throw new MyException(CodeEum.ERROR.getCode(), "分享记录添加失败");
-
-            }
-            // 2.4 有1条记录
-            else if (articleShareRecords.size() == 1) {
-                //articleShareRecord = articleShareRecords.get(0);
-            }
-            // 2.5 多条记录，抛异常
-            else
-                throw new MyException(CodeEum.ERROR.getCode(), "分享记录表存在多条相关记录");
-
-             */
 
             Map<String, Object> map = new HashMap<>(2, 1.0f);
             map.put("article", article);
@@ -110,24 +83,14 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void insert(Article article, Long loginId) {
+    public void insert(Article article, String loginId) {
         // 1、获取用户信息
-        // 1.1 从Redis查
-
-        // 1.2 RPC调用
-//        Result rpcResult = userClient.getUser(loginId);
-//        if(rpcResult.getCode()!=200)
-//            throw new MyException(rpcResult.getCode(),rpcResult.getMsg());
-//
-//        Map userMap=(Map)rpcResult.getData();
-//        String username = userMap.get("username").toString();
-
-        User user = userMapper.selectById(loginId);
+        IuapUser user = iuapClient.getUserById(loginId);
         if (user == null)
             throw new MyException(CodeEum.CODE_PARAM_ERROR, "loginId" + loginId + "not exists");
         // 2、完善article属性
         article.setAuthorId(loginId);//作者id
-        article.setAuthorName(user.getUsername());//作者名称
+        article.setAuthorName(user.getName());//作者名称
 
         article.setArticleViewTimes(0);
         article.setArticleReadTimeSum(0L);
@@ -155,7 +118,7 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void update(Article article, Long loginId) {
+    public void update(Article article, String loginId) {
         MyAssert.notNull("article can not be null and loginId", article, loginId);
         /*
          * 对于createTime和updateTime设为null
@@ -166,8 +129,7 @@ public class ArticleServiceImpl implements ArticleService {
         if (article.getProductIds() != null)
             article.setProductIdsJson(MyJsonUtil.toJsonStr(article.getProductIds()));
 
-        if (articleMapper.updateById(article) != 1)
-            throw new MyException(CodeEum.NOT_EXIST.getCode(), "文章不存在");
+        articleMapper.updateById(article);
     }
 
     @Override
@@ -194,10 +156,11 @@ public class ArticleServiceImpl implements ArticleService {
     }
 
     @Override
-    public void examine(Long id, Long loginId, Integer examineFlag, String examineNotes) {
+    public void examine(Long id, String loginId, Integer examineFlag, String examineNotes) {
         // 1、查出审核人
-        String examineName = userMapper.selectById(loginId).getUsername();
-
+        IuapUser user = iuapClient.getUserById(loginId);
+        if (user == null) throw new MyException(CodeEum.CODE_PARAM_ERROR, "审核人id不存在");
+        String examineName = user.getName();
         // 2.执行修改操作
         articleMapper.examine(id, loginId, examineName, examineFlag, examineNotes);
     }

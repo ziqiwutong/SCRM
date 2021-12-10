@@ -146,18 +146,6 @@ public class CustomerController {
         }
     }
 
-    @PostMapping("bindWxUser")
-    public Resp bindWxUser(
-            @RequestParam("customerId") long customerId,
-            @RequestParam("wx_name") String wx_name,
-            @RequestParam("wx_openid") String wx_openid
-    ) {
-        String result = customerService.bindWxUser(customerId, wx_name, wx_openid);
-        if (result == null) return Resp.success();
-        else
-            return Resp.error().setMsg(result);
-    }
-
     @GetMapping("/delete")
     @ResponseBody
     public Resp delete(

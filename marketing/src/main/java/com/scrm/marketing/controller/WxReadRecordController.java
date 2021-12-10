@@ -21,7 +21,7 @@ public class WxReadRecordController {
     @GetMapping(path = "/shareRecord")
     public Result queryShareRecord(
             @RequestParam("articleId") Long articleId,
-            @RequestParam(name = "shareId", required = false) List<Long> shareIds,
+            @RequestParam(name = "shareId", required = false) List<String> shareIds,
             @RequestParam(name = "pageNum", required = false, defaultValue = "1") int pageNum,
             @RequestParam(name = "pageSize", required = false, defaultValue = "20") int pageSize
     ) {
@@ -43,13 +43,14 @@ public class WxReadRecordController {
         if (articleId == null || articleId < 1)
             return Result.PARAM_ERROR();
         // 调用service
-        return articleShareRecordService.querySharePerson(articleId);
+        return Result.success(
+                articleShareRecordService.querySharePerson(articleId));
     }
 
     @PostMapping(path = "/addReadRecord")
     public Result addReadRecord(
             @RequestParam("articleId") long articleId,
-            @RequestParam("shareId") long shareId,
+            @RequestParam("shareId") String shareId,
             @RequestParam("readTime") int readTime,
             @RequestParam("openid") String openid) {
         // 1.参数检查：微信openid,readTime,articleId,shareId

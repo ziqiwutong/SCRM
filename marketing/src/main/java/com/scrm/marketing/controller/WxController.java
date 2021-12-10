@@ -13,10 +13,7 @@ import com.scrm.marketing.share.wx.WxUserInfoResult;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
@@ -213,5 +210,18 @@ public class WxController {
                 return global_jsapi_ticket;
             }
         }
+    }
+
+
+    @PostMapping(path="/bindWxUser")
+    public Result bindWxUser(
+            @RequestParam("customerId")long customerId,
+            @RequestParam("nickname")String nickname,
+            @RequestParam("openid")String openid
+    ){
+        String result = wxUserService.bindWxUser(customerId, nickname, openid);
+        if (result == null) return Result.success();
+        else
+            return Result.error(CodeEum.FAIL).addMsg(result);
     }
 }

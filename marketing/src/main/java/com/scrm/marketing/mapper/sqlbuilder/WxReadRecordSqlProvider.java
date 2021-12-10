@@ -10,7 +10,7 @@ import java.util.List;
  * @date 2021-11-28 17:03
  */
 public class WxReadRecordSqlProvider implements ProviderMethodResolver {
-    public static String queryByAidAndSids(Long articleId, List<Long> shareIds, int offset, int pageSize) {
+    public static String queryByAidAndSids(Long articleId, List<String> shareIds, int offset, int pageSize) {
         return new SQL() {{
             SELECT("*");
             FROM("mk_wx_read_record");
@@ -21,13 +21,13 @@ public class WxReadRecordSqlProvider implements ProviderMethodResolver {
                 else if (shareIds.size() > 1) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(");
-                    for (Long shareId : shareIds) {
+                    for (String shareId : shareIds) {
                         sb.append(shareId);
                         sb.append(",");
                     }
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(")");
-                    WHERE("share_id in " + sb.toString());
+                    WHERE("share_id in " + sb);
                 }
             }
             ORDER_BY("read_date DESC,create_time DESC");
@@ -36,7 +36,7 @@ public class WxReadRecordSqlProvider implements ProviderMethodResolver {
         }}.toString();
     }
 
-    public static String queryReadTimes(Long articleId, List<Long> shareIds) {
+    public static String queryReadTimes(Long articleId, List<String> shareIds) {
         return new SQL() {{
             SELECT("COUNT(*)");
             FROM("mk_wx_read_record");
@@ -47,19 +47,19 @@ public class WxReadRecordSqlProvider implements ProviderMethodResolver {
                 else if (shareIds.size() > 1) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(");
-                    for (Long shareId : shareIds) {
+                    for (String shareId : shareIds) {
                         sb.append(shareId);
                         sb.append(",");
                     }
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(")");
-                    WHERE("share_id in " + sb.toString());
+                    WHERE("share_id in " + sb);
                 }
             }
         }}.toString();
     }
 
-    public static String queryReadPeople(Long articleId, List<Long> shareIds) {
+    public static String queryReadPeople(Long articleId, List<String> shareIds) {
         return new SQL() {{
             SELECT("COUNT(DISTINCT wid)");
             FROM("mk_wx_read_record");
@@ -70,13 +70,13 @@ public class WxReadRecordSqlProvider implements ProviderMethodResolver {
                 else if (shareIds.size() > 1) {
                     StringBuilder sb = new StringBuilder();
                     sb.append("(");
-                    for (Long shareId : shareIds) {
+                    for (String shareId : shareIds) {
                         sb.append(shareId);
                         sb.append(",");
                     }
                     sb.deleteCharAt(sb.length() - 1);
                     sb.append(")");
-                    WHERE("share_id in " + sb.toString());
+                    WHERE("share_id in " + sb);
                 }
             }
         }}.toString();

@@ -26,7 +26,7 @@ public class ArticleController {
     @GetMapping(path = "/detail")
     public Result getArticleDetail(
             @RequestParam("id") Long id,
-            @RequestParam(value = "shareId", required = false) Long shareId) throws MyException {
+            @RequestParam(value = "shareId", required = false) String shareId) {
         if (id == null)
             return Result.PARAM_ERROR();
         // 调用service
@@ -66,7 +66,7 @@ public class ArticleController {
 
     @PostMapping(path = "/insert")
     @SaCheckPermission("article-add")//拥有文章增加权限
-    public Result insert(@RequestBody Article article) throws MyException {
+    public Result insert(@RequestBody Article article) {
         // 1.1 检查参数：必须有标题,内容,文章类型,文章背景图
         if (article == null)
             return Result.PARAM_MISS();
@@ -86,7 +86,7 @@ public class ArticleController {
         }
 
         // 2.获取loginId
-        Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
+        String loginId = StpUtil.getLoginId().toString();
         // 3.调用service
         articleService.insert(article, loginId);
         return Result.success();
@@ -104,16 +104,16 @@ public class ArticleController {
                 return Result.PARAM_ERROR();
         }
         if (article.getExamineFlag() != null) {
-            if(!Article.checkExamineFlag(article))
+            if (!Article.checkExamineFlag(article))
                 return Result.PARAM_ERROR();
         }
-        if(article.getArticleType()!=null){
-            if(!Article.checkArticleType(article))
+        if (article.getArticleType() != null) {
+            if (!Article.checkArticleType(article))
                 return Result.PARAM_ERROR();
         }
 
         // 2、获取loginId
-        Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
+        String loginId = StpUtil.getLoginId().toString();
 
         // 3.调用service
         articleService.update(article, loginId);
@@ -123,7 +123,7 @@ public class ArticleController {
 
     @DeleteMapping(path = "/delete")
     @SaCheckPermission("article-delete")
-    public Result delete(@RequestParam("id") Long id){
+    public Result delete(@RequestParam("id") Long id) {
         // 1、检查参数
         if (id == null)
             return Result.PARAM_MISS();
@@ -139,7 +139,7 @@ public class ArticleController {
             @RequestParam("id") Long id,
             @RequestParam("examineFlag") Integer examineFlag,
             @RequestParam("examineNotes") String examineNotes
-    ) throws MyException {
+    ) {
         // 1.参数检查：examineFlag必须合法
         if (id == null || examineFlag == null)
             return Result.error(CodeEum.PARAM_MISS);
@@ -147,7 +147,7 @@ public class ArticleController {
             return Result.PARAM_ERROR();
 
         // 2、获取loginId
-        Long loginId = Long.parseLong(StpUtil.getLoginId().toString());
+        String loginId = StpUtil.getLoginId().toString();
 
         // 3.调用service
         articleService.examine(id, loginId, examineFlag, examineNotes);

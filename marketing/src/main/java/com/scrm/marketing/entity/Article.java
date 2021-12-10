@@ -39,7 +39,7 @@ public class Article {
     /**
      * 作者相关属性
      */
-    private Long authorId;
+    private String authorId;
     private String authorName;
 
     /**
@@ -63,7 +63,7 @@ public class Article {
     /**
      * 审核人相关属性
      */
-    private Long examineId;
+    private String examineId;
     private Integer examineFlag;
     private String examineName;
     private String examineNotes;

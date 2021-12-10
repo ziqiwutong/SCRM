@@ -41,7 +41,7 @@ class MarketingApplicationTests {
         wxReadRecord.setArticleId(10L);
         wxReadRecord.setWid(1L);
         wxReadRecord.setOpenid("oSLXk6DwZJ1VcXZQH4aPfk");
-        wxReadRecord.setShareId(1L);
+        wxReadRecord.setShareId("1");
         wxReadRecord.setReadDate(MyDateTimeUtil.getNowDate());
         wxReadRecord.setReadTime(100);
 

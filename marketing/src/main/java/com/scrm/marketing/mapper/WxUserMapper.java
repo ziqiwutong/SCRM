@@ -19,4 +19,17 @@ public interface WxUserMapper extends BaseMapper<WxUser> {
     @SuppressWarnings("all")
     @Update("UPDATE mk_wx_user SET reader_status=#{readerStatus} WHERE id=#{id}")
     int updateReaderStatus(long id, String readerStatus);
+
+    @SuppressWarnings("all")
+    @Update("UPDATE se_customer SET wx_name=#{nickname},wx_openid=#{openid} WHERE id=#{customerId}")
+    int bindWxUser(long customerId, String nickname, String openid);
+
+    @SuppressWarnings("all")
+    @Update("UPDATE mk_wx_user SET reader_status=(SELECT customer_status FROM se_customer WHERE id=#{customerId})" +
+            " WHERE openid=#{openid}")
+    int copyCusStatusToWxUser(long customerId, String openid);
+
+    @SuppressWarnings("all")
+    @Update("UPDATE se_customer SET wx_name=NULL,wx_openid=NULL WHERE wx_openid=#{openid}")
+    int unBindByOpenid(String openid);
 }

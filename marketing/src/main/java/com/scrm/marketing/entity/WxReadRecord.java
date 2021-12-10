@@ -23,7 +23,7 @@ public class WxReadRecord {
      * 关联表相关id属性
      */
     private Long articleId;
-    private Long shareId;
+    private String shareId;
     private Long wid;
     private String openid;
     /**
@@ -42,7 +42,7 @@ public class WxReadRecord {
     public WxReadRecord() {
     }
 
-    public WxReadRecord(Long articleId, Long shareId, Long wid, String openid, String readDate, Integer readTime) {
+    public WxReadRecord(Long articleId, String shareId, Long wid, String openid, String readDate, Integer readTime) {
         this.articleId = articleId;
         this.shareId = shareId;
         this.wid = wid;

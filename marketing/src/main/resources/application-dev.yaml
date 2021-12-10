@@ -7,7 +7,7 @@ spring:
         # 以下3个配置，如果上线服务器测试，则开启第一个group即可；
         # 如果是要进行内网穿透，让服务器的gateway服务指向本地的，则3个都开启
         group: "test_group"
-        ip: "qzz2fc.natappfree.cc"  # 内网穿透给出的域名地址，不能写协议，而且每次都会变
+        ip: "bjtmxe.natappfree.cc"  # 内网穿透给出的域名地址，不能写协议，而且每次都会变
         port: 80
 
   datasource:

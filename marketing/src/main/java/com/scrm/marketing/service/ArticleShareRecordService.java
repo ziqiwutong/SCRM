@@ -1,6 +1,7 @@
 package com.scrm.marketing.service;
 
 import com.scrm.marketing.entity.wrapper.WxReadRecordWrapper;
+import com.scrm.marketing.share.iuap.IuapUser;
 import com.scrm.marketing.util.resp.Result;
 import com.scrm.marketing.share.wx.WxUserInfoResult;
 
@@ -11,9 +12,9 @@ import java.util.List;
  * @date 2021-10-19 23:42
  */
 public interface ArticleShareRecordService {
-    WxReadRecordWrapper queryShareRecord(Long articleId, List<Long> shareIds, int pageNum, int pageSize);
+    WxReadRecordWrapper queryShareRecord(Long articleId, List<String> shareIds, int pageNum, int pageSize);
 
-    Result querySharePerson(Long articleId);
+    List<IuapUser> querySharePerson(Long articleId);
 
-    void addReadRecord(long articleId,long shareId,String openid,int readTime);
+    void addReadRecord(long articleId,String shareId,String openid,int readTime);
 }

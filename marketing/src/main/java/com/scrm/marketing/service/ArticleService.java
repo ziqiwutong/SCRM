@@ -13,17 +13,17 @@ import java.util.List;
  * @date 2021-10-14 20:24
  */
 public interface ArticleService {
-    Result getArticleDetail(Long id, Long shareId);
+    Result getArticleDetail(Long id, String shareId);
 
     PageResult queryPage(int pageNum, int pageSize, Integer examineFlag, Integer materialType);
 
-    void insert(Article article, Long loginId);
+    void insert(Article article, String loginId);
 
-    void update(Article article, Long loginId);
+    void update(Article article, String loginId);
 
     void delete(Long id);
 
-    void examine(Long id, Long loginId, Integer examineFlag, String examineNotes);
+    void examine(Long id, String loginId, Integer examineFlag, String examineNotes);
 
     Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
 

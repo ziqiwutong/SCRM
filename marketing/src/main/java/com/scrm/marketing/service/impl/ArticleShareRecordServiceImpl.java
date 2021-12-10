@@ -5,11 +5,12 @@ import com.scrm.marketing.entity.wrapper.WxReadRecordWrapper;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.service.ArticleShareRecordService;
+import com.scrm.marketing.share.iuap.IuapClient;
+import com.scrm.marketing.share.iuap.IuapUser;
 import com.scrm.marketing.util.MyAssert;
 import com.scrm.marketing.util.MyDateTimeUtil;
 import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
-import com.scrm.marketing.util.resp.Result;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,6 @@ import java.util.*;
 @Service
 public class ArticleShareRecordServiceImpl implements ArticleShareRecordService {
     @Resource
-    private UserMapper userMapper;
-    @Resource
     private ArticleMapper articleMapper;
     @Resource
     private CustomerMapper customerMapper;
@@ -39,20 +38,23 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
     private WxReadRecordMapper wxReadRecordMapper;
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+    @Resource
+    private IuapClient iuapClient;
 
     private static final String readRecordKeyPrefix = "wxReadRecord_articleId:";
+    private static final String sharePersonKeyPrefix = "sharePerson_articleId:";
     private static final Duration cacheTime = Duration.ofMinutes(10); // 默认10分钟
 
     /*判断是否需要缓存*/
-    private boolean isCache(List<Long> shareIds, int pageNum, int pageSize) {
+    private boolean isCache(List<String> shareIds, int pageNum, int pageSize) {
         // 只缓存前3页 且页大小为20
-        if (pageNum > 3 || pageSize != 20) return true;
+        if (pageNum > 3 || pageSize != 20) return false;
         // 只缓存查询所有分享者 或 查询单个分享者
         return shareIds == null || shareIds.size() < 2;
     }
 
     /*生成key的方法*/
-    private String generateKey(Long articleId, List<Long> shareIds, int pageNum) {
+    private String generateKey(Long articleId, List<String> shareIds, int pageNum) {
         String key;
         if (shareIds == null || shareIds.size() == 0)
             key = readRecordKeyPrefix + articleId + "_page:" + pageNum;
@@ -62,7 +64,7 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
     }
 
 
-    private WxReadRecordWrapper getCache(Long articleId, List<Long> shareIds, int pageNum, int pageSize) {
+    private WxReadRecordWrapper getCache(Long articleId, List<String> shareIds, int pageNum, int pageSize) {
         // 1.判断是否缓存
         if (isCache(shareIds, pageNum, pageSize)) {
             // 2.生成key
@@ -77,7 +79,7 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
         return null;
     }
 
-    private void setCache(Long articleId, List<Long> shareIds, int pageNum, int pageSize, WxReadRecordWrapper wrapper) {
+    private void setCache(Long articleId, List<String> shareIds, int pageNum, int pageSize, WxReadRecordWrapper wrapper) {
         // 1.判断是否缓存
         if (isCache(shareIds, pageNum, pageSize)) {
             // 2.生成key
@@ -91,8 +93,8 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
         }
     }
 
-    private void delCache(Long articleId, Long shareId) {
-        List<Long> shareIds = List.of(shareId);
+    private void delCache(Long articleId, String shareId) {
+        List<String> shareIds = List.of(shareId);
         // 1.先删除查询所有分享者的缓存
         String allKey1 = generateKey(articleId, null, 1);
         String allKey2 = generateKey(articleId, null, 2);
@@ -108,7 +110,7 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
 
     @Override
     @Transactional
-    public WxReadRecordWrapper queryShareRecord(Long articleId, List<Long> shareIds, int pageNum, int pageSize) {
+    public WxReadRecordWrapper queryShareRecord(Long articleId, List<String> shareIds, int pageNum, int pageSize) {
         // 1.先查出阅读记录
         // 1.1 先去缓存查
         WxReadRecordWrapper cache = getCache(articleId, shareIds, pageNum, pageSize);
@@ -120,7 +122,7 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
                 wxReadRecordMapper.queryByAidAndSids(articleId, shareIds, offset, pageSize);// 对于shareIds的处理交由SQL构造器
 
         // 2.再查询微信用户信息进行填充
-        Map<Long, WxUser> map = new HashMap<>(wxReadRecords.size());
+        Map<Long, WxUser> map = new HashMap<>(wxReadRecords.size(), 1.0f);
         for (WxReadRecord wxReadRecord : wxReadRecords) {
             Long wid = wxReadRecord.getWid();
             WxUser wxUser = map.get(wid);
@@ -148,15 +150,33 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
     }
 
     @Override
-    public Result querySharePerson(Long articleId) {
-        // 根据文章id查询分享人列表
-        List<User> sharePersons = userMapper.querySharePerson(articleId);
-        return Result.success(sharePersons);
+    public List<IuapUser> querySharePerson(Long articleId) {
+        // 1.查缓存
+        ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+        String json = opsForValue.get(sharePersonKeyPrefix + articleId);
+        if (json != null) {
+            return MyJsonUtil.toBeanList(json, IuapUser.class);
+        }
+        // 2.缓存失效，查数据库
+        // 根据文章id查询分享人列表,这个玩意也得放缓存哦
+        List<String> shareIds = wxReadRecordMapper.queryShareIds(articleId);
+
+        List<IuapUser> iuapUsers = new ArrayList<>(shareIds.size());
+        for (String shareId : shareIds) {
+            IuapUser iuapUser = iuapClient.getUserById(shareId);
+            if (iuapUser != null) {
+                iuapUsers.add(iuapUser);
+            }
+        }
+
+        // 3.放入缓存
+        opsForValue.set(sharePersonKeyPrefix + articleId, MyJsonUtil.toJsonStr(iuapUsers), cacheTime);
+        return iuapUsers;
     }
 
     @Override
     @Transactional// 开启事务
-    public void addReadRecord(long articleId, long shareId, String openid, int readTime) {
+    public void addReadRecord(long articleId, String shareId, String openid, int readTime) {
         MyAssert.notNull("openid can not be null", openid);
 
         /*
@@ -177,33 +197,33 @@ public class ArticleShareRecordServiceImpl implements ArticleShareRecordService 
 
 
         // 2.文章客户阅读记录处理
-        // 找一找这个openid是不是我们客户: 取出客户状态，不存在则为null
-        String customerStatus = customerMapper.queryCusStatusByOpenid(openid);
+        // 找一找这个openid是不是我们客户
+        Long cusId = customerMapper.queryIdByOpenid(openid);
+        String customerStatus = null;
         String nowDate = MyDateTimeUtil.getNowDate();
         // 如果是我们的客户
-        if (customerStatus != null) {
-            // 拿到客户id：必然不会为null吧？这不能给我删了吧
-            Long cusId = customerMapper.queryIdByOpenid(openid);
-            if (cusId != null) {
-                // 先找找今天是否已经有读过了
-                List<Long> artCusReadIds = artCusReadMapper
-                        .queryTodayRead(articleId, cusId, nowDate);
+        if (cusId != null) {
+            // 2.1 先查询客户状态
+            customerStatus = customerMapper.queryCusStatusById(cusId);
 
-                // 2.1 今天没读，即没有记录，则插入一条
-                if (artCusReadIds.size() == 0) {
-                    ArticleCustomerRead articleCustomerRead = new ArticleCustomerRead();
-                    articleCustomerRead.setArticleId(articleId);
-                    articleCustomerRead.setCustomerId(cusId);
-                    articleCustomerRead.setReadDate(nowDate);
-                    articleCustomerRead.setReadTime(readTime);
+            // 2.2 找找今天是否已经有读过了
+            List<Long> artCusReadIds = artCusReadMapper
+                    .queryTodayRead(articleId, cusId, nowDate);
 
-                    artCusReadMapper.insert(articleCustomerRead);
-                }
-                // 2.2 今天读了，有记录，将阅读时间相加
-                else {
-                    long artCusReadId = artCusReadIds.get(0);
-                    artCusReadMapper.addReadTime(artCusReadId, readTime);
-                }
+            // 2.2.1 今天没读，即没有记录，则插入一条
+            if (artCusReadIds.size() == 0) {
+                ArticleCustomerRead articleCustomerRead = new ArticleCustomerRead();
+                articleCustomerRead.setArticleId(articleId);
+                articleCustomerRead.setCustomerId(cusId);
+                articleCustomerRead.setReadDate(nowDate);
+                articleCustomerRead.setReadTime(readTime);
+
+                artCusReadMapper.insert(articleCustomerRead);
+            }
+            // 2.2.2 今天读了，有记录，将阅读时间相加
+            else {
+                long artCusReadId = artCusReadIds.get(0);
+                artCusReadMapper.addReadTime(artCusReadId, readTime);
             }
         }
 
