@@ -1,25 +1,15 @@
 package com.scrm.service.util.order;
 
+import org.springframework.stereotype.Component;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
  * 生成订单号类
  */
+@Component
 public class GenerateNum {
-    // 使用单例模式，不允许直接创建实例
-    private GenerateNum() {}
-
-    // 创建一个空实例对象，类需要用的时候才赋值
-    private static GenerateNum g = null;
-
-    // 单例模式--懒汉模式
-    public static synchronized GenerateNum getInstance() {
-        if (g == null) {
-            g = new GenerateNum();
-        }
-        return g;
-    }
 
     // 全局自增数
     private static int count = 0;
@@ -42,24 +32,20 @@ public class GenerateNum {
      * 生成一个订单号
      */
     public synchronized String GenerateOrder() {
-        String datastr = getNowDateStr();
-        if (datastr.equals(now)) {
+        String dataStr = getNowDateStr();
+        if (dataStr.equals(now)) {
             count++;// 自增
         } else {
             count = 1;
-            now = datastr;
+            now = dataStr;
         }
         int countInteger = String.valueOf(total).length() - String.valueOf(count).length();// 算补位
-        String bu = "";// 补字符串
-        for (int i = 0; i < countInteger; i++) {
-            bu += "0";
-        }
-        bu += String.valueOf(count);
         if (count >= total) {
-            count = 0;
+            count = 1;
         }
-        return datastr + bu;
+        String bu = "0".repeat(Math.max(0, countInteger)) +
+                count;// 补字符串
+        return dataStr + bu;
     }
-
 
 }

@@ -6,6 +6,7 @@ import com.scrm.service.dao.OrderProductDao;
 import com.scrm.service.entity.Order;
 import com.scrm.service.entity.OrderProduct;
 import com.scrm.service.service.OrderService;
+import com.scrm.service.util.order.GenerateNum;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +26,9 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private OrderProductDao orderProductDao;
 
+    @Resource
+    private GenerateNum generateNum;
+
     @Override
     @Transactional
     public List<Order> queryPage(Integer pageCount, Integer currentPage, QueryWrapper<Order> wrapper) {
@@ -32,7 +36,7 @@ public class OrderServiceImpl implements OrderService {
         wrapper.last(" limit " + offset + "," + pageCount);
         List<Order> list = orderDao.selectList(wrapper);
         for (Order order : list) {
-            order.setProductList(queryOrderProduct(order.getId()));
+            queryOrderProduct(order);
         }
         return list;
     }
@@ -47,12 +51,15 @@ public class OrderServiceImpl implements OrderService {
         List<Order> list = orderDao.queryByOrderNum(num);
         if (list.size() == 0) return null;
         Order order = list.get(0);
-        order.setProductList(queryOrderProduct(order.getId()));
+        queryOrderProduct(order);
         return order;
     }
 
     @Override
     public String insert(Order order) {
+        if (order.getOrderNum() == null) {
+            order.setOrderNum(generateNum.GenerateOrder());
+        }
         int result = orderDao.insert(order);
         if (result < 1) {
             return "插入失败";
@@ -79,11 +86,12 @@ public class OrderServiceImpl implements OrderService {
     }
 
     /**
-     * 查询订单下的产品信息列表
+     * 查询订单下的产品信息
      */
-    private List<OrderProduct> queryOrderProduct(Long id) {
+    private void queryOrderProduct(Order order) {
         QueryWrapper<OrderProduct> wrapper = new QueryWrapper<>();
-        wrapper.eq("order_id", id);
-        return orderProductDao.selectList(wrapper);
+        wrapper.eq("order_id", order.getId());
+        order.setProductList(orderProductDao.selectList(wrapper));
+        order.setProductCount(orderProductDao.queryCountByOrder(order.getId()));
     }
 }

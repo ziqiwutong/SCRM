@@ -46,6 +46,9 @@ public class Order {
     @TableField(exist = false)
     private List<OrderProduct> productList;
 
+    @TableField(exist = false)
+    private Integer productCount;
+
     @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;
 
