@@ -9,7 +9,9 @@ import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -137,6 +139,8 @@ public class CommunicationController {
     {
         List<CommunicationLog> communicationLogs = communicationLogService.queryCommunicationLog(
                 communicationLog.getCustomerId(),4);
+        Timestamp date = new Timestamp(System.currentTimeMillis());
+        communicationLog.setCommunicationTime(date);
         if(communicationLogs.size() == 0){
             Communication communication = new Communication();
             communication.setCustomerId(communicationLog.getCustomerId());
