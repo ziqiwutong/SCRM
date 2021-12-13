@@ -26,11 +26,15 @@ public class OrderController {
     public PageResp query(
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
-            @RequestParam(value = "orderStatus", required = false, defaultValue = "") String orderStatus
+            @RequestParam(value = "orderStatus", required = false, defaultValue = "") String orderStatus,
+            @RequestParam(value = "customerId", required = false, defaultValue = "") String customerId
     ) {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
         if (!orderStatus.equals("")) {
             wrapper.eq("order_status", Integer.valueOf(orderStatus));
+        }
+        if (!customerId.equals("")) {
+            wrapper.eq("customer_id", Long.valueOf(customerId));
         }
         int total = orderService.queryCount(wrapper);
         return PageResp.success().setData(

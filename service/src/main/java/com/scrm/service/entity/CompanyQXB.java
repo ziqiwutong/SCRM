@@ -8,7 +8,7 @@ import lombok.Data;
 public class CompanyQXB {
 
     @TableId
-    private String registerNo;
+    private String id;
 
     private String eid;
 
@@ -21,6 +21,8 @@ public class CompanyQXB {
     private String belongOrg;
 
     private String orgNo;
+
+    private String registerNo;
 
     private String creditNo;
 

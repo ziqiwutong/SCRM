@@ -38,10 +38,21 @@ public class ProductController {
             } else if (key.startsWith("in_")) {
                 String order = map.get(key);
                 wrapper.in(VariableName.camelToUnderscore(key.substring(3)), (Object[]) order.split("▓"));
+            } else if (key.startsWith("notin_")) {
+                String order = map.get(key);
+                wrapper.notIn(VariableName.camelToUnderscore(key.substring(6)), (Object[]) order.split("▓"));
             } else if (key.startsWith("bet_")) {
                 String[] order = map.get(key).split("▓");
                 if (order.length != 2) return PageResp.error().setMsg("参数错误");
                 wrapper.between(VariableName.camelToUnderscore(key.substring(4)), order[0], order[1]);
+            } else if (key.startsWith("gt_")) {
+                wrapper.gt(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("ge_")) {
+                wrapper.le(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("lt_")) {
+                wrapper.lt(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("le_")) {
+                wrapper.le(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
             } else if (key.startsWith("like_")) {
                 wrapper.like(VariableName.camelToUnderscore(key.substring(5)), map.get(key));
             }

@@ -57,7 +57,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String insert(Order order) {
-        if (order.getOrderNum() == null) {
+        if (order.getOrderNum() == null || order.getOrderNum().isEmpty()) {
             order.setOrderNum(generateNum.GenerateOrder());
         }
         int result = orderDao.insert(order);

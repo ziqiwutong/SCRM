@@ -39,10 +39,10 @@ public interface CustomerRestService {
 
     /**
      * 查企业详情
-     * @param registerNo 工商注册号
+     * @param keyword 工商注册号/社会统一信用代码
      * @return Object[]
      */
-    CompanyQXB queryCompanyDetail(String registerNo);
+    CompanyQXB queryCompanyDetail(String keyword);
 
     /**
      * 查询企业间关系

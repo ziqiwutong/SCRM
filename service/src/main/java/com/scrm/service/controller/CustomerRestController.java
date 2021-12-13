@@ -65,9 +65,9 @@ public class CustomerRestController {
     @GetMapping("/companyDetail")
     @ResponseBody
     public Resp queryCompanyDetail(
-            @RequestParam(value = "registerNo") String registerNo
+            @RequestParam(value = "keyword") String keyword
     ) {
-        CompanyQXB company = customerRestService.queryCompanyDetail(registerNo);
+        CompanyQXB company = customerRestService.queryCompanyDetail(keyword);
         if (company != null) {
             return Resp.success().setData(company);
         } else {
