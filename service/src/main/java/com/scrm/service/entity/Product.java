@@ -46,6 +46,8 @@ public class Product {
 
     private String priceDescribe;
 
+    private Long articleId;
+
     @TableField(updateStrategy = FieldStrategy.NOT_EMPTY)
     private String createTime;
 
