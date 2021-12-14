@@ -69,6 +69,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public String update(Order order) {
+        if (order.getOrderNum() != null) order.setOrderNum(null);
         int result = orderDao.updateById(order);
         if (result < 1) {
             return "更新失败";
@@ -77,12 +78,23 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public String delete(Long id) {
+        Order order = orderDao.selectById(id);
+        if (order == null) return "订单不存在";
+        String orderNum = order.getOrderNum();
+        if (orderNum != null && orderNum.length() > 3 && orderNum.charAt(2) == '_') return "外部订单禁止删除";
         int result = orderDao.deleteById(id);
-        if (result < 1) {
-            return "删除失败";
-        }
+        if (result < 1) return "删除失败";
+        QueryWrapper<OrderProduct> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id", id);
+        orderProductDao.delete(wrapper);
         return null;
+    }
+
+    @Override
+    public List<Long> queryIdByProduct(String keyword) {
+        return orderDao.queryIdByProduct(keyword);
     }
 
     /**

@@ -17,4 +17,7 @@ public interface OrderDao extends BaseMapper<Order> {
 
     @Select("select * from se_order where order_num = #{orderNum}")
     List<Order> queryByOrderNum(@NonNull String orderNum);
+
+    @Select("select distinct order_id from se_order_product where product_name like '%${keyword}%'")
+    List<Long> queryIdByProduct(String keyword);
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * @author Ganyunhui
@@ -27,14 +28,19 @@ public class OrderController {
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
             @RequestParam(value = "orderStatus", required = false, defaultValue = "") String orderStatus,
+            @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword,
             @RequestParam(value = "customerId", required = false, defaultValue = "") String customerId
     ) {
         QueryWrapper<Order> wrapper = new QueryWrapper<>();
-        if (!orderStatus.equals("")) {
+        if (!orderStatus.isEmpty()) {
             wrapper.eq("order_status", Integer.valueOf(orderStatus));
         }
-        if (!customerId.equals("")) {
+        if (!customerId.isEmpty()) {
             wrapper.eq("customer_id", Long.valueOf(customerId));
+        }
+        if (!keyword.isEmpty()) {
+            List<Long> ids = orderService.queryIdByProduct(keyword);
+            wrapper.in("id", ids);
         }
         int total = orderService.queryCount(wrapper);
         return PageResp.success().setData(

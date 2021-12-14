@@ -22,4 +22,6 @@ public interface OrderService {
     String update(Order order);
 
     String delete(Long id);
+
+    List<Long> queryIdByProduct(String keyword);
 }
