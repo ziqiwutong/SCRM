@@ -210,10 +210,20 @@ public class CustomerRestServiceImpl implements CustomerRestService {
     }
 
     @Override
-    public CompanyQXB queryCompanyDetail(String registerNo) {
+    public CompanyQXB queryCompanyDetail(String keyword) {
+        if (keyword.isEmpty() || keyword.equals("-")) return null;
         QueryWrapper<CompanyQXB> wrapper = new QueryWrapper<>();
-        wrapper.eq("register_no", registerNo);
+        wrapper.eq("register_no", keyword);
         List<CompanyQXB> companyQXBList = companyQXBDao.selectList(wrapper);
+        if (companyQXBList.size() == 1) {
+            return companyQXBList.get(0);
+        }
+        if (companyQXBList.size() > 1) {
+            companyQXBDao.delete(wrapper);
+        }
+        wrapper.clear();
+        wrapper.eq("credit_no", keyword);
+        companyQXBList = companyQXBDao.selectList(wrapper);
         if (companyQXBList.size() == 1) {
             return companyQXBList.get(0);
         }
@@ -228,7 +238,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
         request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
         request.addQueryParameter("appkey", qxbAppKey);
         request.addQueryParameter("secret_key", qxbSecretKey);
-        request.addQueryParameter("keyword", registerNo);
+        request.addQueryParameter("keyword", keyword);
         try {
             ApiExplorerResponse response = client.sendRequest(request);
             JSONObject body = JSONObject.parseObject(response.getResult());
@@ -238,7 +248,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
             JSONObject data = body.getJSONObject("data");
 
             CompanyQXB companyQXB = new CompanyQXB();
-            companyQXB.setRegisterNo(data.getString("regNo"));
+            companyQXB.setId(data.getString("regNo") + "," + data.getString("creditNo"));
             companyQXB.setEid(data.getString("id"));
             companyQXB.setCompanyName(data.getString("name"));
             JSONArray historyNames = data.getJSONArray("historyNames");
@@ -256,6 +266,7 @@ public class CustomerRestServiceImpl implements CustomerRestService {
             companyQXB.setLegalPerson(data.getString("operName"));
             companyQXB.setBelongOrg(data.getString("belongOrg"));
             companyQXB.setOrgNo(data.getString("orgNo"));
+            companyQXB.setRegisterNo(data.getString("regNo"));
             companyQXB.setCreditNo(data.getString("creditNo"));
             companyQXB.setDistrictCode(data.getString("districtCode"));
             companyQXB.setAddress(data.getString("address"));

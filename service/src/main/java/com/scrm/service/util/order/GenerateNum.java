@@ -39,13 +39,10 @@ public class GenerateNum {
             count = 1;
             now = dataStr;
         }
-        int countInteger = String.valueOf(total).length() - String.valueOf(count).length();// 算补位
         if (count >= total) {
             count = 1;
         }
-        String bu = "0".repeat(Math.max(0, countInteger)) +
-                count;// 补字符串
-        return dataStr + bu;
+        return dataStr + String.format("%04d", count);
     }
 
 }
