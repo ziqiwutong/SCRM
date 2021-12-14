@@ -91,6 +91,7 @@ public class ClueController {
                 businessOpportunity.setBoStatus("New Business Opportunity");
                 businessOpportunity.setBoEditor(se_clue.getClueEditor());
                 businessOpportunity.setBoResponsible(se_clue.getClueResponsible());
+                se_clueService.editClue(se_clue);
                 return Result.success(businessOpportunity);
             }
 
