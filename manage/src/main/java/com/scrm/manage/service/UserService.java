@@ -1,7 +1,8 @@
 package com.scrm.manage.service;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.scrm.manage.entity.User;
+import com.scrm.manage.entity.Department;
+import com.scrm.manage.entity.UserInfo;
+import com.scrm.manage.vo.User;
 
 import java.util.List;
 
@@ -9,19 +10,12 @@ public interface UserService {
 
     /**
      * 查询User
-     * @param pageCount 每页数量
-     * @param currentPage 当前页数
-     * @param wrapper
+     * @param count 查询数量
+     * @param preId 前一位用户的ID，不传默认为从第一个开始，传入则从传入ID的下一个开始返回
+     * @param departmentId 部门ID
      * @return List<User>
      */
-    List<User> query(Integer pageCount, Integer currentPage, QueryWrapper<User> wrapper);
-
-    /**
-     * 查询User总数量
-     * @return User数量
-     * @param wrapper
-     */
-    Integer queryCount(QueryWrapper<User> wrapper);
+    List<User> query(Integer count, String preId, String departmentId);
 
     /**
      * 查询User
@@ -31,22 +25,27 @@ public interface UserService {
     User queryById(Long id);
 
     /**
-     * 插入User
-     * @param user User
-     * @return null表示插入成功
+     * 保存附加信息
+     * @param userInfo 附加信息
+     * @return String
      */
-    String insert(User user);
+    String save(UserInfo userInfo);
 
     /**
-     * 更新User
-     * @param user User
-     * @return null表示更新成功
+     * 同步Department
+     * @return String
      */
-    String update(User user);
+    String syncDepartment();
 
     /**
-     * 删除User
-     * @param id User ID
+     * 查询Department
+     * @return List<Department>
      */
-    String delete(Long id);
+    List<Department> queryDepartment();
+
+    /**
+     * 懒加载 查询Department
+     * @return List<Department>
+     */
+    List<Department> queryDepartmentLazy(String id);
 }

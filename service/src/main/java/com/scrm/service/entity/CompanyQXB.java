@@ -7,7 +7,8 @@ import lombok.Data;
 @TableName("se_company_qxb")
 public class CompanyQXB {
 
-    private String registerNo;
+    @TableId
+    private String id;
 
     private String eid;
 
@@ -20,6 +21,8 @@ public class CompanyQXB {
     private String belongOrg;
 
     private String orgNo;
+
+    private String registerNo;
 
     private String creditNo;
 

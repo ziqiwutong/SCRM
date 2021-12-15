@@ -1,26 +1,25 @@
 package com.scrm.service.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Product;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ganyunhui
  * @create 2021-11-23 15:30
  */
 public interface ProductService {
-    Integer queryCount();
 
-    List<Map<Object ,Object>> queryProduct(Integer pageNum, Integer pageSize,Integer type,List<Integer> a);
+    List<Product> queryPage(Integer pageCount, Integer currentPage, QueryWrapper<Product> wrapper);
 
-    Integer addProduct(Product product) throws Exception;
+    int queryCount(QueryWrapper<Product> wrapper);
 
-    Integer editProduct(Product product) throws Exception;
+    Product queryById(Long id);
 
-    Map<Object, Object> productDetail(String id,String shareID);
+    String insert(Product product);
 
-    List<Map<Object, Object>> queryProductByKey(String keySearch);
+    String update(Product product);
 
-
+    String delete(Long id);
 }

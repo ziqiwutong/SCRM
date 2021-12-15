@@ -16,7 +16,7 @@ public interface CommunicationService {
 
     String editCommunication(Communication communication) throws Exception;
 
-    String deleteCommunication(Integer id) throws Exception;
+    String deleteCommunication(Long id) throws Exception;
 
-    Integer deleteCommunicationLog(Integer id) throws Exception;
+    Integer deleteCommunicationLog(Long id) throws Exception;
 }

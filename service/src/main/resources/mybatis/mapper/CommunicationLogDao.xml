@@ -17,10 +17,6 @@
 
     <select id="queryCommunicationLog" resultType="com.scrm.service.entity.CommunicationLog">
         <choose>
-            <when test="id != null">
-                select * from se_communication_log
-                where id = #{id}
-            </when>
             <when test="communicationWay != null and communicationWay == 4">
                 select * from se_communication_log
                 where customer_id = #{customerId}
@@ -31,6 +27,11 @@
                 where customer_id = #{customerId} and communication_way = #{communicationWay}
             </when>
         </choose>
+    </select>
+
+    <select id="queryCommunicationLogDetail" resultType="com.scrm.service.entity.CommunicationLog">
+        select * from se_communication_log
+        where id = #{id}
     </select>
 
     <insert id="addCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog"

@@ -1,108 +1,132 @@
 package com.scrm.service.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.scrm.service.entity.OrderAndOrderDetail;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.scrm.service.entity.Product;
 import com.scrm.service.service.ProductService;
+import com.scrm.service.util.VariableName;
 import com.scrm.service.util.resp.CodeEum;
 import com.scrm.service.util.resp.PageResp;
 import com.scrm.service.util.resp.Resp;
-import com.scrm.service.util.resp.Result;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Map;
+import java.util.HashMap;
 
 /**
  * @author Ganyunhui
  * @create 2021-10-20 19:17
  */
-@Slf4j
 @RequestMapping("/product")
 @RestController
 public class ProductController {
     @Resource
     private ProductService productService;
 
-
-
-    @PostMapping(value = "/queryProduct")
+    @GetMapping("/query")
     @ResponseBody
-    public PageResp queryProduct(
-            @RequestParam(value = "pageNum", required = false) Integer pageNum,
-            @RequestParam(value = "pageSize", required = false) Integer pageSize,
-            @RequestParam(value = "type", required = false) Integer type,
-            @RequestParam(value = "sort", required = false) String para) {
-
-        List<Integer> a = JSON.parseArray(para,Integer.class);
-        return PageResp.success().setData(
-                productService.queryProduct(pageNum, pageSize,type,a)
-        ).setPage(pageNum, pageSize, productService.queryCount()).setMsg("成功");
-    }
-
-    @PostMapping(value = "/addProduct")
-    @ResponseBody
-    public Resp addProduct(
-            @RequestBody Product product
+    public PageResp query(
+            @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
+            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
+            @RequestParam(value = "asc", required = false, defaultValue = "") String asc,
+            @RequestParam(value = "desc", required = false, defaultValue = "") String desc,
+            @RequestParam HashMap<String, String> map
     ) {
-
-        if (product == null ) {
-            return Resp.error().setMsg("不能为空");
+        QueryWrapper<Product> wrapper = new QueryWrapper<>();
+        for (String key : map.keySet()) {
+            if (key.startsWith("eq_")) {
+                wrapper.eq(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("in_")) {
+                String order = map.get(key);
+                wrapper.in(VariableName.camelToUnderscore(key.substring(3)), (Object[]) order.split("▓"));
+            } else if (key.startsWith("notin_")) {
+                String order = map.get(key);
+                wrapper.notIn(VariableName.camelToUnderscore(key.substring(6)), (Object[]) order.split("▓"));
+            } else if (key.startsWith("bet_")) {
+                String[] order = map.get(key).split("▓");
+                if (order.length != 2) return PageResp.error().setMsg("参数错误");
+                wrapper.between(VariableName.camelToUnderscore(key.substring(4)), order[0], order[1]);
+            } else if (key.startsWith("gt_")) {
+                wrapper.gt(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("ge_")) {
+                wrapper.le(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("lt_")) {
+                wrapper.lt(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("le_")) {
+                wrapper.le(VariableName.camelToUnderscore(key.substring(3)), map.get(key));
+            } else if (key.startsWith("like_")) {
+                wrapper.like(VariableName.camelToUnderscore(key.substring(5)), map.get(key));
+            }
         }
-        try {
-            Integer result = productService.addProduct(product);
-            return Resp.success().setMsg("插入成功");
-        } catch (Exception e) {
-            return Resp.error().setMsg(e.getMessage());
+        if (!asc.isEmpty()) {
+            wrapper.orderByAsc(VariableName.camelToUnderscore(asc));
+        }
+        if (!desc.isEmpty()) {
+            wrapper.orderByDesc(VariableName.camelToUnderscore(desc));
+        }
+        int total = productService.queryCount(wrapper);
+        return PageResp.success().setData(
+                productService.queryPage(pageCount, currentPage, wrapper)
+        ).setPage(pageCount, currentPage, total);
+    }
+
+    @GetMapping("/queryById")
+    @ResponseBody
+    public Resp queryById(
+            @RequestParam(value = "id") Long id
+    ) {
+        Product product = productService.queryById(id);
+        if (null == product) {
+            return Resp.error().setMsg("无数据");
+        } else {
+            return Resp.success().setData(product);
         }
     }
 
-    @PostMapping(value = "/editProduct")
-    public Result editOrder(
+    @PostMapping("/insert")
+    @ResponseBody
+    public Resp insert(
             @RequestBody Product product
     ) {
         if (product == null) {
-            return Result.error(CodeEum.PARAM_MISS);
+            return Resp.error(CodeEum.PARAM_ERROR);
         }
-        try {
-            productService.editProduct(product);
-            return Result.success();
-        } catch (Exception e) {
-            return Result.error(CodeEum.FAIL);
+        String result = productService.insert(product);
+        if (result == null) {
+            return Resp.success();
+        } else {
+            return Resp.error().setMsg(result);
         }
     }
 
-    @PostMapping(value="/productDetail")
+    @PostMapping("/update")
     @ResponseBody
-    public Resp queryOrderDetail(
-            @RequestParam(value = "productID") String productID,
-            @RequestParam(value = "shareID",required = false) String shareID
-    ){
-//        Long id = Long.valueOf(orderId);
-        Map<Object,Object> map =
-                productService.productDetail(productID,shareID);
-
-        log.info(String.valueOf(map));
-        if (map == null) {
-            return Resp.error().setMsg("无数据");
+    public Resp update(
+            @RequestBody Product product
+    ) {
+        if (product == null) {
+            return Resp.error(CodeEum.PARAM_ERROR);
+        }
+        String result = productService.update(product);
+        if (result == null) {
+            return Resp.success();
         } else {
-            return Resp.success().setData(map).setMsg("成功");
+            return Resp.error().setMsg(result);
         }
     }
 
-    @PostMapping(value = "/queryProductByKey")
+    @PostMapping("/delete")
     @ResponseBody
-    public Resp queryOrderByKey(
-            @RequestParam(value = "keySearch", required = false) String keySearch) {
-        List<Map<Object, Object> > map = productService.queryProductByKey(keySearch);
-        if (map.size() == 0) {
-            return Resp.error().setMsg("无数据");
+    public Resp delete(
+            @RequestBody HashMap<String, Long> map
+    ) {
+        if (map == null || !map.containsKey("id")) return Resp.error().setMsg("参数错误");
+        Long id = map.get("id");
+        if (id == null) return Resp.error().setMsg("参数错误");
+        String result = productService.delete(id);
+        if (result == null) {
+            return Resp.success();
         } else {
-            return Resp.success().setData(
-                    map
-            ).setMsg("成功");
+            return Resp.error().setMsg(result);
         }
     }
 }

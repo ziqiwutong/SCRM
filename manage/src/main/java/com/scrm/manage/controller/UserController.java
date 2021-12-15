@@ -1,9 +1,9 @@
 package com.scrm.manage.controller;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.scrm.manage.entity.User;
+import com.scrm.manage.entity.UserInfo;
 import com.scrm.manage.service.UserService;
 import com.scrm.manage.util.resp.*;
+import com.scrm.manage.vo.User;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -18,20 +18,13 @@ public class UserController {
     @GetMapping("/query")
     @ResponseBody
     public Resp query(
-            @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
-            @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
-            @RequestParam(value = "name", required = false, defaultValue = "") String name
+            @RequestParam(value = "count", required = false, defaultValue = "10") Integer count,
+            @RequestParam(value = "preId", required = false, defaultValue = "") String preId,
+            @RequestParam(value = "departmentId", required = false, defaultValue = "") String departmentId
     ) {
-        QueryWrapper<User> wrapper = new QueryWrapper<>();
-        if (!name.isEmpty()){
-            wrapper.like("username", name);
-        }
-        int total = userService.queryCount(wrapper);
-        if (currentPage < 1) currentPage = 1;
-        if (pageCount < 1) pageCount = 1;
-        return PageResp.success().setData(
-                userService.query(pageCount, currentPage, wrapper)
-        ).setPage(pageCount, currentPage, total);
+        return Resp.success().setData(
+                userService.query(count, preId, departmentId)
+        );
     }
 
     @GetMapping("/queryById")
@@ -47,48 +40,47 @@ public class UserController {
         }
     }
 
-    @PostMapping("/insert")
+    @PostMapping("/saveAppendInfo")
     @ResponseBody
-    public Resp insert(
-            @RequestBody User user
+    public Resp save(
+            @RequestBody UserInfo userInfo
     ) {
-        if (user == null) {
+        if (userInfo == null) {
             return Resp.error().setMsg("不能为空");
         }
-        String result = userService.insert(user);
+        if (userInfo.getId() == null) {
+            return Resp.error().setMsg("ID不能为空");
+        }
+        String result = userService.save(userInfo);
         if (result == null) {
-            return Resp.success().setData(user).setMsg("插入成功");
+            return Resp.success().setData(userInfo);
         } else {
             return Resp.error().setMsg(result);
         }
     }
 
-    @PostMapping("/update")
+    @GetMapping("/syncDepartment")
     @ResponseBody
-    public Resp update(
-            @RequestBody User user
-    ) {
-        if (user == null) {
-            return Resp.error().setMsg("不能为空");
-        }
-        String result = userService.update(user);
+    public Resp syncDepartment() {
+        String result = userService.syncDepartment();
         if (result == null) {
-            return Resp.success().setData(user).setMsg("更新成功");
+            return Resp.success();
         } else {
             return Resp.error().setMsg(result);
         }
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/department")
     @ResponseBody
-    public Resp delete(
-            @RequestParam(value = "id") Long id
+    public Resp queryDepartment() {
+        return Resp.success().setData(userService.queryDepartment());
+    }
+
+    @GetMapping("/departmentLazy")
+    @ResponseBody
+    public Resp queryDepartmentLazy(
+            @RequestParam(value = "id", required = false, defaultValue = "") String id
     ) {
-        String result = userService.delete(id);
-        if (result == null) {
-            return Resp.success().setData(id).setMsg("删除成功");
-        } else {
-            return Resp.error().setMsg(result);
-        }
+        return Resp.success().setData(userService.queryDepartmentLazy(id));
     }
 }

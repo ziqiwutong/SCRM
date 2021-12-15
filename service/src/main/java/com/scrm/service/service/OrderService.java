@@ -1,27 +1,27 @@
 package com.scrm.service.service;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.scrm.service.entity.Order;
+
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author Ganyunhui
  * @create 2021-11-03 20:22
  */
 public interface OrderService {
-    Integer queryCount();
 
-    List<Map<Object, Object>> queryOrder(Integer pageNum, Integer pageSize, Integer orderType);
+    List<Order> queryPage(Integer pageCount, Integer currentPage, QueryWrapper<Order> wrapper);
 
-    Map<Object, Object> queryOrderDetail(String id);
+    int queryCount(QueryWrapper<Order> wrapper);
 
-    List<Map<Object, Object>> queryOrderByKey(String keySearch, Integer orderType);
+    Order queryByOrderNum(String num);
 
-    Integer deleteOrder(String orderID) throws Exception;
+    String insert(Order order);
 
-    Integer deleteOrderWith(String orderID) throws Exception;
+    String update(Order order);
 
-    List<Map<Object, Object>> queryOrderByCustomerID(String customerID);
+    String delete(Long id);
 
-
-
+    List<Long> queryIdByProduct(String keyword);
 }

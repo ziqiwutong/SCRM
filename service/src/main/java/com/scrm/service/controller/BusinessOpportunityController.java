@@ -18,7 +18,7 @@ public class BusinessOpportunityController {
     @Resource
     private BusinessOpportunityService se_business_opportunityService;
 
-    @PostMapping(value = "/queryBizOpportunity")
+    @GetMapping(value = "/queryBizOpportunity")
     public PageResult queryBizOpportunity(
             @RequestParam(value = "pageCount", required = false) Integer pageCount,
             @RequestParam(value = "currentPage", required = false) Integer currentPage,
@@ -46,7 +46,7 @@ public class BusinessOpportunityController {
         return PageResult.success(businessOpportunities, count, currentPage);
     }
 
-    @PostMapping(value = "/queryBizOpportunityDetail")
+    @GetMapping(value = "/queryBizOpportunityDetail")
     public Result queryBizOpportunityDetail(
             @RequestParam(value = "id") Integer id
     ) {
@@ -54,7 +54,7 @@ public class BusinessOpportunityController {
         return Result.success(business_opportunity);
     }
 
-    @PostMapping(value = "/queryBizOppByKey")
+    @GetMapping(value = "/queryBizOppByKey")
     public Result queryBizOppByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {

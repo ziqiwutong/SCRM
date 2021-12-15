@@ -30,7 +30,7 @@ public class ClueController {
     @Resource
     private ClueStatusService se_clue_statusService;
 
-    @PostMapping(value = "/queryClue") //Mapping query requests
+    @GetMapping(value = "/queryClue") //Mapping query requests
     public PageResult queryClue(
             @RequestParam(value = "pageCount", required = false, defaultValue = "10") Integer pageCount,
             @RequestParam(value = "currentPage", required = false, defaultValue = "1") Integer currentPage,
@@ -48,7 +48,7 @@ public class ClueController {
         }
     }
 
-    @PostMapping(value = "/queryClueByKey") //Mapping keyword query requests
+    @GetMapping(value = "/queryClueByKey") //Mapping keyword query requests
     public Result queryClueByKey(
             @RequestParam(value = "keySearch") String keySearch
     ) {
@@ -91,6 +91,7 @@ public class ClueController {
                 businessOpportunity.setBoStatus("New Business Opportunity");
                 businessOpportunity.setBoEditor(se_clue.getClueEditor());
                 businessOpportunity.setBoResponsible(se_clue.getClueResponsible());
+                se_clueService.editClue(se_clue);
                 return Result.success(businessOpportunity);
             }
 
@@ -113,7 +114,7 @@ public class ClueController {
         }
     }
 
-    @PostMapping(value = "/queryClueStatus")
+    @GetMapping(value = "/queryClueStatus")
     public Result queryClueStatus(
             @RequestParam(value = "clueId") Integer clueId
     ) {
@@ -128,7 +129,7 @@ public class ClueController {
         return Result.success(final_list);
     }
 
-    @PostMapping(value = "/queryClueEditStatus")
+    @GetMapping(value = "/queryClueEditStatus")
     public Result queryClueEditStatus(
             @RequestParam(value = "id") Integer id
     )
@@ -142,7 +143,7 @@ public class ClueController {
             @RequestBody ClueStatus se_clue_status
     )
     {
-        if (se_clue_status == null) {
+        if (se_clue_status == null || se_clue_status.getClueId() == null) {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try {
