@@ -2,9 +2,11 @@ package com.scrm.marketing;
 
 import com.scrm.marketing.entity.*;
 import com.scrm.marketing.mapper.*;
+import com.scrm.marketing.share.iuap.IuapUser;
 import com.scrm.marketing.util.MyDateTimeUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -35,9 +37,10 @@ class MarketingApplicationTests {
 
     @Resource
     private WxReadRecordMapper wxReadRecordMapper;
+
     @Test
     void test1() {
-        WxReadRecord wxReadRecord=new WxReadRecord();
+        WxReadRecord wxReadRecord = new WxReadRecord();
         wxReadRecord.setArticleId(10L);
         wxReadRecord.setWid(1L);
         wxReadRecord.setOpenid("oSLXk6DwZJ1VcXZQH4aPfk");
@@ -50,6 +53,5 @@ class MarketingApplicationTests {
         List<WxReadRecord> wxReadRecords = wxReadRecordMapper.selectList(null);
         wxReadRecords.forEach(System.out::println);
     }
-
 
 }

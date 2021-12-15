@@ -3,7 +3,6 @@ package com.scrm.marketing.controller;
 import cn.hutool.crypto.digest.DigestUtil;
 import com.scrm.marketing.service.WxUserService;
 import com.scrm.marketing.share.wx.UserInfoAccessToken;
-import com.scrm.marketing.util.MyLoggerUtil;
 import com.scrm.marketing.util.MyRandomUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
@@ -63,7 +62,7 @@ public class WxController {
         // 2.sha1加密之后的字符串可与signature对比，标识该请求来源于微信
         if (signature.equals(DigestUtil.sha1Hex(s))) return echostr;// 成功则原样返回
 
-        else MyLoggerUtil.warning("=================warning: signature校验失败，不过还是直接返回echostr=====================");
+        else System.out.println("=================warning: signature校验失败，不过还是直接返回echostr=====================");
         return echostr;
     }
 

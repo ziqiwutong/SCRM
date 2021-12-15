@@ -52,8 +52,8 @@ public class GlobalExceptionHandler {
             throws Exception {
 
         // 打印堆栈，以供调试，上线之前需要注释掉
-        System.out.println("全局异常，上线之前需要注释掉打印信息---------------");
-        e.printStackTrace();
+        //System.out.println("全局异常，上线之前需要注释掉打印信息---------------");
+        //e.printStackTrace();
 
         // 不同异常返回不同状态码
         Result result = null;
