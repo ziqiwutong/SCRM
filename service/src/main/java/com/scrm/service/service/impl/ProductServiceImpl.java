@@ -123,7 +123,8 @@ public class ProductServiceImpl implements ProductService {
         article.setProductIdList("[" + product.getId() + "]");
         article.setProductName(product.getProductName());
         article.setProductImage(product.getProductImage());
-        String context = "<div style=\"padding-top: 45px; padding-bottom: 60px;\">";
+        String context = "<div class=\"productDiv\" id=\"" + product.getId() +
+                "\" style=\"padding-top: 45px; padding-bottom: 60px;\">";
         if (product.getProductImage() != null) {
             context = context + "<img src=" + product.getProductImage() +
                     " width=\"100%\" style=\"display: table-cell; text-align:center; margin: 0 auto\"/>";
