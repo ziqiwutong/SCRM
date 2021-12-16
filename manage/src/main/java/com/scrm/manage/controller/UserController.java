@@ -52,10 +52,10 @@ public class UserController {
             return Resp.error().setMsg("ID不能为空");
         }
         String result = userService.save(userInfo);
-        if (result == null) {
-            return Resp.success().setData(userInfo);
+        if (result != null) {
+            return Resp.success().setData(result);
         } else {
-            return Resp.error().setMsg(result);
+            return Resp.error();
         }
     }
 

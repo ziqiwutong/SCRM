@@ -206,6 +206,32 @@ public class WeimobServiceImpl implements WeimobService {
     }
 
     @Override
+    public JSONObject queryUserInfo(Long userId) {
+        String token = getToken();
+        if (token == null) return null;
+        ApiExplorerClient client = new ApiExplorerClient(new AppSigner());
+        String path = "https://dopen.weimob.com/api/1_0/ec/membership/queryUserInfoOpen";
+        ApiExplorerRequest request = new ApiExplorerRequest(HttpMethodName.POST, path);
+        request.addHeaderParameter("Content-Type", "application/json;charset=UTF-8");
+        request.addQueryParameter("accesstoken", token);
+        JSONObject json = new JSONObject();
+        json.put("wid", userId);
+        json.put("StoreId", 0);
+        request.setJsonBody(json.toString());
+
+        try {
+            ApiExplorerResponse response = client.sendRequest(request);
+            JSONObject body = JSONObject.parseObject(response.getResult());
+            if (responseFail(body)) return null;
+            JSONObject data = body.getJSONObject("data");
+            return data.getJSONObject("customerInfo");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
     public String distributeUrl(Long userId) {
         String token = getToken();
         if (token == null) return null;

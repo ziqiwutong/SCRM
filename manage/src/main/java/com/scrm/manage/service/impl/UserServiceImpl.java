@@ -1,5 +1,6 @@
 package com.scrm.manage.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -36,6 +37,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private DepartmentDao departmentDao;
+
+    @Resource(name = "otherRestTemplate")
+    private RestTemplate otherRestTemplate;
 
     private final RestTemplate restTemplate;
 
@@ -101,12 +105,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public String save(UserInfo userInfo) {
+        String url = "http://service/weimob/queryUserInfo?id=" + userInfo.getWeimobId();
+        String result = otherRestTemplate.getForObject(url, String.class);
+        JSONObject jsonObject = JSON.parseObject(result);
+
         if (userInfoDao.selectById(userInfo.getId()) == null) {
-            if (userInfoDao.insert(userInfo) < 1) return "保存失败";
+            if (userInfoDao.insert(userInfo) < 1) return null;
         } else {
-            if (userInfoDao.updateById(userInfo) < 1) return "保存失败";
+            if (userInfoDao.updateById(userInfo) < 1) return null;
         }
-        return null;
+
+        if (jsonObject == null) return "微盟用户信息不存在";
+        Integer code = jsonObject.getInteger("code");
+        if (code == null || code != 200) return "微盟用户信息不存在";
+        JSONObject data = jsonObject.getJSONObject("data");
+        return "微盟用户：" + data.getString("nickName");
     }
 
     @Override

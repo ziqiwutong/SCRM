@@ -1,5 +1,6 @@
 package com.scrm.service.service;
 
+import com.alibaba.fastjson.JSONObject;
 import com.scrm.service.entity.Product;
 
 import java.util.List;
@@ -34,6 +35,13 @@ public interface WeimobService {
      * @return String
      */
     String syncOrder();
+
+    /**
+     * 查询用户/会员信息
+     * @param userId 微盟用户ID
+     * @return String
+     */
+    JSONObject queryUserInfo(Long userId);
 
     /**
      * 获取用户微盟分销链接

@@ -1,5 +1,6 @@
 package com.scrm.service.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.scrm.service.service.WeimobService;
 import com.scrm.service.util.resp.PageResp;
 import com.scrm.service.util.resp.Resp;
@@ -44,6 +45,19 @@ public class WeimobController {
             return Resp.success().setMsg("同步成功");
         } else {
             return Resp.error().setMsg(result);
+        }
+    }
+
+    @GetMapping("/queryUserInfo")
+    @ResponseBody
+    public Resp queryUserInfo(
+            @RequestParam(value = "id") Long userId
+    ) {
+        JSONObject result = weimobService.queryUserInfo(userId);
+        if (result != null) {
+            return Resp.success().setData(result);
+        } else {
+            return Resp.error().setMsg("微盟用户信息获取失败");
         }
     }
 
