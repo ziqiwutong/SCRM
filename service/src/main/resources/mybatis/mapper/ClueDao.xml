@@ -25,12 +25,12 @@
 
     <insert id="addClue" parameterType="com.scrm.service.entity.Clue"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_clue (id, clue_name, clue_date, clue_status, clue_editor, clue_discover, clue_responsible, business_opporitunity_flag)
-        values(#{id}, #{clueName}, #{clueDate}, #{clueStatus}, #{clueEditor}, #{clueDiscover}, #{clueResponsible}, #{businessOpporitunityFlag})
+        insert into se_clue (id, clue_name, clue_date, clue_status, clue_editor_id, clue_editor, clue_discover_id, clue_discover, clue_responsible_id, clue_responsible, biz_opp_flag)
+        values(#{id}, #{clueName}, #{clueDate}, #{clueStatus}, #{clueEditorId}, #{clueEditor}, #{clueDiscoverId}, #{clueDiscover}, #{clueResponsibleId}, #{clueResponsible}, #{bizOppFlag})
     </insert>
 
     <update id="editClue" parameterType="com.scrm.service.entity.Clue">
-        update se_clue set clue_name = #{clueName}, clue_date = #{clueDate}, clue_status = #{clueStatus}, clue_editor = #{clueEditor}, clue_discover = #{clueDiscover}, clue_responsible = #{clueResponsible}, business_opporitunity_flag = #{businessOpporitunityFlag}
+        update se_clue set clue_name = #{clueName}, clue_date = #{clueDate}, clue_status = #{clueStatus}, clue_editor_id = #{clueEditorId}, clue_editor = #{clueEditor}, clue_discover_id = #{clueDiscoverId}, clue_discover = #{clueDiscover}, clue_responsible_id = #{clueResponsibleId}, clue_responsible = #{clueResponsible}, biz_opp_flag = #{bizOppFlag}
         where id = #{id}
     </update>
 

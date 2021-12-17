@@ -13,10 +13,13 @@ public class Clue {
     private  String clueName;
     private  Date clueDate;
     private  String clueStatus;
+    private  Long clueEditorId;
     private  String clueEditor;
+    private  Long clueDiscoverId;
     private  String clueDiscover;
+    private  Long clueResponsibleId;
     private  String clueResponsible;
-    private  Boolean businessOpporitunityFlag;
+    private  Boolean bizOppFlag;
     private  Timestamp createTime;
     private  Timestamp updateTime;
 
@@ -52,6 +55,10 @@ public class Clue {
         this.clueStatus = clueStatus;
     }
 
+    public Long getClueEditorId() { return clueEditorId; }
+
+    public void setClueEditorId(Long clueEditorId) { this.clueEditorId = clueEditorId; }
+
     public String getClueEditor() {
         return clueEditor;
     }
@@ -59,6 +66,10 @@ public class Clue {
     public void setClueEditor(String clueEditor) {
         this.clueEditor = clueEditor;
     }
+
+    public Long getClueDiscoverId() { return clueDiscoverId; }
+
+    public void setClueDiscoverId(Long clueDiscoverId) { this.clueDiscoverId = clueDiscoverId; }
 
     public String getClueDiscover() {
         return clueDiscover;
@@ -68,6 +79,10 @@ public class Clue {
         this.clueDiscover = clueDiscover;
     }
 
+    public Long getClueResponsibleId() { return clueResponsibleId; }
+
+    public void setClueResponsibleId(Long clueResponsibleId) { this.clueResponsibleId = clueResponsibleId; }
+
     public String getClueResponsible() {
         return clueResponsible;
     }
@@ -76,12 +91,12 @@ public class Clue {
         this.clueResponsible = clueResponsible;
     }
 
-    public Boolean getBusinessOpporitunityFlag() {
-        return businessOpporitunityFlag;
+    public Boolean getBizOppFlag() {
+        return bizOppFlag;
     }
 
-    public void setBusinessOpporitunityFlag(Boolean businessOpporitunityFlag) {
-        this.businessOpporitunityFlag = businessOpporitunityFlag;
+    public void setBizOppFlag(Boolean bizOppFlag) {
+        this.bizOppFlag = bizOppFlag;
     }
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

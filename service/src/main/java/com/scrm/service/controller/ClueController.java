@@ -10,7 +10,6 @@ import com.scrm.service.util.resp.PageResult;
 import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,7 +84,7 @@ public class ClueController {
             return Result.error(CodeEum.PARAM_MISS);
         }
         try {
-            if(se_clue.getBusinessOpporitunityFlag() == true){
+            if(se_clue.getBizOppFlag() == true){
                 BusinessOpportunity businessOpportunity = new BusinessOpportunity();
                 businessOpportunity.setBoName(se_clue.getClueName());
                 businessOpportunity.setBoStatus("New Business Opportunity");
