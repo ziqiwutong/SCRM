@@ -10,84 +10,39 @@
         where se_communication.customer_id = #{customerId}
     </select>
 
-    <select id="queryCommunication" resultType="com.scrm.service.entity.Communication">
-        select *
-        from se_communication where se_communication.customer_id = #{customerId}
+    <select id="querySingleCustomerRelation" resultType="com.scrm.service.entity.CustomerRelation">
+        select * from se_customer_relationship
+        where customer_id = #{customerId} and relation_type = replace(#{relationType}, '''', '')
     </select>
 
-    <select id="queryCommunicationLog" resultType="com.scrm.service.entity.CommunicationLog">
-        <choose>
-            <when test="communicationWay != null and communicationWay == 4">
-                select * from se_communication_log
-                where customer_id = #{customerId}
-                order by communication_way
-            </when>
-            <when test="communicationWay != null and communicationWay != 4">
-                select * from se_communication_log
-                where customer_id = #{customerId} and communication_way = #{communicationWay}
-            </when>
-        </choose>
+    <select id="queryCustomerRelation" resultType="com.scrm.service.entity.CustomerRelation">
+        select * from se_customer_relationship
+        where customer_id = #{customerId}
+        order by relation_type
     </select>
 
-    <select id="queryCommunicationLogDetail" resultType="com.scrm.service.entity.CommunicationLog">
-        select * from se_communication_log
+    <select id="queryCustomerRelationDetail" resultType="com.scrm.service.entity.CustomerRelation">
+        select * from se_customer_relationship
         where id = #{id}
     </select>
 
-    <insert id="addCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog"
+    <select id="queryCustomerRelationCount" resultType="Integer">
+        select count(id) from se_customer_relationship
+        where customer_id = #{customerId} and relation_type = replace(#{relationType}, '''', '')
+    </select>
+
+    <insert id="addCustomerRelation" parameterType="com.scrm.service.entity.CustomerRelation"
             keyProperty="id" useGeneratedKeys="true">
-        insert into se_communication_log (customer_id, communication_way, communication_content, communication_time)
-        values(#{customerId}, #{communicationWay}, #{communicationContent}, #{communicationTime})
+        insert into se_customer_relationship (customer_id, relation_type, relation_detail, communication_time)
+        values(#{customerId}, #{relationType}, #{relationDetail}, #{communicationTime})
     </insert>
 
-    <update id="PlusCommunication">
-        <choose>
-            <when test="communicationWay != null and communicationWay == 0">
-                update se_communication set visit_times = visit_times + 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 1">
-                update se_communication set call_times = call_times + 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 2">
-                update se_communication set msg_times = msg_times + 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 3">
-                update se_communication set wx_times = wx_times + 1
-                where customer_id = #{customerId}
-            </when>
-        </choose>
-    </update>
-
-    <update id="editCommunicationLog" parameterType="com.scrm.service.entity.CommunicationLog">
-        update se_communication_log set customer_id = #{customerId}, communication_way = #{communicationWay}, communication_content = #{communicationContent}, communication_time = #{communicationTime}
+    <update id="editCustomerRelation" parameterType="com.scrm.service.entity.CustomerRelation">
+        update se_customer_relationship set customer_id = #{customerId}, relation_type = #{relationType}, relation_detail = #{relationDetail}, communication_time = #{communicationTime}
         where id = #{id}
     </update>
 
-    <delete id="deleteCommunicationLog">
-    delete from se_communication_log where id = #{id}
+    <delete id="deleteCustomerRelation">
+        delete from se_customer_relationship where id = #{id}
     </delete>
-
-    <update id="MinusCommunication">
-        <choose>
-            <when test="communicationWay != null and communicationWay == 0">
-                update se_communication set visit_times = visit_times - 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 1">
-                update se_communication set call_times = call_times - 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 2">
-                update se_communication set msg_times = msg_times - 1
-                where customer_id = #{customerId}
-            </when>
-            <when test="communicationWay != null and communicationWay == 3">
-                update se_communication set wx_times = wx_times - 1
-                where customer_id = #{customerId}
-            </when>
-        </choose>
-    </update>
 </mapper>
