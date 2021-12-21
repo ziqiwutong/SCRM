@@ -11,7 +11,7 @@ import java.util.List;
  * @author fzk
  * @date 2021-10-19 23:42
  */
-public interface ArticleShareRecordService {
+public interface WxReadRecordService {
     WxReadRecordWrapper queryShareRecord(Long articleId, List<String> shareIds, int pageNum, int pageSize);
 
     List<IuapUser> querySharePerson(Long articleId);

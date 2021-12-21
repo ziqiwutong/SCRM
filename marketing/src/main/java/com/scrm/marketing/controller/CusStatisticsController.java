@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.util.HtmlUtils;
-import org.w3c.dom.html.HTMLDocument;
 
 import javax.annotation.Resource;
 
@@ -40,15 +38,15 @@ public class CusStatisticsController {
             @RequestParam(name = "customerId", required = false) Long customerId,
             @RequestParam(name = "sevenFlag", required = false) Boolean sevenFlag,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
-            @RequestParam(name = "pageSize", required = false) Integer pageSize
+            @RequestParam(name = "pageSize", required = false, defaultValue = "20") Integer pageSize
     ) {
         // 1.参数检查
         if (customerId == null) {
             if (pageNum == null || pageSize == null)
-                return Result.error(CodeEum.PARAM_MISS);
+                return Result.PARAM_MISS();
             else if (pageNum < 1 || pageSize < 1)
-                return Result.error(CodeEum.PARAM_ERROR);
-        } else if (sevenFlag == null) return Result.error(CodeEum.PARAM_MISS);
+                return Result.PARAM_ERROR();
+        } else if (sevenFlag == null) return Result.PARAM_MISS();
 
         // 调用service
         return cusStatisticsService.queryCusRead(customerId, sevenFlag, pageNum, pageSize);

@@ -4,7 +4,7 @@ import com.scrm.marketing.entity.*;
 import com.scrm.marketing.entity.wrapper.WxReadRecordWrapper;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.mapper.*;
-import com.scrm.marketing.service.ArticleShareRecordService;
+import com.scrm.marketing.service.WxReadRecordService;
 import com.scrm.marketing.share.iuap.IuapClient;
 import com.scrm.marketing.share.iuap.IuapUser;
 import com.scrm.marketing.util.MyAssert;
@@ -25,7 +25,7 @@ import java.util.*;
  * @date 2021-10-19 23:43
  */
 @Service
-public class ArticleShareRecordServiceImpl implements ArticleShareRecordService {
+public class WxReadRecordServiceImpl implements WxReadRecordService {
     @Resource
     private ArticleMapper articleMapper;
     @Resource

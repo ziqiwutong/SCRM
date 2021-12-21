@@ -25,7 +25,7 @@ public interface WxUserMapper extends BaseMapper<WxUser> {
     int bindWxUser(long customerId, String nickname, String openid);
 
     @SuppressWarnings("all")
-    @Update("UPDATE mk_wx_user SET reader_status=(SELECT customer_status FROM se_customer WHERE id=#{customerId})" +
+    @Update("UPDATE mk_wx_user SET customer_id=#{customerId},reader_status=(SELECT customer_status FROM se_customer WHERE id=#{customerId})" +
             " WHERE openid=#{openid}")
     int copyCusStatusToWxUser(long customerId, String openid);
 

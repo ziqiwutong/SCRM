@@ -19,7 +19,7 @@ public interface CusStatisticsService {
      * @param pageSize 页大小
      * @return 返回PageResult
      */
-    PageResult queryCusPurchase(@NonNull Integer pageNum, @NonNull Integer pageSize);
+    PageResult queryCusPurchase(Integer pageNum, Integer pageSize);
 
     /**
      * 查询 特定客户 购买的 所有种类 购买情况
@@ -27,7 +27,7 @@ public interface CusStatisticsService {
      * @param customerId 客户id
      * @return 返回Result
      */
-    Result queryCusPurchase(@NonNull Long customerId);
+    Result queryCusPurchase(Long customerId);
 
     /**
      * 查询 特定客户 购买的 特定种类 购买情况
@@ -36,7 +36,7 @@ public interface CusStatisticsService {
      * @param productTypeId 产品分类id
      * @return 返回Result
      */
-    Result queryCusPurchase(@NonNull Long customerId, @NonNull Long productTypeId);
+    Result queryCusPurchase(Long customerId, Long productTypeId);
 
-    Result queryCusBrowse(@Nullable Long customerId, @Nullable Integer pageNum, @Nullable Integer pageSize);
+    Result queryCusBrowse(Long customerId, Integer pageNum, Integer pageSize);
 }
