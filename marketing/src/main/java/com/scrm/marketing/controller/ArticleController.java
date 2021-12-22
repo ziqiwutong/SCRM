@@ -171,7 +171,7 @@ public class ArticleController {
             @RequestParam(name = "articleId", required = false) Long articleId,
             @RequestParam(name = "sevenFlag", required = false) Boolean sevenFlag,
             @RequestParam(name = "pageNum", required = false) Integer pageNum,
-            @RequestParam(name = "pageSize", required = false) Integer pageSize
+            @RequestParam(name = "pageSize", required = false, defaultValue = "20") Integer pageSize
     ) {
         // 1.参数检查
         if (articleId == null) {

@@ -25,6 +25,7 @@ public class ArticleSqlProvider implements ProviderMethodResolver {
             if(materialType!=null){
                 WHERE("material_type="+materialType);
             }
+            // 以创建时间倒排，阅读总时长排序否？
             ORDER_BY("create_time DESC");
             LIMIT(pageSize);
             OFFSET(offset);

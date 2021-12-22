@@ -1,6 +1,6 @@
 package com.scrm.marketing.controller;
 
-import com.scrm.marketing.service.ArticleShareRecordService;
+import com.scrm.marketing.service.WxReadRecordService;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +16,7 @@ import java.util.List;
 @RequestMapping("/mk/article")
 public class WxReadRecordController {
     @Resource
-    private ArticleShareRecordService articleShareRecordService;
+    private WxReadRecordService articleShareRecordService;
 
     @GetMapping(path = "/shareRecord")
     public Result queryShareRecord(

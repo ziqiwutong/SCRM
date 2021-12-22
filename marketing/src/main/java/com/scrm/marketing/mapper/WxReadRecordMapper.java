@@ -2,11 +2,13 @@ package com.scrm.marketing.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.scrm.marketing.entity.WxReadRecord;
+import com.scrm.marketing.entity.wrapper.SharePersonWrapper;
 import com.scrm.marketing.mapper.sqlbuilder.WxReadRecordSqlProvider;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -30,4 +32,20 @@ public interface WxReadRecordMapper extends BaseMapper<WxReadRecord> {
     @SuppressWarnings("all")
     @Select("SELECT DISTINCT share_id FROM mk_wx_read_record WHERE id=#{articleId}")
     List<String> queryShareIds(long articleId);
+
+    @SuppressWarnings("all")
+    @Select("SELECT article_id,SUM(read_time) read_time,read_date " +
+            " FROM mk_wx_read_record" +
+            " WHERE article_id=#{articleId} " +
+            " AND #{startDate}<=read_date AND read_date<=CURRENT_DATE" +
+            " GROUP BY article_id,read_date")
+    List<WxReadRecord> queryArticleRead(Long articleId, LocalDate startDate);
+
+    @SuppressWarnings("all")
+    @Select("SELECT article_id,share_id,SUM(read_time) readTimeSum,COUNT(*) read_times" +
+            " FROM mk_wx_read_record" +
+            " WHERE article_id=#{articleId}" +
+            " GROUP BY article_id,share_id" +
+            " ORDER BY readTimeSum DESC")
+    List<SharePersonWrapper> queryArtSharePerson(long articleId);
 }

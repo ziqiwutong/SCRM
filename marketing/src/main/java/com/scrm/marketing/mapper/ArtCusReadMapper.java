@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.apache.ibatis.annotations.Update;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -24,13 +24,14 @@ public interface ArtCusReadMapper extends BaseMapper<ArticleCustomerRead> {
     @Select("SELECT article_id,SUM(read_time) read_time,read_date " +
             " FROM mk_article_customer_read" +
             " WHERE article_id=#{articleId} " +
-            " AND #{startDate}<read_date AND read_date<=CURRENT_DATE" +
+            " AND #{startDate}<=read_date AND read_date<=CURRENT_DATE" +
             " GROUP BY article_id,read_date")
-    List<ArticleCustomerRead> queryArticleRead(Long articleId, Date startDate);
+    List<ArticleCustomerRead> queryArticleRead(Long articleId, LocalDate startDate);
 
     @SelectProvider(ArtCusReadSqlProvider.class)
     @SuppressWarnings("all")
-    List<ArticleCustomerRead> queryCusRead(Long customerId, Date startDate, Integer offset, Integer pageSize);
+    List<ArticleCustomerRead> queryCusRead(Long customerId, LocalDate startDate, Integer offset, Integer pageSize);
+
 
 
     /**

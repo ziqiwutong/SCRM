@@ -20,6 +20,7 @@ public class WxUser {
      * 微信用户相关属性
      */
     private String openid;
+    private Long customerId;// 客户id，未绑定的状态下为null
     private String nickname;
     private String sex; // 用户的性别，1是男性，2是女性，0是未知
     private String province;
@@ -41,7 +42,7 @@ public class WxUser {
     public WxUser() {
     }
 
-    public WxUser(String openid, String nickname, String sex, String province, String city, String country, String headimgurl, String unionid,String readerStatus) {
+    public WxUser(String openid, String nickname, String sex, String province, String city, String country, String headimgurl, String unionid, String readerStatus) {
         this.openid = openid;
         this.nickname = nickname;
         this.sex = sex;
@@ -50,6 +51,6 @@ public class WxUser {
         this.country = country;
         this.headimgurl = headimgurl;
         this.unionid = unionid;
-        this.readerStatus=readerStatus;
+        this.readerStatus = readerStatus;
     }
 }
