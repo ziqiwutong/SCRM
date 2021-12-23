@@ -56,11 +56,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public String insert(Order order) {
         if (order.getOrderNum() == null || order.getOrderNum().isEmpty()) {
             order.setOrderNum(generateNum.GenerateOrder());
         }
         int result = orderDao.insert(order);
+        if (order.getProductList() != null) {
+            insertOrderProduct(order);
+        }
         if (result < 1) {
             return "插入失败";
         }
@@ -68,9 +72,16 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    @Transactional
     public String update(Order order) {
         if (order.getOrderNum() != null) order.setOrderNum(null);
         int result = orderDao.updateById(order);
+        QueryWrapper<OrderProduct> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("order_id", order.getId());
+        orderProductDao.delete(queryWrapper);
+        if (order.getProductList() != null) {
+            insertOrderProduct(order);
+        }
         if (result < 1) {
             return "更新失败";
         }
@@ -105,5 +116,15 @@ public class OrderServiceImpl implements OrderService {
         wrapper.eq("order_id", order.getId());
         order.setProductList(orderProductDao.selectList(wrapper));
         order.setProductCount(orderProductDao.queryCountByOrder(order.getId()));
+    }
+
+    /**
+     * 插入订单下的产品信息
+     */
+    private void insertOrderProduct(Order order) {
+        for (OrderProduct orderProduct : order.getProductList()) {
+            orderProduct.setOrderId(order.getId());
+            orderProductDao.insert(orderProduct);
+        }
     }
 }
