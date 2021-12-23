@@ -4,10 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.scrm.service.dao.CommunicationLogDao">
     <select id="queryCommunicationUser" resultType="com.scrm.service.entity.UserAndCommunication">
-        select se_customer.id, se_customer.customer_name, se_customer.customer_type, se_customer.telephone, se_customer.belong_company, se_customer.customer_icon, se_customer.enter_pool_date
-        from se_communication
-        left join se_customer on se_communication.customer_id = se_customer.id
-        where se_communication.customer_id = #{customerId}
+        select id, customer_name, customer_type, telephone, belong_company, customer_icon, enter_pool_date
+        from se_customer
+        where id = #{customerId}
     </select>
 
     <select id="querySingleCustomerRelation" resultType="com.scrm.service.entity.CustomerRelation">

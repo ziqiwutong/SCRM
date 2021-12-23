@@ -10,6 +10,7 @@ import com.scrm.service.util.resp.Result;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.sql.Date;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -71,6 +72,10 @@ public class CommunicationController {
     )
     {
         try{
+            if(customerRelation.getCommunicationTime() == null){
+                Timestamp date = new Timestamp(System.currentTimeMillis());
+                customerRelation.setCommunicationTime(date);
+            }
             communicationLogService.addCustomerRelation(customerRelation);
             return Result.success();
         }catch(Exception e) {
