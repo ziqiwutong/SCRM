@@ -17,8 +17,6 @@ class MarketingApplicationTests {
     @Resource
     private ArticleMapper articleMapper;
     @Resource
-    private ArtCusReadMapper articleCustomerReadMapper;
-    @Resource
     private ProCusBpLogMapper productCustomerBpLogMapper;
 
     @Test
@@ -26,9 +24,6 @@ class MarketingApplicationTests {
         List<Article> articles =
                 articleMapper.selectList(null);
         articles.forEach(System.out::println);
-
-        List<ArticleCustomerRead> articleCustomerReads = articleCustomerReadMapper.selectList(null);
-        articleCustomerReads.forEach(System.out::println);
 
 
         List<ProductCustomerBpLog> productCustomerBpLogs = productCustomerBpLogMapper.selectList(null);
