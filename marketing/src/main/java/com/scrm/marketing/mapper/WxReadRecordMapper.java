@@ -30,14 +30,14 @@ public interface WxReadRecordMapper extends BaseMapper<WxReadRecord> {
     int queryReadPeople(Long articleId, List<String> shareIds);
 
     @SuppressWarnings("all")
-    @Select("SELECT DISTINCT share_id FROM mk_wx_read_record WHERE id=#{articleId}")
+    @Select("SELECT DISTINCT share_id FROM mk_wx_read_record WHERE article_id=#{articleId}")
     List<String> queryShareIds(long articleId);
 
     @SuppressWarnings("all")
     @Select("SELECT article_id,SUM(read_time) read_time,read_date " +
             " FROM mk_wx_read_record" +
             " WHERE article_id=#{articleId} " +
-            " AND #{startDate}<=read_date AND read_date<=CURRENT_DATE" +
+            " AND #{startDate}<read_date AND read_date<=CURRENT_DATE" +
             " GROUP BY article_id,read_date")
     List<WxReadRecord> queryArticleRead(Long articleId, LocalDate startDate);
 
@@ -48,4 +48,23 @@ public interface WxReadRecordMapper extends BaseMapper<WxReadRecord> {
             " GROUP BY article_id,share_id" +
             " ORDER BY readTimeSum DESC")
     List<SharePersonWrapper> queryArtSharePerson(long articleId);
+
+    @SuppressWarnings("all")
+    @Select("SELECT r.wid,SUM(r.read_time) read_time,r.openid," +
+            " (SELECT nickname FROM mk_wx_user WHERE id=r.wid) nickname," +
+            " (SELECT headimgurl FROM mk_wx_user WHERE id=r.wid) headimgurl" +
+            " FROM mk_wx_read_record r" +
+            " GROUP BY r.wid,r.openid" +
+            " ORDER BY read_time DESC" +
+            " LIMIT #{pageSize} OFFSET #{offset}")
+    List<WxReadRecord> queryAllWxRead(int offset, int pageSize);
+
+    @SuppressWarnings("all")
+    @Select("SELECT wid,openid,SUM(read_time) read_time,read_date" +
+            " FROM mk_wx_read_record" +
+            " WHERE wid=#{wid} AND " +
+            " openid=(SELECT openid FROM mk_wx_user WHERE id=#{wid})" +
+            " AND #{startDate}<read_date AND read_date<=CURRENT_DATE" +
+            " GROUP BY wid,openid,read_date")
+    List<WxReadRecord> queryOneWxRead(Long wid, LocalDate startDate);
 }

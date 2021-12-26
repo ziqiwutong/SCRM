@@ -25,7 +25,5 @@ public interface ArticleService {
 
     void examine(Long id, String loginId, Integer examineFlag, String examineNotes);
 
-    Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize);
-
     List<Article> queryByTitle(String title);
 }

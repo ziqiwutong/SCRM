@@ -93,7 +93,7 @@ public class Result {
 
 
     /* 缓存 */
-    private static class ResultCache extends Result {
+    private static final class ResultCache extends Result {
         public static final Result SUCCESS = new ResultCache(200, "ok", null);
         public static final Result PARAM_MISS = new ResultCache(CodeEum.PARAM_MISS.getCode(), CodeEum.PARAM_MISS.getMsg(), null);
         public static final Result PARAM_ERROR = new ResultCache(CodeEum.PARAM_ERROR.getCode(), CodeEum.PARAM_ERROR.getMsg(), null);

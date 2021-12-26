@@ -29,9 +29,7 @@ public class WxReadRecordServiceImpl implements WxReadRecordService {
     @Resource
     private ArticleMapper articleMapper;
     @Resource
-    private CustomerMapper customerMapper;
-    @Resource
-    private ArtCusReadMapper artCusReadMapper;
+    private ProductMapper productMapper;
     @Resource
     private WxUserMapper wxUserMapper;
     @Resource
@@ -181,12 +179,10 @@ public class WxReadRecordServiceImpl implements WxReadRecordService {
 
         /*
         1.判断openid是否合法，取出对应的微信用户表的id
-        2.如果是我们的客户，那么：文章客户阅读记录处理：表 mk_article_customer_read
-            2.1 今天没读，即没有记录，则插入一条
-            2.2 今天读了，有记录，将阅读时间相加
+        2.微信用户表处理：如果是客户，则更新readerStatus信息
         3.文章阅读记录处理，表：mk_article
-        4.微信用户表处理：如果是客户，则更新readerStatus信息
-        5.微信阅读记录表处理：直接新增阅读记录
+        4.微信阅读记录表处理：直接新增阅读记录
+        5.产品浏览次数+1，表：se_product
         6.删除缓存
          */
         // 1.判断openid
@@ -197,53 +193,27 @@ public class WxReadRecordServiceImpl implements WxReadRecordService {
 
 
         // 2.文章客户阅读记录处理
-        // 找一找这个openid是不是我们客户
-        Long cusId = customerMapper.queryIdByOpenid(openid);
-        String customerStatus = null;
-        String nowDate = MyDateTimeUtil.getNowDate();
-        // 如果是我们的客户
-        if (cusId != null) {
-            // 2.1 先查询客户状态
-            customerStatus = customerMapper.queryCusStatusById(cusId);
-
-            // 2.2 找找今天是否已经有读过了
-            List<Long> artCusReadIds = artCusReadMapper
-                    .queryTodayRead(articleId, cusId, nowDate);
-
-            // 2.2.1 今天没读，即没有记录，则插入一条
-            if (artCusReadIds.size() == 0) {
-                ArticleCustomerRead articleCustomerRead = new ArticleCustomerRead();
-                articleCustomerRead.setArticleId(articleId);
-                articleCustomerRead.setCustomerId(cusId);
-                articleCustomerRead.setReadDate(nowDate);
-                articleCustomerRead.setReadTime(readTime);
-
-                artCusReadMapper.insert(articleCustomerRead);
-            }
-            // 2.2.2 今天读了，有记录，将阅读时间相加
-            else {
-                long artCusReadId = artCusReadIds.get(0);
-                artCusReadMapper.addReadTime(artCusReadId, readTime);
-            }
+        // 如果是我们的客户，则更新一下微信用户的客户状态
+        if(wxUser.getCustomerId()!=null){
+            wxUserMapper.updateReaderStatus(wxUser.getId(),wxUser.getCustomerId());
         }
 
         // 3.文章阅读记录处理
         articleMapper.addArticleRead(articleId, readTime);
 
-        // 4.微信用户表处理：更新readerStatus状态信息
-        if (customerStatus != null)
-            wxUserMapper.updateReaderStatus(wxUser.getId(), customerStatus);
-
-        // 5.微信阅读记录表处理：直接新增阅读记录
+        // 4.微信阅读记录表处理：直接新增阅读记录
         WxReadRecord wxReadRecord = new WxReadRecord(
                 articleId,
                 shareId,
                 wxUser.getId(),
                 openid,
-                nowDate,
+                MyDateTimeUtil.getNowDate(),
                 readTime);
         // 直接插入，不做相同读者当日阅读时间合并
         wxReadRecordMapper.insert(wxReadRecord);
+
+        // 5.处理产品浏览次数,可能+1
+        productMapper.addProductViewTimes(articleId);
 
         // 6.删除缓存
         delCache(articleId, shareId);

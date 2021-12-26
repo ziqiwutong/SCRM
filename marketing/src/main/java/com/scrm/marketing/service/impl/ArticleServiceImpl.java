@@ -1,8 +1,6 @@
 package com.scrm.marketing.service.impl;
 
-import cn.hutool.core.date.DateUtil;
 import com.scrm.marketing.entity.Article;
-import com.scrm.marketing.entity.ArticleCustomerRead;
 import com.scrm.marketing.exception.MyException;
 import com.scrm.marketing.mapper.*;
 import com.scrm.marketing.service.ArticleService;
@@ -13,6 +11,7 @@ import com.scrm.marketing.util.MyJsonUtil;
 import com.scrm.marketing.util.resp.CodeEum;
 import com.scrm.marketing.util.resp.PageResult;
 import com.scrm.marketing.util.resp.Result;
+import io.netty.util.internal.ThreadLocalRandom;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
@@ -20,9 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.time.Duration;
-import java.time.LocalDate;
-import java.time.temporal.TemporalAdjuster;
-import java.time.temporal.TemporalAdjusters;
 import java.util.*;
 
 /**
@@ -33,8 +29,6 @@ import java.util.*;
 public class ArticleServiceImpl implements ArticleService {
     @Resource
     private ArticleMapper articleMapper;
-    @Resource
-    private ArtCusReadMapper articleCustomerReadMapper;
     @Resource
     private WxReadRecordMapper wxReadRecordMapper;
     @Resource
@@ -47,33 +41,54 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public Result getArticleDetail(Long id, String shareId) {
-        // 0. 查询文章所有
-        // 0.1 从缓存查
+        // 1. 从缓存查
         Article article;
         ValueOperations<String, String> opsForValue = redisTemplate.opsForValue();
+
         String article_json = opsForValue.get(articleKeyPrefix + id);
         if (article_json != null)
             article = MyJsonUtil.toBean(article_json, Article.class);
 
-            // 0.2 从数据库查
         else {
-            article = articleMapper.selectById(id);
-            // 放入缓存
-            opsForValue.set(articleKeyPrefix + id, MyJsonUtil.toJsonStr(article), cacheTime);
+            // 2.缓存没拿到，先互斥锁定
+            Boolean lockFlag = Boolean.FALSE;
+            for (int i = 0; i < 3; i++) {
+                lockFlag = opsForValue.setIfAbsent(
+                        articleKeyPrefix + id + "_lock",
+                        Thread.currentThread().getName());
+                if (Boolean.TRUE.equals(lockFlag)) break;
+                try {
+                    Thread.sleep(ThreadLocalRandom.current().nextLong(0, 500));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            // 3.拿到锁了或循环了3次了，再从缓存拿
+            article_json = opsForValue.get(articleKeyPrefix + id);
+            if (article_json != null) {
+                article = MyJsonUtil.toBean(article_json, Article.class);
+            } else {
+                // 4.确实没有，再去数据库查询
+                article = articleMapper.selectById(id);
+                // 放入缓存
+                opsForValue.set(articleKeyPrefix + id, MyJsonUtil.toJsonStr(article), cacheTime);
+            }
+            // 5.释放锁
+            if (Boolean.TRUE.equals(lockFlag))
+                redisTemplate.delete(articleKeyPrefix + id + "_lock");
         }
         if (article == null)
-            return Result.error(CodeEum.NOT_EXIST, "文章id:" + id + "不存在");
+            return Result.error(CodeEum.NOT_EXIST, "文章id: " + id + " 不存在");
 
-        // 0.3 将productIdsJson 转为 productIds属性
+        // 6.将productIdsJson 转为 productIds属性
         Article.productIdsHandle(article);
 
-        // 1、shareId为空
+        // 7.1 shareId为空
         if (shareId == null) {
             return Result.success(article);
         }
-        // 2、shareId不为空
+        // 7.2、shareId不为空
         else {
-            // 2.1 先查出user
             IuapUser shareUser = iuapClient.getUserById(shareId);
 
             if (shareUser == null)
@@ -155,23 +170,15 @@ public class ArticleServiceImpl implements ArticleService {
     public void delete(Long id) throws MyException {
         /*
          删除文章，应该需要级联删除
-             // 1.article_share_record
-             // 2.article_customer_read
-             3.微信用户阅读记录：mk_wx_read_record
-         注意：此处保留了相关文章的客户阅读记录
-         */
-        // 1.删除文章分享记录
-        // articleShareRecordMapper.deleteByArticleId(id);
-        // 2.不删除文章客户阅读记录
-        //articleCustomerReadMapper.deleteByArticleId(id);
-
-        // 3.删除文章的微信阅读记录
+         1.微信用户阅读记录：mk_wx_read_record
+           */
+        // 1.删除文章的微信阅读记录
         wxReadRecordMapper.deleteByAid(id);
 
-        // 4、删除文章
+        // 2、删除文章
         if (articleMapper.deleteById(id) != 1)
             throw new MyException(CodeEum.CODE_ERROR, "删除失败,可能是文章已经被删除");
-        // 5、删除缓存
+        // 3、删除缓存
         redisTemplate.delete(articleKeyPrefix + id);
     }
 
@@ -186,88 +193,6 @@ public class ArticleServiceImpl implements ArticleService {
 
         // 3.删除缓存
         redisTemplate.delete(articleKeyPrefix + id);
-    }
-
-    @Override
-    /*感觉这里应该不需要对productIds属性进行处理*/
-    public Result queryArticleRead(Long articleId, Boolean sevenFlag, Integer pageNum, Integer pageSize) {
-        // 情况2：有文章id，则查询特定文章的7天或者30天的阅读时长，从 mk_article_customer_read 表查
-        if (articleId != null && sevenFlag != null) {
-            // 1.查缓存
-            List<ArticleCustomerRead> articleCustomerReads =
-                    getOneReadCache(articleId, sevenFlag);
-            if (articleCustomerReads != null) return Result.success(articleCustomerReads);
-
-            // 2.这里根据sevenFlag生成查询起始时间
-            LocalDate startDate = LocalDate.now();
-            if (sevenFlag) startDate = startDate.minusDays(7L);
-            else startDate = startDate.minusDays(30L);   // 查询30天
-
-            // 3.从mk_article_customer_read表查
-            articleCustomerReads =
-                    articleCustomerReadMapper.queryArticleRead(articleId, startDate);
-            // 4.放缓存
-            setOneReadCache(articleId, sevenFlag, articleCustomerReads);
-
-            return Result.success(articleCustomerReads);
-        }
-        // 情况1：无文章id，则分页查询文章总阅读时长，从 mk_article 表查：审核通过，无论哪种materialType
-        else {
-            // 1.查缓存
-            PageResult result = getAllReadCache(pageNum, pageSize);
-            if (result != null) return result;
-
-            // 2.计算偏移量
-            int offset = (pageNum - 1) * pageSize;
-            // 从mk_article表查询文章总阅读时长
-            List<Article> articles = articleMapper.queryPage(offset, pageSize, Article.EXAMINE_FLAG_ACCESS, null);
-            // 3.查询文章总数
-            int total = articleMapper.queryCount(offset, pageSize, Article.EXAMINE_FLAG_ACCESS, null);
-            // 4.放缓存
-            result = PageResult.success(articles, total, pageNum);
-            setAllReadCache(pageNum, pageSize, result);
-
-            return result;
-        }
-    }
-
-    private boolean isCache(int pageNum, int pageSize) {
-        // 缓存前3页，每页20条
-        return 0 < pageNum && pageNum <= 3 && pageSize == 20;
-    }
-
-    private PageResult getAllReadCache(int pageNum, int pageSize) {
-        if (isCache(pageNum, pageSize)) {
-            String json = redisTemplate.opsForValue().get("article_read_all_pageNum:" + pageNum);
-            if (json != null)
-                return MyJsonUtil.toBean(json, PageResult.class);
-        }
-        return null;
-    }
-
-    private void setAllReadCache(Integer pageNum, Integer pageSize, PageResult result) {
-        if (isCache(pageNum, pageSize)) {
-            redisTemplate.opsForValue().set("article_read_all_pageNum:" + pageNum,
-                    MyJsonUtil.toJsonStr(result),
-                    cacheTime);
-        }
-    }
-
-    private List<ArticleCustomerRead> getOneReadCache(long articleId, boolean sevenFlag) {
-        String json = redisTemplate.opsForValue().
-                get("article_read_id:" + articleId + "_sevenFlag:" + sevenFlag);
-
-        if (json != null)
-            return MyJsonUtil.toBeanList(json, ArticleCustomerRead.class);
-        return null;
-    }
-
-    private void setOneReadCache(long articleId, boolean sevenFlag, List<ArticleCustomerRead> articleCustomerReads) {
-        redisTemplate.opsForValue().set(
-                "article_read_id:" + articleId + "_sevenFlag:" + sevenFlag,
-                MyJsonUtil.toJsonStr(articleCustomerReads),
-                cacheTime
-        );
     }
 
     /**
