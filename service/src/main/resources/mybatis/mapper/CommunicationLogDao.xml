@@ -12,12 +12,13 @@
     <select id="querySingleCustomerRelation" resultType="com.scrm.service.entity.CustomerRelation">
         select * from se_customer_relationship
         where customer_id = #{customerId} and relation_type = replace(#{relationType}, '''', '')
+        order by communication_time desc
     </select>
 
     <select id="queryCustomerRelation" resultType="com.scrm.service.entity.CustomerRelation">
         select * from se_customer_relationship
         where customer_id = #{customerId}
-        order by relation_type
+        order by communication_time desc
     </select>
 
     <select id="queryCustomerRelationDetail" resultType="com.scrm.service.entity.CustomerRelation">
