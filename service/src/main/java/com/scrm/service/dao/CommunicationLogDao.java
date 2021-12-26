@@ -1,7 +1,6 @@
 package com.scrm.service.dao;
 
-import com.scrm.service.entity.Communication;
-import com.scrm.service.entity.CommunicationLog;
+import com.scrm.service.entity.CustomerRelation;
 import com.scrm.service.entity.UserAndCommunication;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -11,19 +10,17 @@ import java.util.List;
 public interface CommunicationLogDao {
     List<UserAndCommunication> queryCommunicationUser(Long customerId);
 
-    Communication queryCommunication(Long customerId);
+    List<CustomerRelation> querySingleCustomerRelation(Long customerId, String relationType);
 
-    List<CommunicationLog> queryCommunicationLog(Long customerId, Integer communicationWay);
+    List<CustomerRelation> queryCustomerRelation(Long customerId);
 
-    CommunicationLog queryCommunicationLogDetail(Long id);
+    CustomerRelation queryCustomerRelationDetail(Long id);
 
-    Integer addCommunicationLog(CommunicationLog communicationLog);
+    Integer queryCustomerRelationCount(Long customerId, String relationType);
 
-    Integer PlusCommunication(Long customerId, Integer communicationWay);
+    Integer addCustomerRelation(CustomerRelation customerRelation);
 
-    Integer editCommunicationLog(CommunicationLog communicationLog);
+    Integer editCustomerRelation(CustomerRelation customerRelation);
 
-    Integer deleteCommunicationLog(Long id);
-
-    Integer MinusCommunication(Long customerId, Integer communicationWay);
+    Integer deleteCustomerRelation(Long id);
 }

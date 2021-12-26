@@ -1,9 +1,8 @@
 package com.scrm.service.service.impl;
 
-import com.scrm.service.dao.CommunicationDao;
 import com.scrm.service.dao.CommunicationLogDao;
 import com.scrm.service.entity.Communication;
-import com.scrm.service.entity.CommunicationLog;
+import com.scrm.service.entity.CustomerRelation;
 import com.scrm.service.entity.UserAndCommunication;
 import com.scrm.service.service.CommunicationLogService;
 import org.springframework.stereotype.Service;
@@ -22,23 +21,37 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Communication queryCommunication(Long customerId) {
-        return communicationLogDao.queryCommunication(customerId);
+    public List<CustomerRelation> querySingleCustomerRelation(Long customerId, String relationType) {
+        return communicationLogDao.querySingleCustomerRelation(customerId, relationType);
     }
 
     @Override
-    public List<CommunicationLog> queryCommunicationLog(Long customerId, Integer communicationWay) {
-        return communicationLogDao.queryCommunicationLog(customerId, communicationWay);
+    public List<CustomerRelation> queryCustomerRelation(Long customerId) {
+        return communicationLogDao.queryCustomerRelation(customerId);
     }
 
     @Override
-    public CommunicationLog queryCommunicationLogDetail(Long id) {
-        return communicationLogDao.queryCommunicationLogDetail(id);
+    public CustomerRelation queryCustomerRelationDetail(Long id) {
+        return communicationLogDao.queryCustomerRelationDetail(id);
     }
 
     @Override
-    public String addCommunicationLog(CommunicationLog communicationLog) throws Exception{
-        int result = communicationLogDao.addCommunicationLog(communicationLog);
+    public Communication queryCustomerRelationTimes(Long customerId) {
+        int callTimes = communicationLogDao.queryCustomerRelationCount(customerId,"打电话");
+        int msgTimes = communicationLogDao.queryCustomerRelationCount(customerId,"发短信");
+        int wxTimes = communicationLogDao.queryCustomerRelationCount(customerId,"发微信");
+        int visitTimes = communicationLogDao.queryCustomerRelationCount(customerId,"线下沟通");
+        Communication communication = new Communication();
+        communication.setCallTimes(callTimes);
+        communication.setMsgTimes(msgTimes);
+        communication.setWxTimes(wxTimes);
+        communication.setVisitTimes(visitTimes);
+        return communication;
+    }
+
+    @Override
+    public Integer addCustomerRelation(CustomerRelation customerRelation) throws Exception {
+        int result = communicationLogDao.addCustomerRelation(customerRelation);
         if (result < 1) {
             throw new Exception("插入失败");
         }
@@ -46,37 +59,19 @@ public class CommunicationLogServiceImpl implements CommunicationLogService {
     }
 
     @Override
-    public Integer PlusCommunication(Long customerId, Integer communicationWay) throws Exception {
-        int result = communicationLogDao.PlusCommunication(customerId, communicationWay);
+    public Integer editCustomerRelation(CustomerRelation customerRelation) throws Exception {
+        int result = communicationLogDao.editCustomerRelation(customerRelation);
         if (result < 1) {
-            throw new Exception("更新沟通次数失败");
+            throw new Exception("修改失败");
         }
         return null;
     }
 
     @Override
-    public String editCommunicationLog(CommunicationLog communicationLog) throws Exception{
-        int result = communicationLogDao.editCommunicationLog(communicationLog);
-        if (result < 1) {
-            throw new Exception("更新失败");
-        }
-        return null;
-    }
-
-    @Override
-    public String deleteCommunicationLog(Long id) throws Exception{
-        int result = communicationLogDao.deleteCommunicationLog(id);
+    public Integer deleteCustomerRelation(Long id) throws Exception {
+        int result = communicationLogDao.deleteCustomerRelation(id);
         if (result < 1) {
             throw new Exception("删除失败");
-        }
-        return null;
-    }
-
-    @Override
-    public Integer MinusCommunication(Long customerId, Integer communicationWay) throws Exception {
-        int result = communicationLogDao.MinusCommunication(customerId, communicationWay);
-        if (result < 1) {
-            throw new Exception("更新沟通次数失败");
         }
         return null;
     }

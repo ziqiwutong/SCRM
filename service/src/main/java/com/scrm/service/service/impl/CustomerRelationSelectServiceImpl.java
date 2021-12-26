@@ -93,8 +93,8 @@ public class CustomerRelationSelectServiceImpl implements CustomerRelationSelect
                 //评价关系中的雇佣关系
                 int EmployCountFlag = 0, EmployScoreFlag = 0;
                 List<List<String>> labelEmployCategory = new ArrayList<>();
-                labelEmployCategory.add(Arrays.asList("分支机构"));
-                labelEmployCategory.add(Arrays.asList("董监高", "公告中的董监高"));
+                labelEmployCategory.add(Arrays.asList("董监高"));
+                labelEmployCategory.add(Arrays.asList("公告中的董监高"));
                 labelEmployCategory.add(Arrays.asList("历史董监高"));
                 ArrayList<Integer> linkLabelEmployScore = new ArrayList<>();
                 for(FirmRelation Employrelation : firmRelation) {
@@ -141,7 +141,7 @@ public class CustomerRelationSelectServiceImpl implements CustomerRelationSelect
                 //评价关系中的其他属性关系
                 int AttributeCountFlag = 0;
                 List<List<String>> labelAttributeCategory = new ArrayList<>();
-                labelAttributeCategory.add(Arrays.asList("相同名字", "相同电话", "相同地址", "相同邮箱", "相同域名",
+                labelAttributeCategory.add(Arrays.asList("分支机构", "相同名字", "相同电话", "相同地址", "相同邮箱", "相同域名",
                         "相同软件著作权", "相同裁判文书", "相同专利", "相同字号", "相同域名关键字或相同邮箱关键字", "相同历史地址",
                         "相同历史邮箱", "相同历史电话", "相同历史域名"));
                 ArrayList<Integer> linkLabelAttributeScore = new ArrayList<>();
